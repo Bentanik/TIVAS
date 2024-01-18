@@ -61,7 +61,7 @@ function Home() {
                 <div className={cx("nav-item")}>Press</div>
               </div>
               <div className={cx("navigation-2")}>
-                <div className={cx("nav-item1")}>ABOUT US</div>
+                <div className={cx("nav-item1")}>RESOURCES</div>
                 <div className={cx("nav-item")}>Travel Guides and Tips</div>
                 <div className={cx("nav-item")}>Help Resources and Articles</div>
                 <div className={cx("nav-item")}>Owner Resources</div>
