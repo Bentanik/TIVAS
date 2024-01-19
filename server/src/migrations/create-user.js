@@ -18,11 +18,12 @@ module.exports = {
       password: {
         type: Sequelize.STRING,
       },
-      phoneNumer: {
+      phoneNumber: {
         type: Sequelize.STRING,
       },
       banStatus: {
         type: Sequelize.BOOLEAN,
+        defaultValue: false,
       },
       roleID: {
         type: Sequelize.INTEGER,
