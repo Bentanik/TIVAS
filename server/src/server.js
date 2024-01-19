@@ -4,6 +4,7 @@ import cors from "cors";
 
 import "dotenv/config";
 import "../connectionDB";
+import initRoutes from "./routes";
 
 const app = express();
 const PORT = process.env.PORT;
@@ -20,9 +21,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
-  return res.send("hello world");
-});
+initRoutes(app);
 
 app.listen(PORT, () => {
   console.log(`Successfully at PORT ${PORT}`);

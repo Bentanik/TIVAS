@@ -1,7 +1,12 @@
+<<<<<<< HEAD
 'use strict';
 const {
   Model
 } = require('sequelize');
+=======
+"use strict";
+const { Model } = require("sequelize");
+>>>>>>> master
 module.exports = (sequelize, DataTypes) => {
   class RoleCode extends Model {
     /**
@@ -13,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
+<<<<<<< HEAD
   RoleCode.init({
     roleName: DataTypes.STRING
   }, {
@@ -21,3 +27,16 @@ module.exports = (sequelize, DataTypes) => {
   });
   return RoleCode;
 };
+=======
+  RoleCode.init(
+    {
+      roleName: DataTypes.STRING,
+    },
+    {
+      sequelize,
+      modelName: "RoleCode",
+    }
+  );
+  return RoleCode;
+};
+>>>>>>> master
