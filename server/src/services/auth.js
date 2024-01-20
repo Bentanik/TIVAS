@@ -58,6 +58,7 @@ export const login = ({ username, email, password }) => {
       const isChecked = user && bcrypt.compareSync(password, user.password);
 
       const accessToken = isChecked ? generateAccessToken(user) : null;
+
       resolve({
         err: accessToken ? 0 : 1,
         mess: accessToken

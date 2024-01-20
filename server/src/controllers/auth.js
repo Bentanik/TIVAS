@@ -39,7 +39,6 @@ export const reNewToken = async (req, res) => {
     if (err) {
       console.log(err);
       console.log(user);
-
       return notAuth("Access token may be invalid", res);
     }
     // const newToken = services.generateAccessToken(user);
