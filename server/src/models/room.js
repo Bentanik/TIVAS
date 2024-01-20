@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Room.hasMany(models.TimeShare);
       Room.belongsTo(models.Property);
-      Room.belongsTo(models.Model);
+      Room.belongsTo(models.ModelProject);
       // define association here
     }
   }
