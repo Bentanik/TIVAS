@@ -22,7 +22,8 @@ module.exports = {
         type: Sequelize.DOUBLE
       },
       reservationID: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        unique: true,
       },
       createdAt: {
         type: "TIMESTAMP",

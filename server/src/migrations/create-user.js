@@ -31,6 +31,7 @@ module.exports = {
       },
       refundHistoryID: {
         type: Sequelize.INTEGER,
+        unique: true,
       },
       createdAt: {
         type: "TIMESTAMP",
