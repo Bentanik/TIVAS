@@ -1,35 +1,27 @@
-"use strict";
+'use strict';
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Users", {
+    await queryInterface.createTable('Bookings', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       },
-      username: {
-        type: Sequelize.STRING,
+      startDate: {
+        type: Sequelize.DATE
       },
-      email: {
-        type: Sequelize.STRING,
+      endDate: {
+        type: Sequelize.DATE
       },
-      password: {
-        type: Sequelize.STRING,
+      status: {
+        type: Sequelize.INTEGER
       },
-      phoneNumber: {
-        type: Sequelize.STRING,
+      priceBooking: {
+        type: Sequelize.DOUBLE
       },
-      banStatus: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false,
-      },
-      roleID: {
-        type: Sequelize.INTEGER,
-        defaultValue: 3,
-      },
-      refundHistoryID: {
+      reservationID: {
         type: Sequelize.INTEGER,
         unique: true,
       },
@@ -42,10 +34,10 @@ module.exports = {
         type: "TIMESTAMP",
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
         allowNull: false,
-      },
+      }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Users");
-  },
+    await queryInterface.dropTable('Bookings');
+  }
 };
