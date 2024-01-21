@@ -12,13 +12,13 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Room.hasMany(models.TimeShare);
       Room.belongsTo(models.Property);
-      Room.belongsTo(models.ModelProject);
+      Room.belongsTo(models.TypeOfProject);
       // define association here
     }
   }
   Room.init({
     desc: DataTypes.STRING,
-    modelProjectID: DataTypes.INTEGER,
+    typeOfProjectID: DataTypes.INTEGER,
     propertyID: DataTypes.INTEGER
   }, {
     sequelize,
