@@ -9,10 +9,6 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      User.belongsTo(models.RoleCode);
-      User.hasMany(models.TimeShare);
-      User.belongsToMany(models.TimeShare, {through: models.Reservation});
-      User.belongsTo(models.RefundHistory);
     }
   }
   User.init(
