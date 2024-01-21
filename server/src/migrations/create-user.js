@@ -33,6 +33,12 @@ module.exports = {
         type: Sequelize.INTEGER,
         unique: true,
       },
+      refreshToken: {
+        type: Sequelize.STRING,
+      },
+      type: {
+        type: Sequelize.STRING,
+      },
       createdAt: {
         type: "TIMESTAMP",
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
