@@ -32,6 +32,12 @@ module.exports = {
       refundHistoryID: {
         type: Sequelize.INTEGER,
       },
+      refreshToken: {
+        type: Sequelize.STRING,
+      },
+      type: {
+        type: Sequelize.STRING,
+      },
       createdAt: {
         type: "TIMESTAMP",
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
