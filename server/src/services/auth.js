@@ -9,6 +9,7 @@ const hashPassword = (password) =>
 export const generateAccessToken = (user) => {
   return jwt.sign(
     {
+      id: user.id,
       username: user.username,
       roleID: user.roleID,
     },
@@ -20,7 +21,8 @@ export const generateAccessToken = (user) => {
 export const generateRefreshToken = (user) => {
   return jwt.sign(
     {
-      username: user.username,
+      id: user.id,
+      username: user.username || null,
       roleID: user.roleID,
     },
     process.env.JWT_REFRESH_KEY,
@@ -46,15 +48,21 @@ export const register = ({
           email,
           password: hashPassword(password),
           phoneNumber,
-          refreshToken: generateRefreshToken({
-            username,
-            roleID,
-          }),
           type: "Local",
         },
       });
       const accessToken = created ? generateAccessToken(user) : null;
-
+      const refreshToken = created ? generateRefreshToken(user) : null;
+      if (refreshToken) {
+        await db.User.update(
+          {
+            refreshToken,
+          },
+          {
+            where: { id: user.id },
+          }
+        );
+      }
       resolve({
         err: accessToken ? 0 : 1,
         mess: accessToken
@@ -80,14 +88,15 @@ export const login = ({ username, email, password }) => {
         },
         raw: true,
       });
-      const isChecked = user && bcrypt.compareSync(password, user.password);
+      const isChecked =
+        user !== null && bcrypt.compareSync(password, user.password);
       const accessToken = isChecked ? generateAccessToken(user) : null;
       const refreshToken = isChecked ? generateRefreshToken(user) : null;
 
       if (refreshToken) {
         await db.User.update(
           {
-            refreshToken,
+            refreshToken: refreshToken,
           },
           {
             where: { id: user.id },
@@ -107,8 +116,8 @@ export const login = ({ username, email, password }) => {
               roleID: user.roleID,
             }
           : null,
-        accessToken,
-        refreshToken: user.refreshToken,
+        accessToken: accessToken,
+        refreshToken: user?.refreshToken,
       });
     } catch (error) {
       console.log(error);
@@ -126,10 +135,6 @@ export const loginGoogle = ({ email, roleID = 3 }) => {
         },
         defaults: {
           email,
-          refreshToken: generateRefreshToken({
-            username: null,
-            roleID,
-          }),
           type: "Google",
         },
       });
@@ -139,7 +144,7 @@ export const loginGoogle = ({ email, roleID = 3 }) => {
       const refreshToken =
         user.type === "Google" ? generateRefreshToken(user) : null;
 
-      if (!created && refreshToken) {
+      if (refreshToken) {
         await db.User.update(
           {
             refreshToken,
@@ -168,6 +173,36 @@ export const loginGoogle = ({ email, roleID = 3 }) => {
     } catch (error) {
       console.log(error);
       reject(error);
+    }
+  });
+};
+
+export const refreshToken = ({ refreshToken }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      jwt.verify(
+        refreshToken,
+        process.env.JWT_REFRESH_KEY,
+        async (err, user) => {
+          if (err) {
+            console.log(err);
+          } else {
+            const newAccessToken = generateAccessToken(user);
+            const newRefreshToken = generateRefreshToken(user);
+            await db.User.update(
+              {
+                refreshToken: newRefreshToken,
+              },
+              {
+                where: { id: user.id },
+              }
+            );
+            resolve({ newRefreshToken, newAccessToken });
+          }
+        }
+      );
+    } catch (err) {
+      reject(err);
     }
   });
 };

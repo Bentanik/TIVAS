@@ -24,5 +24,6 @@ router.get(
 );
 
 // Refresh token
+router.post("/refreshtoken", controllers.refreshToken);
 
 export default router;
