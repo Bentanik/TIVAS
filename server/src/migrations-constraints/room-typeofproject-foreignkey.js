@@ -11,10 +11,10 @@ module.exports = {
      */
     await queryInterface.addConstraint('Rooms', {
       type: 'foreign key',
-      name: 'room-modelproject-fk',
-      fields: ['modelProjectID'],
+      name: 'room-typeofproject-fk',
+      fields: ['typeOfProjectID'],
       references: {
-        table: 'ModelProjects',
+        table: 'TypeOfProjects',
         field: 'id',
       },
       onDelete: 'cascade',
@@ -29,6 +29,6 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-    await queryInterface.removeConstraint('Rooms', 'room-modelproject-fk');
+    await queryInterface.removeConstraint('Rooms', 'room-typeofproject-fk');
   }
 };
