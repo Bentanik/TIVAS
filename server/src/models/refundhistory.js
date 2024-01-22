@@ -10,13 +10,16 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      RefundHistory.hasOne(models.User);
+      RefundHistory.belongsTo(models.User ,{
+        foreignKey: 'userID',
+      });
       // define association here
     }
   }
   RefundHistory.init({
     date: DataTypes.DATE,
-    paymentMethod: DataTypes.STRING
+    paymentMethod: DataTypes.STRING,
+    userID: DataTypes.INTEGER,
   }, {
     sequelize,
     modelName: 'RefundHistory',

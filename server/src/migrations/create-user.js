@@ -29,10 +29,6 @@ module.exports = {
         type: Sequelize.INTEGER,
         defaultValue: 3,
       },
-      refundHistoryID: {
-        type: Sequelize.INTEGER,
-        unique: true,
-      },
       refreshToken: {
         type: Sequelize.STRING,
       },
