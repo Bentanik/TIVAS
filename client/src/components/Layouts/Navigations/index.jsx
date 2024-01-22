@@ -1,10 +1,9 @@
 import classNames from "classnames/bind";
 import styles from "./Navigations.module.scss";
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import Search from "~/components/Search";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { faBell } from "@fortawesome/free-regular-svg-icons";
 
 const cx = classNames.bind(styles);
