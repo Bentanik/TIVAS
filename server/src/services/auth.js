@@ -14,7 +14,7 @@ export const generateAccessToken = (user) => {
       roleID: user.roleID,
     },
     process.env.JWT_ACCESS_KEY,
-    { expiresIn: "20s" }
+    { expiresIn: "60s" }
   );
 };
 

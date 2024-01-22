@@ -57,6 +57,7 @@ export const loginGoogle = async (req, res) => {
 // Refresh token
 export const refreshToken = async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
+  console.log(refreshToken);
   if (!refreshToken)
     return notAuth("Access token may be expired or invalid", res);
   const response = await services.refreshToken({ refreshToken });
