@@ -50,8 +50,8 @@ function ResortBox() {
               </div>
             <div className={cx("footer-text")}>
               <div className={cx("a")}>© 2024 Tivas.com</div>
-              <div className={cx("a1")}>Term of service</div>
-              <div className={cx("a1")}>Privacy Prolite</div>
+              <div className={cx("a-one")}>Term of service</div>
+              <div className={cx("a-one")}>Privacy Prolite</div>
             </div>
             </div>
           </div>
