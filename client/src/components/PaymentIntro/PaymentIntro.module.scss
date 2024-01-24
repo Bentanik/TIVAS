@@ -1,4 +1,6 @@
 .payment-intro {
+    user-select: none;
+    margin-top: 100px;
     .header-slogan {
         display: grid;
         color: #000;
@@ -6,7 +8,7 @@
         font-size: 3.5rem;
         font-style: normal;
         font-weight: 500;
-        margin-left: 280px;
+        margin-left: 265px;
     }
 
     .body {

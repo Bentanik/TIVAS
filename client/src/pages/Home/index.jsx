@@ -3,6 +3,7 @@ import styles from "./Home.module.scss";
 import Navigations from "~/components/Layouts/Navigations";
 import Footer from "~/components/Layouts/Footer";
 import PaymentIntro from "~/components/PaymentIntro/PaymentIntro";
+import PageOwner from "~/components/PageOwner";
 
 const cx = classNames.bind(styles);
 
@@ -16,6 +17,7 @@ function Home() {
       </header>
       {/* Main */}
       <main>Main</main>
+      <PageOwner/>
       <PaymentIntro/>
       {/* Footer */}
       <footer className={cx("footer")}>
