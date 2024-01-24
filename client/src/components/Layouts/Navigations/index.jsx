@@ -5,6 +5,9 @@ import Search from "~/components/Search";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { faBell } from "@fortawesome/free-regular-svg-icons";
+import { useDispatch, useSelector } from "react-redux";
+import createAxios from "~/configs/axios";
+import { logout } from "~/controllers/auth";
 
 const cx = classNames.bind(styles);
 
@@ -27,8 +30,11 @@ const LIST_NAV = [
   },
 ];
 
-function Navigations({triggerLogin}) {
-  const currentUser = null;
+function Navigations({ triggerLogin }) {
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.auth.login.user);
+  const axiosInstance = createAxios(dispatch, currentUser);
+
 
   const renderNavbar = () => {
     return LIST_NAV.map((item, index) => {
@@ -38,6 +44,10 @@ function Navigations({triggerLogin}) {
         </Link>
       );
     });
+  };
+
+  const handleLogout = () => {
+    logout(dispatch, axiosInstance);
   };
 
   return (
@@ -68,6 +78,9 @@ function Navigations({triggerLogin}) {
                 />
                 <h4 className={cx("show-name")}>Unknown</h4>
                 <FontAwesomeIcon icon={faChevronDown} className={cx("icon")} />
+              </div>
+              <div className={cx("action")} onClick={handleLogout}>
+                <h4 className={cx("register")}>Logout</h4>
               </div>
             </>
           ) : (

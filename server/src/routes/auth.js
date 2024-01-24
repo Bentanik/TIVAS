@@ -26,4 +26,7 @@ router.get(
 // Refresh token
 router.post("/refreshtoken", controllers.refreshToken);
 
+//Logout
+router.post("/logout", controllers.logout);
+
 export default router;

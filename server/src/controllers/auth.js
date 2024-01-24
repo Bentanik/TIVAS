@@ -36,6 +36,7 @@ export const login = async (req, res) => {
     path: "/",
     sameSite: "strict",
   });
+
   return res.status(200).json(rest);
 };
 
@@ -57,9 +58,10 @@ export const loginGoogle = async (req, res) => {
 // Refresh token
 export const refreshToken = async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
-  console.log(refreshToken);
+  console.log("refreshToken: ", refreshToken);
   if (!refreshToken)
     return notAuth("Access token may be expired or invalid", res);
+  
   const response = await services.refreshToken({ refreshToken });
   const { newRefreshToken, ...rest } = response;
   res.cookie("refreshToken", newRefreshToken, {
@@ -69,4 +71,13 @@ export const refreshToken = async (req, res) => {
     sameSite: "strict",
   });
   return res.status(200).json(rest);
+};
+
+//Logout
+export const logout = async (req, res) => {
+  res.clearCookie("refreshToken");
+  return res.status(200).json({
+    err: 0,
+    mess: "Logout successfully",
+  });
 };

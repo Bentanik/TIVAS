@@ -14,7 +14,7 @@ export const generateAccessToken = (user) => {
       roleID: user.roleID,
     },
     process.env.JWT_ACCESS_KEY,
-    { expiresIn: "60s" }
+    { expiresIn: "30s" }
   );
 };
 
@@ -69,7 +69,7 @@ export const register = ({
           ? "Register successfully"
           : "Username or email is already in use",
         accessToken: `Bearer ${accessToken}`,
-        refreshToken: user.refreshToken,
+        refreshToken,
       });
     } catch (err) {
       console.log(err);
@@ -116,8 +116,8 @@ export const login = ({ username, email, password }) => {
               roleID: user.roleID,
             }
           : null,
-        accessToken: accessToken,
-        refreshToken: user?.refreshToken,
+        accessToken: `Bearer ${accessToken}`,
+        refreshToken,
       });
     } catch (error) {
       console.log(error);
@@ -167,7 +167,7 @@ export const loginGoogle = ({ email, roleID = 3 }) => {
               roleID: user.roleID || roleID,
             }
           : null,
-        accessToken,
+        accessToken: `Bearer ${accessToken}`,
         refreshToken,
       });
     } catch (error) {
@@ -187,17 +187,31 @@ export const refreshToken = ({ refreshToken }) => {
           if (err) {
             console.log(err);
           } else {
-            const newAccessToken = generateAccessToken(user);
-            const newRefreshToken = generateRefreshToken(user);
-            await db.User.update(
-              {
-                refreshToken: newRefreshToken,
-              },
-              {
-                where: { id: user.id },
-              }
-            );
-            resolve({ newRefreshToken, newAccessToken });
+            const res = await db.User.findOne({
+              where: { id: user.id },
+              raw: true,
+            });
+            const newAccessToken = res.refreshToken
+              ? generateAccessToken(user)
+              : null;
+            const newRefreshToken = res.refreshToken
+              ? generateRefreshToken(user)
+              : null;
+            if (res.refreshToken) {
+              await db.User.update(
+                {
+                  refreshToken: newRefreshToken,
+                },
+                {
+                  where: { id: user.id },
+                }
+              );
+            }
+            resolve({
+              err: res.refreshToken ? 0 : 1,
+              newRefreshToken,
+              newAccessToken: `Bearer ${newAccessToken}`,
+            });
           }
         }
       );

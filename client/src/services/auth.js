@@ -1,0 +1,27 @@
+export const refreshToken = async (axios) => {
+  try {
+    const res = await axios.post(
+      `${process.env.REACT_APP_SERVER_URL}/api/v1/auth/refreshtoken`
+    );
+    return res.data;
+  } catch (err) {
+    
+    return "error";
+  }
+};
+
+export const login = (axiosInstance, form) => {
+  return axiosInstance.post("/api/v1/auth/login", form);
+};
+
+export const logout = (axiosInstance) => {
+  return axiosInstance.post("/api/v1/auth/logout");
+};
+
+export const register = (axiosInstance, form) => {
+  return axiosInstance.post("/api/v1/auth/register", form);
+};
+
+export const getAll = (axiosInstance) => {
+  return axiosInstance.get("/api/v1/user/getAllUsers");
+};

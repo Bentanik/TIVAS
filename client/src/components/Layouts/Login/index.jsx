@@ -4,13 +4,21 @@ import InputItem from "~/components/InputItem";
 import { useState } from "react";
 import images from "~/assets";
 import { login as validateLogin } from "~/middlewares/Validates/validateForm";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "~/controllers/auth";
+import createAxios from "~/configs/axios";
 
 const cx = classNames.bind(styles);
 
 function Login() {
   const [loginValue, setLoginValue] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState("");
+  const [errors, setErrors] = useState({});
+
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.auth.login.user);
+
+  const axiosInstance = createAxios(dispatch, currentUser);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -18,10 +26,13 @@ function Login() {
     const form = { loginValue, password };
     const err = validateLogin(form);
     console.log(err);
-    if (err.numberErrors === 1) {
+    if (err.numberErrors !== 0) {
       setErrors(err);
     } else {
-      console.log(form);
+      setErrors({});
+      if (err.email)
+        login(dispatch, axiosInstance, { email: loginValue, password });
+      else login(dispatch, axiosInstance, { username: loginValue, password });
     }
   };
 
@@ -53,6 +64,7 @@ function Login() {
             type={loginValue === "" || password === "" ? "button" : "submit"}
             className={cx("action-login", {
               "hide-login": loginValue === "" || password === "",
+              "show-login": loginValue !== "" && password !== "",
             })}
           >
             Log In

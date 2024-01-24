@@ -37,16 +37,11 @@
     outline: none;
     border: none;
     border-radius: 40px;
-    border: 1px solid #ffe1c5;
-    background: #ffcc41;
     padding: 10px 0;
-
-    color: #0b0b0b;
 
     font-family: "Inter", sans-serif;
     font-size: 1.5rem;
     font-weight: 400;
-    cursor: pointer;
   }
 
   .hide-login {
@@ -55,6 +50,18 @@
 
     color: #b5b5b5;
     cursor: default;
+  }
+
+  .show-login {
+    color: #0b0b0b;
+
+    border: 1px solid #ffe1c5;
+    background: #ffcc41;
+    cursor: pointer;
+
+    &:hover {
+      background: #fac73b;
+    }
   }
 
   .login-google {

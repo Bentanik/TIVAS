@@ -8,7 +8,14 @@ import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 
 const cx = classNames.bind(styles);
 
-function InputItem({ value, setValue, placeholder, errors, type = "text" }) {
+function InputItem({
+  value,
+  setValue,
+  placeholder,
+  errors,
+  error,
+  type = "text",
+}) {
   const [typeValue, setTypeValue] = useState(type);
 
   const handleValue = (e) => {
@@ -27,7 +34,7 @@ function InputItem({ value, setValue, placeholder, errors, type = "text" }) {
           type={typeValue}
           placeholder={placeholder}
           className={cx("input-item", {
-            error: errors && value === "",
+            error: (errors && value === "") || error,
           })}
           value={value}
           onChange={handleValue}
@@ -48,11 +55,16 @@ function InputItem({ value, setValue, placeholder, errors, type = "text" }) {
         )}
         {errors && value === "" && (
           <div className={cx("error-icon")}>
-            <FontAwesomeIcon icon={faCircleExclamation}  className={cx("icon")}/>
+            <FontAwesomeIcon
+              icon={faCircleExclamation}
+              className={cx("icon")}
+            />
           </div>
         )}
       </div>
-      {errors && value === "" && <span className={cx("text-error")}>{errors}</span>}
+      {errors && value === "" && (
+        <span className={cx("text-error")}>{errors}</span>
+      )}
     </div>
   );
 }
