@@ -27,8 +27,8 @@ const LIST_NAV = [
   },
 ];
 
-function Navigations() {
-  const currentUser = "Vy";
+function Navigations({triggerLogin}) {
+  const currentUser = null;
 
   const renderNavbar = () => {
     return LIST_NAV.map((item, index) => {
@@ -72,7 +72,7 @@ function Navigations() {
             </>
           ) : (
             <>
-              <div className={cx("action")}>
+              <div className={cx("action")} onClick={() => triggerLogin(true)}>
                 <h4 className={cx("login")}>Sign in</h4>
               </div>
               <div className={cx("action")}>
