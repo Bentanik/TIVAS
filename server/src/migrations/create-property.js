@@ -21,9 +21,6 @@ module.exports = {
       quantity: {
         type: Sequelize.INTEGER
       },
-      modelID: {
-        type: Sequelize.INTEGER
-      },
       createdAt: {
         type: "TIMESTAMP",
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),

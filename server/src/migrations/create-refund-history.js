@@ -15,6 +15,10 @@ module.exports = {
       paymentMethod: {
         type: Sequelize.STRING
       },
+      userID : {
+        type: Sequelize.INTEGER,
+        unique: true
+      },
       createdAt: {
         type: "TIMESTAMP",
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),

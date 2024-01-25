@@ -9,6 +9,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      User.belongsTo(models.RoleCode, {
+        foreignKey: 'roleID',
+      });
+      User.belongsToMany(models.TimeShare, {through: models.Reservation}, {
+        foreignKey: 'userID',
+      });
+      User.hasOne(models.RefundHistory, {
+        foreignKey: 'userID',
+      });
     }
   }
   User.init(
@@ -19,7 +28,8 @@ module.exports = (sequelize, DataTypes) => {
       phoneNumber: DataTypes.STRING,
       banStatus: DataTypes.BOOLEAN,
       roleID: DataTypes.INTEGER,
-      refundHistoryID: DataTypes.NUMBER,
+      refreshToken: DataTypes.STRING,
+      type: DataTypes.STRING,
     },
     {
       sequelize,
