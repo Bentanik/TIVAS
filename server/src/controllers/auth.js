@@ -61,7 +61,7 @@ export const refreshToken = async (req, res) => {
   console.log("refreshToken: ", refreshToken);
   if (!refreshToken)
     return notAuth("Access token may be expired or invalid", res);
-  
+
   const response = await services.refreshToken({ refreshToken });
   const { newRefreshToken, ...rest } = response;
   res.cookie("refreshToken", newRefreshToken, {

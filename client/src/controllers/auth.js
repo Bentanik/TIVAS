@@ -22,6 +22,25 @@ export const login = async (dispatch, axiosInstance, form) => {
   }
 };
 
+export const loginGoogle = async (dispatch, axiosInstance, form) => {
+  dispatch(loginStart());
+  try {
+    window.open(
+      `${process.env.REACT_APP_SERVER_URL}/api/v1/auth/google`,
+      "_self"
+    );
+    // const res = 
+    // if (res.err === 0) {
+    //   dispatch(loginSuccess(res));
+    // } else {
+    //   dispatch(loginError(res.mess));
+    // }
+    dispatch(loginError("error"));
+  } catch (err) {
+    dispatch(loginError("Error"));
+  }
+};
+
 export const logout = async (dispatch, axiosInstance) => {
   dispatch(logoutStart());
   try {

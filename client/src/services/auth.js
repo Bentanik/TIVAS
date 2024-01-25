@@ -5,7 +5,6 @@ export const refreshToken = async (axios) => {
     );
     return res.data;
   } catch (err) {
-    
     return "error";
   }
 };

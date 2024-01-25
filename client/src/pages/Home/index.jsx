@@ -8,6 +8,7 @@ import Login from "~/components/Layouts/Login";
 import { useDispatch, useSelector } from "react-redux";
 import { getAll } from "~/services";
 import createAxios from "~/configs/axios";
+import { resetLogin } from "~/redux/authSlice";
 
 const cx = classNames.bind(styles);
 
@@ -18,6 +19,7 @@ function Home() {
 
   const handleCloseLogin = () => {
     setLogin(false);
+    dispatch(resetLogin());
   };
 
   const axiosInstance = createAxios(dispatch, currentUser);

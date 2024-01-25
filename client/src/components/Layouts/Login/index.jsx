@@ -5,8 +5,12 @@ import { useState } from "react";
 import images from "~/assets";
 import { login as validateLogin } from "~/middlewares/Validates/validateForm";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from "~/controllers/auth";
+import { login, loginGoogle } from "~/controllers/auth";
 import createAxios from "~/configs/axios";
+
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
+import LoginGoogle from "~/components/LoginGoogle";
 
 const cx = classNames.bind(styles);
 
@@ -16,7 +20,10 @@ function Login() {
   const [errors, setErrors] = useState({});
 
   const dispatch = useDispatch();
+
   const currentUser = useSelector((state) => state.auth.login.user);
+  const error = useSelector((state) => state.auth.login.error);
+  const statusLogin = useSelector((state) => state.auth.login.isFetching);
 
   const axiosInstance = createAxios(dispatch, currentUser);
 
@@ -36,6 +43,10 @@ function Login() {
     }
   };
 
+  const handleLoginGoogle = () => {
+    loginGoogle(dispatch, axiosInstance);
+  };
+
   return (
     <div className={cx("login-wrapper")}>
       <h2 className={cx("heading")}>Login</h2>
@@ -46,14 +57,19 @@ function Login() {
             setValue={setLoginValue}
             placeholder="Username or email *"
             errors={errors.loginValue}
+            error={error !== "" ? error : null}
           />
-          <InputItem
-            type="password"
-            value={password}
-            setValue={setPassword}
-            placeholder="Password *"
-            errors={errors.password}
-          />
+          <div>
+            <InputItem
+              type="password"
+              value={password}
+              setValue={setPassword}
+              placeholder="Password *"
+              errors={errors.password}
+              error={error !== "" ? error : null}
+            />
+            <p className={cx("error")}>{error}</p>
+          </div>
         </div>
         <div className={cx("footer")}>
           <p className={cx("text")}>
@@ -72,15 +88,20 @@ function Login() {
           <p className={cx("text")}>
             Not a member? <span className={cx("link")}>Sign up</span>
           </p>
-          <a
-            className={cx("login-google")}
-            href={`${process.env.REACT_APP_SERVER_URL}api/v1/auth/google`}
-          >
+          <LoginGoogle />
+          <div className={cx("login-google")} onClick={handleLoginGoogle}>
             <img src={images.googleIcon} alt="Google" className={cx("icon")} />
             <span className={cx("text")}>Continue with Google</span>
-          </a>
+          </div>
         </div>
       </form>
+
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={statusLogin}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 }
