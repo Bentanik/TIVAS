@@ -1,6 +1,7 @@
 import passport from "passport";
 import { Strategy as JwtStrategy, ExtractJwt, Strategy } from "passport-jwt";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import GooglePlusTokenStrategy from "passport-google-plus-token";
 
 // Passport JWT
 passport.use(
@@ -38,3 +39,23 @@ passport.use(
     }
   )
 );
+
+// passport.use(
+//   new GooglePlusTokenStrategy(
+//     {
+//       clientID: process.env.GOOGLE_CLIENT_ID,
+//       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+//       passReqToCallback: process.env.CLIENT_URL,
+//     },
+//     async (accessToken, refreshToken, profile, done) => {
+//       try {
+//         console.log("accessToken: ", accessToken);
+//         console.log("refreshToken: ", refreshToken);
+//         console.log("profile: ", profile);
+//         done(null, profile);
+//       } catch (error) {
+//         done(error, false);
+//       }
+//     }
+//   )
+// );
