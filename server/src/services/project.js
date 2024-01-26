@@ -1,10 +1,13 @@
 import db from "../models";
 const cloudinary = require('cloudinary').v2;
+import "dotenv/config";
+import { Op } from "sequelize";
 
 export const createNewProject = ({
     name,
     description,
-    buildingStatus
+    buildingStatus,
+    destination
 }, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -14,6 +17,7 @@ export const createNewProject = ({
                     name,
                     description,
                     buildingStatus,
+                    destination,
                     images: fileData?.path,
                 },
             })
@@ -34,3 +38,4 @@ export const createNewProject = ({
         }
     })
 }
+

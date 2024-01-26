@@ -3,11 +3,11 @@ import { badRequest, missValue } from "../middlewares/handle_errors";
 import * as services from "../services";
 const cloudinary = require('cloudinary').v2;
 
+//Create New Project
 export const createNewProject = async (req, res) => {
-  const { name, description, buildingStatus } = req.body;
-  console.log(`Buidling Status: ${buildingStatus}`);
-  console.log(`Type of Building Status: ${typeof (parseInt(buildingStatus))}`);
-  if (!name || !description || !buildingStatus) {
+  console.log(req.body)
+  const { name, description, buildingStatus, destination } = req.body;
+  if (!name || !description || !buildingStatus || !destination) {
     if (req.file) {
       cloudinary.uploader.destroy(req.file.filename);
     }
@@ -22,3 +22,5 @@ export const createNewProject = async (req, res) => {
   const response = await services.createNewProject(req.body, req.file);
   return res.status(200).json(response);
 };
+
+
