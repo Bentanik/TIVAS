@@ -1,7 +1,6 @@
 import classNames from "classnames/bind";
 import styles from "./Search.module.scss";
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import TippyHeadless from "@tippyjs/react/headless";
 import images from "~/assets";
 
@@ -15,7 +14,7 @@ function Search() {
       <TippyHeadless
         render={(attrs) => (
           <div className="box" tabIndex="-1" {...attrs}>
-            My tippy box
+            <div className={cx("search-result")}>Search result</div>
           </div>
         )}
       >
