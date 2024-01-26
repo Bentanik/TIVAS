@@ -8,5 +8,6 @@ router.post(
   uploadCloud.single('image'),
   controllers.createNewProject
 );
+router.get("/getAll",controllers.getAllProject)
 
 export default router;

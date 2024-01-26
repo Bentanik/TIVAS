@@ -34,3 +34,18 @@ export const createNewProject = ({
         }
     })
 }
+
+export const getAllProject = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            var query = {};
+            const data = await db.Project.findAll(query)
+            resolve({
+                data: data
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}

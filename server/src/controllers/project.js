@@ -22,3 +22,8 @@ export const createNewProject = async (req, res) => {
   const response = await services.createNewProject(req.body, req.file);
   return res.status(200).json(response);
 };
+
+export const getAllProject = async (req,res) => {
+  const data = await services.getAllProject()
+  return res.status(200).json(data)
+}
