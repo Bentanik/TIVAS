@@ -1,7 +1,9 @@
 import db from "../models";
 import { Op } from "sequelize";
 import bcrypt from "bcrypt";
+import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
+import { createClient } from "redis";
 
 const hashPassword = (password) =>
   bcrypt.hashSync(password, bcrypt.genSaltSync(8));
@@ -14,7 +16,7 @@ export const generateAccessToken = (user) => {
       roleID: user.roleID,
     },
     process.env.JWT_ACCESS_KEY,
-    { expiresIn: "30s" }
+    { expiresIn: "10s" }
   );
 };
 
@@ -215,6 +217,80 @@ export const refreshToken = ({ refreshToken }) => {
           }
         }
       );
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const sendCodeEmail = ({ email }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const timeEmail = 120000;
+      const client = createClient();
+      await client.connect();
+
+      const user = await db.User.findOne({
+        where: { email },
+        raw: true,
+      });
+
+      if (!user) {
+        let transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: process.env.GOOGE_APP_EMAIL,
+            pass: process.env.GOOGLE_APP_PASSWORD,
+          },
+        });
+
+        const OTP = Math.floor(100000 + Math.random() * 900000);
+
+        let mailOptions = {
+          from: "Tivas",
+          to: `${email}`,
+          subject: "Confirm received email",
+          text: `Code: ${OTP}, valid for 2 minutes`,
+        };
+
+        transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log("Email sent: " + info.response);
+          }
+        });
+
+        await client.setEx(email, timeEmail / 1000, JSON.stringify(OTP));
+      }
+
+      resolve({
+        err: user ? 1 : 0,
+        mess: user
+          ? "This email already exists"
+          : "Please check the code in the email",
+        email: email,
+        time: user ? null : timeEmail,
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const checkRegister = ({ email, otp }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const client = createClient();
+      await client.connect();
+
+      const otpRedis = await client.get(email);
+      const isChecked = otpRedis && otpRedis === otp ? true : false;
+      resolve({
+        err: isChecked ? 0 : 1,
+        mess: isChecked ? "Successfully" : "Code invalid!",
+        email: email,
+      });
     } catch (err) {
       reject(err);
     }

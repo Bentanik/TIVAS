@@ -30,11 +30,10 @@ const LIST_NAV = [
   },
 ];
 
-function Navigations({ triggerLogin }) {
+function Navigations({ triggerLogin, triggerRegister }) {
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.login.user);
   const axiosInstance = createAxios(dispatch, currentUser);
-
 
   const renderNavbar = () => {
     return LIST_NAV.map((item, index) => {
@@ -88,7 +87,10 @@ function Navigations({ triggerLogin }) {
               <div className={cx("action")} onClick={() => triggerLogin(true)}>
                 <h4 className={cx("login")}>Sign in</h4>
               </div>
-              <div className={cx("action")}>
+              <div
+                className={cx("action")}
+                onClick={() => triggerRegister(true)}
+              >
                 <h4 className={cx("register")}>Sign up</h4>
               </div>
             </>

@@ -5,8 +5,39 @@ import {
   logoutError,
   logoutStart,
   logoutSuccess,
+  sendMailError,
+  sendMailStart,
+  sendMailSuccess,
 } from "~/redux/authSlice";
 import * as services from "~/services";
+
+export const sendMail = async (dispatch, axiosInstance, form) => {
+  dispatch(sendMailStart());
+  try {
+    const res = await services.sendMail(axiosInstance, form);
+    if (res.err === 0) {
+      dispatch(sendMailSuccess(res));
+    } else {
+      dispatch(sendMailError(res.mess));
+    }
+  } catch (err) {
+    dispatch(sendMailError("Error"));
+  }
+};
+
+export const registerByEmail = async (dispatch, axiosInstance, form) => {
+  dispatch(sendMailStart());
+  try {
+    const res = await services.registerByEmail(axiosInstance, form);
+    if (res.err === 0) {
+      dispatch(sendMailSuccess(res));
+    } else {
+      dispatch(sendMailError(res.mess));
+    }
+  } catch (err) {
+    dispatch(sendMailError("Error"));
+  }
+};
 
 export const login = async (dispatch, axiosInstance, form) => {
   dispatch(loginStart());
@@ -29,7 +60,7 @@ export const loginGoogle = async (dispatch, axiosInstance, form) => {
       `${process.env.REACT_APP_SERVER_URL}/api/v1/auth/google`,
       "_self"
     );
-    // const res = 
+    // const res =
     // if (res.err === 0) {
     //   dispatch(loginSuccess(res));
     // } else {

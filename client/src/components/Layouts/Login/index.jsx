@@ -14,7 +14,7 @@ import LoginGoogle from "~/components/LoginGoogle";
 
 const cx = classNames.bind(styles);
 
-function Login() {
+function Login({ handleAccessRegister }) {
   const [loginValue, setLoginValue] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
@@ -86,7 +86,7 @@ function Login() {
             Log In
           </button>
           <p className={cx("text")}>
-            Not a member? <span className={cx("link")}>Sign up</span>
+            Not a member? <span className={cx("link")} onClick={handleAccessRegister}>Sign up</span>
           </p>
           <LoginGoogle />
           <div className={cx("login-google")} onClick={handleLoginGoogle}>

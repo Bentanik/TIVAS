@@ -9,17 +9,35 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAll } from "~/services";
 import createAxios from "~/configs/axios";
 import { resetLogin } from "~/redux/authSlice";
+import Register from "~/components/Layouts/Register";
+import ToastNotify from "~/components/ToastNotify";
 
 const cx = classNames.bind(styles);
 
 function Home() {
   const [login, setLogin] = useState(false);
+  const [register, setRegister] = useState(false);
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.login.user);
 
   const handleCloseLogin = () => {
     setLogin(false);
     dispatch(resetLogin());
+  };
+
+  const handleCloseRegister = () => {
+    setRegister(false);
+    // dispatch(resetLogin());
+  };
+
+  const handleAccessRegister = () => {
+    setLogin(false);
+    setRegister(true);
+  };
+
+  const handleAccessLogin = () => {
+    setLogin(true);
+    setRegister(false);
   };
 
   const axiosInstance = createAxios(dispatch, currentUser);
@@ -38,7 +56,7 @@ function Home() {
       {/* Header */}
       <header className={cx("header")}>
         {/* Navigations */}
-        <Navigations triggerLogin={setLogin} />
+        <Navigations triggerLogin={setLogin} triggerRegister={setRegister} />
       </header>
       {/* Main */}
       <main>
@@ -49,9 +67,14 @@ function Home() {
         <Footer />
       </footer>
       {!currentUser && (
-        <Popup trigger={login} onClose={handleCloseLogin}>
-          <Login />
-        </Popup>
+        <>
+          <Popup trigger={login} onClose={handleCloseLogin}>
+            <Login handleAccessRegister={handleAccessRegister} />
+          </Popup>
+          <Popup trigger={register} onClose={handleCloseRegister}>
+            <Register handleAccessLogin={handleAccessLogin} />
+          </Popup>
+        </>
       )}
     </div>
   );

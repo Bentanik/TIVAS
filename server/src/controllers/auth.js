@@ -1,6 +1,24 @@
 import * as services from "../services";
 import { missValue, notAuth } from "../middlewares/handle_errors";
 
+export const sendCodeEmail = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return missValue("Missing value!", res);
+  }
+
+  const response = await services.sendCodeEmail(req.body);
+
+  return res.status(200).json(response);
+};
+
+export const checkRegister = async (req, res) => {
+  const { email, otp } = req.body;
+  const response = await services.checkRegister(req.body);
+  return res.status(200).json(response);
+};
+
 export const register = async (req, res) => {
   const { username, email, password, phoneNumber } = req.body;
 

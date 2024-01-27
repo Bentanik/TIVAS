@@ -5,6 +5,10 @@ import * as controllers from "../controllers";
 
 const router = express.Router();
 
+//Verify by email register OTP
+router.post("/sendmail", controllers.sendCodeEmail);
+router.post("/registerbyemail", controllers.checkRegister);
+
 // Local
 router.post("/register", controllers.register);
 router.post("/login", controllers.login);

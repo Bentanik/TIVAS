@@ -1,6 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+  sendMail: {
+    isFetching: false,
+    error: "",
+    success: "",
+    email: "",
+  },
   login: {
     isFetching: false,
     user: null,
@@ -17,6 +23,30 @@ const authSlice = createSlice({
   initialState,
   name: "auth",
   reducers: {
+    sendMailStart: (state) => {
+      state.sendMail.isFetching = true;
+    },
+    sendMailSuccess: (state, action) => {
+      state.sendMail.isFetching = false;
+      state.sendMail.success = action.payload?.mess;
+      state.sendMail.email = action.payload?.email;
+      state.sendMail.error = "";
+    },
+    sendMailError: (state, action) => {
+      state.sendMail.isFetching = false;
+      state.sendMail.success = "";
+      state.sendMail.email = "";
+      state.sendMail.error = action.payload;
+    },
+    resetSendMail: (state) => {
+      state.sendMail.isFetching = false;
+      state.sendMail.success = "";
+      state.sendMail.email = "";
+      state.sendMail.error = "";
+    },
+    handlerTimeSendMail: (state, action) => {
+      state.sendMail.time = action.payload;
+    },
     loginStart: (state) => {
       state.login.isFetching = true;
     },
@@ -66,6 +96,11 @@ export const {
   logoutSuccess,
   logoutError,
   resetLogout,
+  sendMailError,
+  sendMailStart,
+  sendMailSuccess,
+  resetSendMail,
+  handlerTimeSendMail,
 } = authSlice.actions;
 
 export default authSlice.reducer;

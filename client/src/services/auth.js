@@ -24,3 +24,11 @@ export const register = (axiosInstance, form) => {
 export const getAll = (axiosInstance) => {
   return axiosInstance.get("/api/v1/user/getAllUsers");
 };
+
+export const sendMail = (axiosInstance, form) => {
+  return axiosInstance.post("/api/v1/auth/sendmail", form);
+};
+
+export const registerByEmail = (axiosInstance, form) => {
+  return axiosInstance.post("/api/v1/auth/registerbyemail", form);
+};
