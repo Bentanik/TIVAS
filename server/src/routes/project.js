@@ -9,5 +9,24 @@ router.post(
   controllers.createNewProject
 );
 
+router.get(
+  "/getAll",
+  controllers.getAllProject
+)
+
+router.get(
+  "/search",
+  controllers.searchProject
+)
+
+router.get(
+  "/top10",
+  controllers.getTop10
+)
+
+router.get(
+  "/:id",
+  controllers.getDetailsProject
+)
 
 export default router;
