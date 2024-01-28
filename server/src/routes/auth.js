@@ -19,11 +19,23 @@ router.get(
 );
 router.get(
   "/google/callback",
-  passport.authenticate("google", { session: false }),
+  passport.authenticate("google", {
+    session: false,
+    // successRedirect: process.env.CLIENT_URL,
+  }),
   controllers.loginGoogle
 );
 
+// router.post(
+//   "/google",
+//   passport.authenticate("google-plus-token", { session: false }),
+//   controllers.loginGoogle
+// );
+
 // Refresh token
 router.post("/refreshtoken", controllers.refreshToken);
+
+//Logout
+router.post("/logout", controllers.logout);
 
 export default router;
