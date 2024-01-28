@@ -38,10 +38,53 @@ export const createNewProject = ({
 export const getAllProject = () => {
     return new Promise(async (resolve, reject) => {
         try {
-            var query = {};
-            const data = await db.Project.findAll(query)
+            const data = await db.Project.findAll({})
             resolve({
-                data: data
+                err: data ? data : "[]",
+                mess: data ? "List Projects" : "Not have Projects to view",
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
+export const deleteProject = (id) => {
+    return new Promise(async (resolve,reject) => {
+        try{
+            const deleted = await db.Project.destroy({
+                where :{
+                    id: id
+                }
+            })
+            resolve({
+                err: deleted ? 1 : 0,
+                mess: deleted ? "Delete Successfully" : "Delete Fail",
+            })
+        }catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
+export const updateProject = ({
+    name,
+    description,
+    buildingStatus
+},id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const [project, updated] = await db.Project.update({
+                    name,
+                    description,
+                    buildingStatus},
+                {where: { id : id }
+            })
+            resolve({
+                err: updated ? updated : 0,
+                mess: updated ? "Update Project Successfully." : "Update Fail",
             })
         } catch (error) {
             console.log(error);
