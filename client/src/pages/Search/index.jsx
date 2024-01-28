@@ -1,6 +1,8 @@
 import classNames from "classnames/bind";
 import styles from "./Search.module.scss";
 import Navigations from "~/components/Layouts/Navigations";
+import ProjectResult from "~/components/ProjectResult";
+import ExpandList from "~/components/ExpandList";
 import SearchPage from "~/components/SearchPage";
 
 import images from "~/assets";
@@ -58,8 +60,14 @@ function Search() {
                     <div className={cx("left-content")}>
                         {/* Bread Crumb */}
                         <div className={cx("bread-crumb")}>
-                            <p className={cx("crumb-name")}>Home</p>
-                            <img src={images.rightArrow} alt="Right Arrow" />
+                            <Link to="/home">
+                                <span className={cx("crumb-name")}>Home</span>
+                            </Link>
+                            <img
+                                className={cx("crumb-icon")}
+                                src={images.rightArrow}
+                                alt="Right Arrow"
+                            />
                             <p className={cx("crumb-name")}>11 project found</p>
                         </div>
 
@@ -83,12 +91,18 @@ function Search() {
                                     Relevance
                                 </option>
                                 {/* Newest First */}
-                                <option value={cx("relevance")}>Newest</option>
+                                <option value={cx("newest")}>Newest</option>
                             </select>
                         </div>
 
                         {/* Project Result */}
-                        <div className={cx("project-result")}></div>
+                        <>
+                            <ProjectResult />
+                            <ProjectResult />
+                            <ProjectResult />
+                            <ProjectResult />
+                            <ProjectResult />
+                        </>
 
                         {/* Pagination */}
                         <div className={cx("pagination")}>
@@ -101,7 +115,15 @@ function Search() {
                         </div>
                     </div>
                     {/* Right content */}
-                    <div className={cx("right-content")}></div>
+                    <div className={cx("right-content")}>
+                        <>
+                            <ExpandList />
+                            <ExpandList />
+                        </>
+                    </div>
+                    {/* <>
+                        <ExpandList />
+                    </> */}
                 </div>
             </main>
             {/* Footer */}
