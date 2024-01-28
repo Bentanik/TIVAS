@@ -68,34 +68,37 @@ export const getAllProject = ({page, limit, orderType, orderBy}) => {
     })
 }
 
-export const searchProject = ({ type, content, page, limit, orderType, orderBy }) => {
+export const searchProject = ({ page, limit, orderType, orderBy, ...query }) => {
     return new Promise(async (resolve, reject) => {
         try {
-            // Conditionally set the where clause based on the presence of type
-            const whereClause = type
-                ? { [type]: { [Op.substring]: content } }
-                : { name: { [Op.substring]: content } };
-            //Pagination
-            //Page = 1 => Get position 0 (From 0)
-            //Page = 2 => Get position 1 (From 1*limit)
+
+            //condition clause
+            const whereClause = {};
+            for(const [key, value] of Object.entries(query)){
+                whereClause[key] = {[Op.substring]: value};
+            }
+
+            //Page and limit
             const queries = { raw: true, nest: true };
             const offset = (!page || +page <= 1) ? 0 : (+page - 1);
             const fLimit = (!limit || limit < 1) ? +process.env.LIMIT_PROJECT : limit;
             queries.offset = offset * fLimit;
             queries.limit = +fLimit;
+            console.log(query)
 
             //Order
             const fOrderType = (orderType === 'DESC') ? 'DESC' : 'ASC';
             const fOrderBy = (orderBy) ? orderBy : 'id';
             queries.order = [[fOrderBy, fOrderType]];
+            
 
             const response = await db.Project.findAndCountAll({
-                where: {...whereClause},
+                where: whereClause,
                 ...queries,
             })
             resolve({
                 err: response ? 0 : 1,
-                mess: (response && response.length !== 0) ? `Search Projects Results in: page (${offset + 1}), type (${type ? type : 'name'}), content (${content}), limit (${fLimit}), orderType (${fOrderType}), orderBy (${fOrderBy})` : "Can not find any Projects!",
+                mess: (response && response.length !== 0) ? `Search Projects Results in: page (${offset + 1}), limit (${fLimit}), orderType (${fOrderType}), orderBy (${fOrderBy})` : "Can not find any Projects!",
                 data: response,
                 count: response ? response.length : 0,
             })
