@@ -14,7 +14,7 @@ function Search() {
       <TippyHeadless
         render={(attrs) => (
           <div className="box" tabIndex="-1" {...attrs}>
-            My tippy box
+            <div className={cx("search-result")}>Search result</div>
           </div>
         )}
       >

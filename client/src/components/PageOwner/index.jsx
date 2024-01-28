@@ -1,5 +1,6 @@
 import classNames from "classnames/bind";
 import styles from "./PageOwner.module.scss";
+import images from "~/assets";
 const cx = classNames.bind(styles);
 
 function PageOwner() {
@@ -16,7 +17,7 @@ function PageOwner() {
                 <div className={cx("father")}>
                 <div className={cx("body")}>
                     <div className={cx("item")}>
-                    <img className={cx("box-img")} src={require("src/assets/Picture/pageowner.png")} alt="pic" />
+                    <img className={cx("box-img")} src={(images.pageOwner)} alt="pic" />
                     <div className={cx("info")}>
                         <span className={cx("description")}>
                             Royal Vila 
@@ -30,7 +31,7 @@ function PageOwner() {
                 </div>
                 <div className={cx("body")}>
                     <div className={cx("item")}>
-                    <img className={cx("box-img")} src={require("src/assets/Picture/pageowner.png")} alt="pic" />
+                    <img className={cx("box-img")} src={(images.pageOwner)} alt="pic" />
                     <div className={cx("info")}>
                         <span className={cx("description")}>
                             Royal Vila 
@@ -44,7 +45,7 @@ function PageOwner() {
                 </div>
                 <div className={cx("body")}>
                     <div className={cx("item")}>
-                    <img className={cx("box-img")} src={require("src/assets/Picture/pageowner.png")} alt="pic" />
+                    <img className={cx("box-img")} src={(images.pageOwner)} alt="pic" />
                     <div className={cx("info")}>
                         <span className={cx("description")}>
                             Royal Vila 
@@ -58,7 +59,7 @@ function PageOwner() {
                 </div>
                 <div className={cx("body")}>
                     <div className={cx("item")}>
-                    <img className={cx("box-img")} src={require("src/assets/Picture/pageowner.png")} alt="pic" />
+                    <img className={cx("box-img")} src={(images.pageOwner)} alt="pic" />
                     <div className={cx("info")}>
                         <span className={cx("description")}>
                             Royal Vila 
