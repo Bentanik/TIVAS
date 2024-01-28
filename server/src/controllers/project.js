@@ -7,6 +7,7 @@ const cloudinary = require('cloudinary').v2;
 export const createNewProject = async (req, res) => {
   console.log(req.body)
   const { name, description, buildingStatus, destination } = req.body;
+  console.log(req.body)
   if (!name || !description || !buildingStatus || !destination) {
     if (req.file) {
       cloudinary.uploader.destroy(req.file.filename);
