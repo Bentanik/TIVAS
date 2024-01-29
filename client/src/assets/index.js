@@ -7,6 +7,7 @@ const images = {
   facebookFooter: require("~/assets/images/facebookFooter.svg").default,
   googleIcon: require("~/assets/images/googleIcon.svg").default,
   pageOwner: require("~/assets/images/pageOwner.png"),
+  DestinationImg: require("~/assets/images/DestinationImg.png"),
 };
 
 export default images;

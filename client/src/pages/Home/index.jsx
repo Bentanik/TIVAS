@@ -87,9 +87,6 @@ function Home() {
               </Link>
             </div>
           </div>
-          <div>
-            <PageOwner />
-          </div>
         </div>
       </main>
       {/* Footer */}

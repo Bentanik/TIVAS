@@ -1,0 +1,30 @@
+@import url("https://fonts.cdnfonts.com/css/newsreader-2");
+@import url("https://fonts.cdnfonts.com/css/inter");
+
+.list-beat {
+  display: flex;
+  justify-content: space-evenly;
+  grid-template-rows: 1fr;
+}
+.destination-intro {
+  .favorite-item {
+    padding: 0 220px 0 220px;
+    margin-bottom: 60px;
+    .text-item {
+      margin-top: 54px;
+      display: flex;
+      justify-content: start;
+      margin-bottom: 36px;
+      color: #000;
+      font-family: "Roboto";
+      font-size: 2.6rem;
+      font-weight: 700;
+    }
+  }
+  .destination-img{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 105px;
+    margin-top: 116px;
+  }
+}

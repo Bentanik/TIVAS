@@ -1,4 +1,5 @@
 import Home from "~/pages/Home";
+import Destination from "~/pages/Destination"
 
 const routes = [
   {
@@ -8,7 +9,7 @@ const routes = [
   },
   {
     path: "/destination",
-    component: Home,
+    component: Destination,
     layout: null,
   },
 
