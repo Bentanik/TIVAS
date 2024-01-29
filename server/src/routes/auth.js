@@ -8,6 +8,7 @@ const router = express.Router();
 //Verify by email register OTP
 router.post("/sendmail", controllers.sendCodeEmail);
 router.post("/registerbyemail", controllers.checkRegister);
+router.post("/checkusernameregister", controllers.checkUserName);
 
 // Local
 router.post("/register", controllers.register);

@@ -8,9 +8,9 @@ import Login from "~/components/Layouts/Login";
 import { useDispatch, useSelector } from "react-redux";
 import { getAll } from "~/services";
 import createAxios from "~/configs/axios";
-import { resetLogin } from "~/redux/authSlice";
+import { resetLogin, resetSendMail } from "~/redux/authSlice";
 import Register from "~/components/Layouts/Register";
-import ToastNotify from "~/components/ToastNotify";
+import { resetForm } from "~/redux/formRegisterSlice";
 
 const cx = classNames.bind(styles);
 
@@ -27,7 +27,9 @@ function Home() {
 
   const handleCloseRegister = () => {
     setRegister(false);
-    // dispatch(resetLogin());
+    dispatch(resetSendMail());
+    dispatch(resetForm());
+    sessionStorage.removeItem("emailRegister");
   };
 
   const handleAccessRegister = () => {
@@ -71,9 +73,11 @@ function Home() {
           <Popup trigger={login} onClose={handleCloseLogin}>
             <Login handleAccessRegister={handleAccessRegister} />
           </Popup>
-          <Popup trigger={register} onClose={handleCloseRegister}>
-            <Register handleAccessLogin={handleAccessLogin} />
-          </Popup>
+          <Register
+            handleAccessLogin={handleAccessLogin}
+            trigger={register}
+            handleCloseRegister={handleCloseRegister}
+          />
         </>
       )}
     </div>

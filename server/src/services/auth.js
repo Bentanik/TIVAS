@@ -37,24 +37,20 @@ export const register = ({
   email,
   password,
   phoneNumber,
+  refundHistoryID,
   roleID = 3,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const [user, created] = await db.User.findOrCreate({
-        where: {
-          [Op.or]: [{ username }, { email }],
-        },
-        defaults: {
-          username,
-          email,
-          password: hashPassword(password),
-          phoneNumber,
-          type: "Local",
-        },
+      const user = await db.User.create({
+        username,
+        email,
+        password: hashPassword(password),
+        phoneNumber,
+        refundHistoryID,
+        type: "Local",
       });
-      const accessToken = created ? generateAccessToken(user) : null;
-      const refreshToken = created ? generateRefreshToken(user) : null;
+      const refreshToken = user ? generateRefreshToken(user) : null;
       if (refreshToken) {
         await db.User.update(
           {
@@ -70,7 +66,6 @@ export const register = ({
         mess: accessToken
           ? "Register successfully"
           : "Username or email is already in use",
-        accessToken: `Bearer ${accessToken}`,
         refreshToken,
       });
     } catch (err) {
@@ -79,6 +74,8 @@ export const register = ({
     }
   });
 };
+
+// Login
 
 export const login = ({ username, email, password }) => {
   return new Promise(async (resolve, reject) => {
@@ -269,7 +266,7 @@ export const sendCodeEmail = ({ email }) => {
         mess: user
           ? "This email already exists"
           : "Please check the code in the email",
-        email: email,
+        email: "",
         time: user ? null : timeEmail,
       });
     } catch (err) {
@@ -288,8 +285,25 @@ export const checkRegister = ({ email, otp }) => {
       const isChecked = otpRedis && otpRedis === otp ? true : false;
       resolve({
         err: isChecked ? 0 : 1,
-        mess: isChecked ? "Successfully" : "Code invalid!",
-        email: email,
+        mess: isChecked ? "Successfully" : "Please check the code again!",
+        email: isChecked ? email : "",
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const checkUserName = ({ username }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await db.User.findOne({
+        where: { username },
+        raw: true,
+      });
+      resolve({
+        err: user ? 1 : 0,
+        mess: user ? "User Name already exists " : "",
       });
     } catch (err) {
       reject(err);

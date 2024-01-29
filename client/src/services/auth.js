@@ -32,3 +32,7 @@ export const sendMail = (axiosInstance, form) => {
 export const registerByEmail = (axiosInstance, form) => {
   return axiosInstance.post("/api/v1/auth/registerbyemail", form);
 };
+
+export const checkUsername = (axiosInstance, form) => {
+  return axiosInstance.post("/api/v1/auth/checkusernameregister", form);
+};

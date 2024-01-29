@@ -44,3 +44,46 @@ body::-webkit-scrollbar-track {
 body::-webkit-scrollbar-thumb {
   background: #a8d8ea;
 }
+
+body {
+
+  .StripeElement {
+    background: #fff;
+    border: 1px solid #ababab;
+    padding: 18px 30px;
+    font-family: "Inter", sans-serif;
+  }
+
+  .StripeElement--focus {
+    border: 1px solid #000;
+  }
+
+  .StripeElement--invalid {
+    border-color: red;
+  }
+
+  .StripeElement--webkit-autofill {
+    background-color: #fefde5 !important;
+  }
+
+  .StripeElement ::placeholder {
+    color: #aab7c4;
+  }
+
+  .StripeElement .InputElement {
+    display: block;
+    margin-top: 10px;
+    font-size: 16px;
+    color: #495057;
+  }
+
+  .StripeElement .StripeElement--invalid .ErrorMessage {
+    color: #fa755a;
+  }
+
+  .CardTypeIcon {
+    width: 30px;
+    height: 20px;
+    margin-top: 10px;
+  }
+}

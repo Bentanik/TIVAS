@@ -17,6 +17,11 @@ const initialState = {
     success: false,
     error: false,
   },
+  register: {
+    isFetching: false,
+    success: false,
+    error: false,
+  },
 };
 
 const authSlice = createSlice({
@@ -84,6 +89,24 @@ const authSlice = createSlice({
       state.logout.success = false;
       state.logout.error = false;
     },
+    registerStart: (state) => {
+      state.register.isFetching = true;
+    },
+    registerSuccess: (state) => {
+      state.register.isFetching = false;
+      state.register.success = true;
+      state.register.error = false;
+    },
+    registerError: (state) => {
+      state.register.isFetching = false;
+      state.register.success = false;
+      state.register.error = true;
+    },
+    resetRegister: (state) => {
+      state.register.isFetching = false;
+      state.register.success = false;
+      state.register.error = false;
+    },
   },
 });
 
@@ -101,6 +124,10 @@ export const {
   sendMailSuccess,
   resetSendMail,
   handlerTimeSendMail,
+  registerStart,
+  registerError,
+  registerSuccess,
+  resetRegister,
 } = authSlice.actions;
 
 export default authSlice.reducer;

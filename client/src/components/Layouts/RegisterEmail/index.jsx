@@ -57,10 +57,6 @@ function RegisterEmail({ handleAccessLogin }) {
     }
   }, [dispatch, stateEmail.error, stateEmail.success]);
 
-  useEffect(() => {
-    
-  }, [])
-
   return (
     <div className={cx("login-wrapper")}>
       <h2 className={cx("heading")}>Sign up</h2>

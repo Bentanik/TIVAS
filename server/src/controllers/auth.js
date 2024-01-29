@@ -1,6 +1,8 @@
 import * as services from "../services";
 import { missValue, notAuth } from "../middlewares/handle_errors";
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
+// Register
 export const sendCodeEmail = async (req, res) => {
   const { email } = req.body;
 
@@ -13,29 +15,79 @@ export const sendCodeEmail = async (req, res) => {
   return res.status(200).json(response);
 };
 
+// Check otp
 export const checkRegister = async (req, res) => {
   const { email, otp } = req.body;
+  if (!email || !otp) return missValue("Missing value!", res);
   const response = await services.checkRegister(req.body);
   return res.status(200).json(response);
 };
 
-export const register = async (req, res) => {
-  const { username, email, password, phoneNumber } = req.body;
-
-  if (!username || !email || !password || !phoneNumber) {
-    return missValue("Missing value!", res);
-  }
-
-  const reponses = await services.register(req.body);
-  const { refreshToken, ...rest } = reponses;
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: false,
-    path: "/",
-    sameSite: "strict",
-  });
-  return res.status(200).json(rest);
+export const checkUserName = async (req, res) => {
+  const { username } = req.body;
+  if (!username) return missValue("Missing value!", res);
+  const response = await services.checkUserName(req.body);
+  return res.status(200).json(response);
 };
+
+export const register = async (req, res) => {
+  const { email, username, fullName, password, phoneNumber, paymentMethod } =
+    req.body;
+
+  try {
+    if (
+      !email ||
+      !username ||
+      !fullName ||
+      !password ||
+      !phoneNumber ||
+      !paymentMethod
+    ) {
+      return missValue("Missing value!", res);
+    }
+
+    const setupIntent = await stripe.setupIntents.create({
+      payment_method: paymentMethod,
+    });
+
+    const paymentMethodId = setupIntent.payment_method;
+
+    const customer = await stripe.customers.create({
+      email: email,
+      name: fullName,
+      payment_method: paymentMethodId,
+      invoice_settings: {
+        default_payment_method: paymentMethodId,
+      },
+    });
+    if (customer) {
+      const reponses = await services.register({
+        email,
+        username,
+        fullName,
+        password,
+        phoneNumber,
+        refundHistoryID: customer.id,
+      });
+      const { refreshToken, ...rest } = reponses;
+      return res.status(200).json(rest);
+    } else {
+      return res.status(500).json({
+        err: 1,
+        mess: "Error register",
+      });
+    }
+  } catch (error) {
+    console.error("Error creating customer:", error);
+    return res.status(500).json({
+      error: 1,
+      message: "Failed to create customer",
+      success: false,
+    });
+  }
+};
+
+// Login local
 
 export const login = async (req, res) => {
   const { username, email, password } = req.body;

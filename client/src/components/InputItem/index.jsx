@@ -34,12 +34,12 @@ function InputItem({
           type={typeValue}
           placeholder={placeholder}
           className={cx("input-item", {
-            error: (errors && value === "") || error,
-            readOnly: readOnly
+            error: errors || error,
+            readOnly: readOnly,
           })}
           value={value}
           onChange={handleValue}
-          readOnly = {readOnly}
+          readOnly={readOnly}
         />
 
         {type === "password" && value !== "" && (
@@ -64,9 +64,8 @@ function InputItem({
           </div>
         )}
       </div>
-      {errors && value === "" && (
-        <span className={cx("text-error")}>{errors}</span>
-      )}
+      {errors && <span className={cx("text-error")}>{errors}</span>}
+      {error && <span className={cx("text-error")}>{error}</span>}
     </div>
   );
 }
