@@ -138,11 +138,10 @@ export const getTop10 = () => {
 export const getDetailsProject = ({ id }) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const response = await db.RoleCode.findAll( {
+            const response = await db.Project.findAll( {
                 nest: true,
                 include: [{
-                    model: db.User,
-                    as: 'Users'
+                    model: db.TypeOfProject,
                 }]
             });
             console.log(response)
