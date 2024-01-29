@@ -1,10 +1,13 @@
 import db from "../models";
 const cloudinary = require('cloudinary').v2;
+import "dotenv/config";
+import { Op } from "sequelize";
 
 export const createNewProject = ({
     name,
     description,
-    buildingStatus
+    buildingStatus,
+    destination
 }, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -14,6 +17,7 @@ export const createNewProject = ({
                     name,
                     description,
                     buildingStatus,
+                    destination,
                     images: fileData?.path,
                 },
             })
@@ -35,13 +39,27 @@ export const createNewProject = ({
     })
 }
 
-export const getAllProject = () => {
+export const getAllProject = ({page, limit, orderType, orderBy}) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const data = await db.Project.findAll({})
+            const queries = {raw: true, nest: true};
+            const offset = (!page || +page <= 1) ? 0 : (+page - 1);
+            const fLimit = (!limit || limit < 1) ? +process.env.LIMIT_PROJECT : limit;
+            queries.offset = offset * fLimit;
+            queries.limit = +fLimit;
+
+            const fOrderType = (orderType === 'DESC') ? 'DESC' : 'ASC';
+            const fOrderBy = (orderBy) ? orderBy : 'id';
+            queries.order = [[fOrderBy, fOrderType]];
+            const response = await db.Project.findAll({
+                ...queries,
+            })
+
             resolve({
-                err: data ? data : "[]",
-                mess: data ? "List Projects" : "Not have Projects to view",
+                err: response ? 0 : 1,
+                message: (response && response.length !== 0) ? `All of project in: page (${offset + 1}), limit (${fLimit}), orderType (${fOrderType}), orderBy (${fOrderBy})` : 'Can not find any Projects!', 
+                data: response,
+                count: response ? response.length : 0,
             })
         } catch (error) {
             console.log(error);
@@ -85,6 +103,81 @@ export const updateProject = ({
             resolve({
                 err: updated ? updated : 0,
                 mess: updated ? "Update Project Successfully." : "Update Fail",
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+export const searchProject = ({ page, limit, orderType, orderBy, ...query }) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+
+            //condition clause
+            const whereClause = {};
+            for(const [key, value] of Object.entries(query)){
+                whereClause[key] = {[Op.substring]: value};
+            }
+
+            //Page and limit
+            const queries = { raw: true, nest: true };
+            const offset = (!page || +page <= 1) ? 0 : (+page - 1);
+            const fLimit = (!limit || limit < 1) ? +process.env.LIMIT_PROJECT : limit;
+            queries.offset = offset * fLimit;
+            queries.limit = +fLimit;
+            console.log(query)
+
+            //Order
+            const fOrderType = (orderType === 'DESC') ? 'DESC' : 'ASC';
+            const fOrderBy = (orderBy) ? orderBy : 'id';
+            queries.order = [[fOrderBy, fOrderType]];
+            
+
+            const response = await db.Project.findAndCountAll({
+                where: whereClause,
+                ...queries,
+            })
+            resolve({
+                err: response ? 0 : 1,
+                mess: (response && response.length !== 0) ? `Search Projects Results in: page (${offset + 1}), limit (${fLimit}), orderType (${fOrderType}), orderBy (${fOrderBy})` : "Can not find any Projects!",
+                data: response,
+                count: response ? response.length : 0,
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
+export const getTop10 = () => {
+    return new Promise( async(resolve, reject) => {
+        try {
+            const response = await db.Project.findAndCountAll({
+                limit: 10,
+                order: [['createdAt','DESC']],
+            })
+            resolve({
+                err: response ? 0 : 1,
+                mess: response ? "Top 10 new Projects" : "Can not find any Projects!",
+                data: response,
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
+export const getDetailsProject = ({id}) => {
+    return new Promise( async(resolve, reject) => {
+        try {
+            const response = await db.Project.findByPk(id);
+            resolve({
+                err: response ? 0 : 1,
+                message: response ? 'Project found' : `Can not find Project with id: ${id}`,
+                data: response,
             })
         } catch (error) {
             console.log(error);

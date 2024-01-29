@@ -83,9 +83,8 @@ function Footer() {
                 <div className={cx("list-options")}>
                   <Link to="/option">
                     <span className={cx("option")}>
-                      <span className={cx("bold")}>Location: </span> Lô E2a-7,
-                      Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ Đức, Thành
-                      phố Hồ Chí Minh 700000
+                      <span className={cx("bold")}>Location: </span> District 9,
+                      Ho Chi Minh city
                     </span>
                   </Link>
                   <Link to="/option">

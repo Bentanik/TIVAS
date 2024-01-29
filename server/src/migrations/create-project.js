@@ -18,6 +18,9 @@ module.exports = {
       images: {
         type: Sequelize.STRING
       },
+      location: {
+        type: Sequelize.STRING
+      },
       buildingStatus: {
         type: Sequelize.INTEGER
       },

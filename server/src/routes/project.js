@@ -12,4 +12,24 @@ router.get("/getAll",controllers.getAllProject)
 router.delete("/delete/:id",controllers.deleteProjects)
 router.put("/update/:id",uploadCloud.single('image'),controllers.updateProjects)
 
+router.get(
+  "/getAll",
+  controllers.getAllProject
+)
+
+router.get(
+  "/search",
+  controllers.searchProject
+)
+
+router.get(
+  "/top10",
+  controllers.getTop10
+)
+
+router.get(
+  "/:id",
+  controllers.getDetailsProject
+)
+
 export default router;
