@@ -4,10 +4,12 @@ import "dotenv/config";
 import { Op } from "sequelize";
 
 export const createNewProject = ({
+    id,
     name,
     description,
     buildingStatus,
-    destination
+    location,
+    type
 }, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -17,7 +19,7 @@ export const createNewProject = ({
                     name,
                     description,
                     buildingStatus,
-                    destination,
+                    location,
                     images: fileData?.path,
                 },
             })
@@ -77,7 +79,7 @@ export const deleteProject = (id) => {
                 }
             })
             resolve({
-                err: deleted ? 1 : 0,
+                err: deleted ? 0 : 1,
                 mess: deleted ? "Delete Successfully" : "Delete Fail",
             })
         }catch (error) {
@@ -90,19 +92,22 @@ export const deleteProject = (id) => {
 export const updateProject = ({
     name,
     description,
-    buildingStatus
+    buildingStatus,
+    location
 },id) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const [project, updated] = await db.Project.update({
+            const updated = await db.Project.update({
                     name,
                     description,
-                    buildingStatus},
+                    buildingStatus,
+                    location},
                 {where: { id : id }
             })
+            console.log(updated);
             resolve({
-                err: updated ? updated : 0,
-                mess: updated ? "Update Project Successfully." : "Update Fail",
+                err: updated ? 0 : 1 ,
+                mess: updated ? "Update Project Successfully."  : "Update Fail",
             })
         } catch (error) {
             console.log(error);
