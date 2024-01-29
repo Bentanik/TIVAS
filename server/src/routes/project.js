@@ -9,7 +9,7 @@ router.post(
   controllers.createNewProject
 );
 router.get("/getAll",controllers.getAllProject)
-router.get("/delete/:id",controllers.deleteProjects)
-router.put("/update/:id",controllers.updateProjects)
+router.delete("/delete/:id",controllers.deleteProjects)
+router.put("/update/:id",uploadCloud.single('image'),controllers.updateProjects)
 
 export default router;
