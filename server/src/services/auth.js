@@ -62,8 +62,8 @@ export const register = ({
         );
       }
       resolve({
-        err: accessToken ? 0 : 1,
-        mess: accessToken
+        err: refreshToken ? 0 : 1,
+        mess: refreshToken
           ? "Register successfully"
           : "Username or email is already in use",
         refreshToken,

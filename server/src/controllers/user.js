@@ -5,3 +5,4 @@ export const getAll = (req, res) => {
     mess: "Get all user",
   });
 };
+  

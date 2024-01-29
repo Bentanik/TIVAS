@@ -46,12 +46,12 @@ function Register({ handleAccessLogin, handleCloseRegister, trigger }) {
   }, [trigger]);
 
   useEffect(() => {
-    if (registerPath === 0 && stateEmail.email !== "") {
+    if (registerPath === 0 && stateEmail?.email !== "") {
       setRegisterPath(1);
     } else if (registerPath === 1 && stateFormRegister.status === true) {
       setRegisterPath(2);
     }
-  }, [stateFormRegister, registerPath, stateEmail.email]);
+  }, [stateFormRegister, registerPath, stateEmail?.email]);
 
   useEffect(() => {
     if (statusRegister.success) {
