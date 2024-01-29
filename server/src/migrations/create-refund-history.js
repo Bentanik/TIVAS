@@ -15,9 +15,9 @@ module.exports = {
       paymentMethod: {
         type: Sequelize.STRING
       },
-      userID : {
+      userID: {
         type: Sequelize.INTEGER,
-        unique: true
+        unique: true,
       },
       createdAt: {
         type: "TIMESTAMP",
