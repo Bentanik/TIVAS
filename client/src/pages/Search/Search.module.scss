@@ -6,6 +6,10 @@
     .left-content {
         width: 75%;
     }
+
+    // .right-content {
+    //     position: sticky;
+    // }
 }
 
 .bread-crumb {
@@ -32,7 +36,6 @@
 .row {
     margin-top: 15px;
     display: flex;
-    gap: 170px;
 
     .desc {
         color: #000;
@@ -48,6 +51,7 @@
         height: 40px;
         border-radius: 5px;
         opacity: 0.5;
+        margin-left: auto;
 
         &:hover {
             opacity: 1;
