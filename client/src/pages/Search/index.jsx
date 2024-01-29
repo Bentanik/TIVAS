@@ -116,14 +116,13 @@ function Search() {
                     </div>
                     {/* Right content */}
                     <div className={cx("right-content")}>
-                        <>
-                            <ExpandList />
-                            <ExpandList />
-                        </>
+                        <div className={cx("sticky-content")}>
+                            <>
+                                <ExpandList />
+                                <ExpandList />
+                            </>
+                        </div>
                     </div>
-                    {/* <>
-                        <ExpandList />
-                    </> */}
                 </div>
             </main>
             {/* Footer */}

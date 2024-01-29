@@ -7,9 +7,15 @@
         width: 75%;
     }
 
-    // .right-content {
-    //     position: sticky;
-    // }
+    .right-content {
+        top: 0;
+        // transition: top 1s ease;
+
+        .sticky-content {
+            position: sticky;
+            top: 50px;
+        }
+    }
 }
 
 .bread-crumb {
