@@ -4,10 +4,12 @@ import "dotenv/config";
 import { Model, Op } from "sequelize";
 
 export const createNewProject = ({
+    id,
     name,
     description,
     buildingStatus,
-    location
+    location,
+    type
 }, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -20,17 +22,18 @@ export const createNewProject = ({
                     location,
                     images: fileData?.path,
                 },
-            })
-            const [TypeOfProject, created1] = await db.TypeOfProject.findOrCreate({
-                where: {projectID: name},
+            }) 
+            
+            const [TypeOfProject, createdT] = await db.TypeOfProject.findOrCreate({
+                where: {projectID: id},
                 defaults: {
-                    projectID: 1, 
-                    typeID: 1,
+                    projectID: id, 
+                    typeID: type == "Villa" ? 1 : 2,
                 }
             })
             resolve({
-                err: created ? 0 : 1,
-                mess: created ? "Create Project Successfully." : "Project Name has been used!",
+                err: (created && createdT) ? 0 : 1,
+                mess: (created && createdT) ? "Create Project Successfully." : "Project Name has been used!",
             })
 
             if (fileData && !created) {
@@ -75,6 +78,51 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
     })
 }
 
+export const deleteProject = (id) => {
+    return new Promise(async (resolve,reject) => {
+        try{
+            const deleted = await db.Project.destroy({
+                where :{
+                    id: id
+                }
+            })
+            resolve({
+                err: deleted ? 0 : 1,
+                mess: deleted ? "Delete Successfully" : "Delete Fail",
+            })
+        }catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
+export const updateProject = ({
+    name,
+    description,
+    buildingStatus,
+    location
+},id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const updated = await db.Project.update({
+                    name,
+                    description,
+                    buildingStatus,
+                    location},
+                {where: { id : id }
+            })
+            console.log(updated);
+            resolve({
+                err: updated ? 0 : 1 ,
+                mess: updated ? "Update Project Successfully."  : "Update Fail",
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
 export const searchProject = ({ page, limit, orderType, orderBy, ...query }) => {
     return new Promise(async (resolve, reject) => {
         try {
