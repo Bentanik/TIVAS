@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import createAxios from "~/configs/axios";
 
 import RegisterEmail from "../RegisterEmail";
 
@@ -16,10 +15,6 @@ import { resetRegister } from "~/redux/authSlice";
 
 function Register({ handleAccessLogin, handleCloseRegister, trigger }) {
   const dispatch = useDispatch();
-
-  const stateLogin = useSelector((state) => state.auth.login);
-
-  const axiosInstance = createAxios(dispatch, stateLogin.user);
 
   const stateEmail = useSelector((state) => state.auth.sendMail);
 
@@ -39,8 +34,6 @@ function Register({ handleAccessLogin, handleCloseRegister, trigger }) {
     setRegisterPath((prev) => prev - 1);
   };
 
-  console.log(registerPath);
-
   useEffect(() => {
     if (trigger === false) setRegisterPath(0);
   }, [trigger]);
@@ -52,6 +45,8 @@ function Register({ handleAccessLogin, handleCloseRegister, trigger }) {
       setRegisterPath(2);
     }
   }, [stateFormRegister, registerPath, stateEmail?.email]);
+
+  console.log(registerPath);
 
   useEffect(() => {
     if (statusRegister.success) {
@@ -68,11 +63,7 @@ function Register({ handleAccessLogin, handleCloseRegister, trigger }) {
       dispatch(resetRegister());
       handleCloseRegister();
     }
-  }, [
-    dispatch,
-    handleCloseRegister,
-    statusRegister.success,
-  ]);
+  }, [dispatch, handleCloseRegister, statusRegister.success]);
 
   const renderRegister = () => {
     if (registerPath === 0) {

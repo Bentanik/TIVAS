@@ -8,6 +8,7 @@ import {
   registerError,
   registerStart,
   registerSuccess,
+  resetLogin,
   sendMailError,
   sendMailStart,
   sendMailSuccess,
@@ -58,25 +59,6 @@ export const login = async (dispatch, axiosInstance, form) => {
   }
 };
 
-export const loginGoogle = async (dispatch, axiosInstance, form) => {
-  dispatch(loginStart());
-  try {
-    window.open(
-      `${process.env.REACT_APP_SERVER_URL}/api/v1/auth/google`,
-      "_self"
-    );
-    // const res =
-    // if (res.err === 0) {
-    //   dispatch(loginSuccess(res));
-    // } else {
-    //   dispatch(loginError(res.mess));
-    // }
-    dispatch(loginError("error"));
-  } catch (err) {
-    dispatch(loginError("Error"));
-  }
-};
-
 export const logout = async (dispatch, axiosInstance) => {
   dispatch(logoutStart());
   try {
@@ -114,5 +96,24 @@ export const register = async (dispatch, axiosInstance, form) => {
   } catch (err) {
     dispatch(registerError());
     console.log(err);
+  }
+};
+
+export const loginGoogle = async (dispatch, navigate, axiosInstance, form) => {
+  dispatch(loginStart());
+  try {
+    const res = await services.loginGoogle(axiosInstance, form);
+    if (res.err === 0) {
+      dispatch(loginSuccess(res));
+    } else {
+      if (res.register === false) {
+        navigate("/registerinformation");
+        dispatch(resetLogin());
+      } else {
+        dispatch(loginError(res.mess));
+      }
+    }
+  } catch (err) {
+    dispatch(loginError("Error"));
   }
 };

@@ -125,23 +125,20 @@ export const login = ({ username, email, password }) => {
   });
 };
 
-export const loginGoogle = ({ email, roleID = 3 }) => {
+export const loginGoogle = ({ id, email, roleID = 3 }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const [user, created] = await db.User.findOrCreate({
+      const user = await db.User.findOne({
         where: {
           email,
         },
-        defaults: {
-          email,
-          type: "Google",
-        },
+        raw: true,
       });
 
       const accessToken =
-        user.type === "Google" ? generateAccessToken(user) : null;
+        user?.type === "Google" ? generateAccessToken(user) : null;
       const refreshToken =
-        user.type === "Google" ? generateRefreshToken(user) : null;
+        user?.type === "Google" ? generateRefreshToken(user) : null;
 
       if (refreshToken) {
         await db.User.update(
@@ -152,6 +149,14 @@ export const loginGoogle = ({ email, roleID = 3 }) => {
             where: { id: user.id },
           }
         );
+      }
+
+      // Google account is not registered
+      if (!user) {
+        const client = createClient();
+        await client.connect();
+
+        // await client.setEx(email, 600, JSON.stringify(OTP));
       }
 
       resolve({
@@ -168,6 +173,7 @@ export const loginGoogle = ({ email, roleID = 3 }) => {
           : null,
         accessToken: `Bearer ${accessToken}`,
         refreshToken,
+        register: user ? true : false,
       });
     } catch (error) {
       console.log(error);
@@ -175,6 +181,8 @@ export const loginGoogle = ({ email, roleID = 3 }) => {
     }
   });
 };
+
+// export const registerGoogle = ({})
 
 export const refreshToken = ({ refreshToken }) => {
   return new Promise(async (resolve, reject) => {

@@ -10,7 +10,8 @@ import createAxios from "~/configs/axios";
 
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
-import LoginGoogle from "~/components/LoginGoogle";
+import { useGoogleLogin } from "@react-oauth/google";
+import { useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 
@@ -20,12 +21,14 @@ function Login({ handleAccessRegister }) {
   const [errors, setErrors] = useState({});
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const currentUser = useSelector((state) => state.auth.login.user);
   const error = useSelector((state) => state.auth.login.error);
   const statusLogin = useSelector((state) => state.auth.login.isFetching);
 
   const axiosInstance = createAxios(dispatch, currentUser);
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -43,9 +46,13 @@ function Login({ handleAccessRegister }) {
     }
   };
 
-  const handleLoginGoogle = () => {
-    loginGoogle(dispatch, axiosInstance);
-  };
+  const handleLoginGoogle = useGoogleLogin({
+    onSuccess: (tokenResponse) => {
+      loginGoogle(dispatch, navigate, axiosInstance, {
+        access_token: tokenResponse.access_token,
+      });
+    },
+  });
 
   return (
     <div className={cx("login-wrapper")}>
@@ -57,7 +64,6 @@ function Login({ handleAccessRegister }) {
             setValue={setLoginValue}
             placeholder="Username or email *"
             errors={errors.loginValue}
-            error={error !== "" ? error : null}
           />
           <div>
             <InputItem
@@ -66,7 +72,6 @@ function Login({ handleAccessRegister }) {
               setValue={setPassword}
               placeholder="Password *"
               errors={errors.password}
-              error={error !== "" ? error : null}
             />
             <p className={cx("error")}>{error}</p>
           </div>
@@ -86,9 +91,11 @@ function Login({ handleAccessRegister }) {
             Log In
           </button>
           <p className={cx("text")}>
-            Not a member? <span className={cx("link")} onClick={handleAccessRegister}>Sign up</span>
+            Not a member?{" "}
+            <span className={cx("link")} onClick={handleAccessRegister}>
+              Sign up
+            </span>
           </p>
-          <LoginGoogle />
           <div className={cx("login-google")} onClick={handleLoginGoogle}>
             <img src={images.googleIcon} alt="Google" className={cx("icon")} />
             <span className={cx("text")}>Continue with Google</span>

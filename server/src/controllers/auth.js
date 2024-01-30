@@ -113,8 +113,9 @@ export const login = async (req, res) => {
 // Login google
 export const loginGoogle = async (req, res) => {
   const email = req.user.emails[0].value;
+  const id = req.user.id;
 
-  const response = await services.loginGoogle({ email });
+  const response = await services.loginGoogle({ id, email });
   const { refreshToken, ...rest } = response;
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,

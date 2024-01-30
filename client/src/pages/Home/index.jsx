@@ -56,6 +56,7 @@ function Home() {
   return (
     <div className={cx("home-wrapper")}>
       {/* Header */}
+
       <header className={cx("header")}>
         {/* Navigations */}
         <Navigations triggerLogin={setLogin} triggerRegister={setRegister} />
@@ -70,14 +71,18 @@ function Home() {
       </footer>
       {!currentUser && (
         <>
-          <Popup trigger={login} onClose={handleCloseLogin}>
-            <Login handleAccessRegister={handleAccessRegister} />
-          </Popup>
-          <Register
-            handleAccessLogin={handleAccessLogin}
-            trigger={register}
-            handleCloseRegister={handleCloseRegister}
-          />
+          {login === true && (
+            <Popup trigger={login} onClose={handleCloseLogin}>
+              <Login handleAccessRegister={handleAccessRegister} />
+            </Popup>
+          )}
+          {register === true && (
+            <Register
+              handleAccessLogin={handleAccessLogin}
+              trigger={register}
+              handleCloseRegister={handleCloseRegister}
+            />
+          )}
         </>
       )}
     </div>
