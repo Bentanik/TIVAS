@@ -23,9 +23,7 @@ const DATA = [
   {
     reName: "Hot Xoan",
   },
-  {
-    reName: "Hot Xoan",
-  },
+ 
 ];
 
 function Destination() {
@@ -40,42 +38,132 @@ function Destination() {
   return (
     <div className={cx("destination-intro")}>
       <Navigations />
+      <h1 className={cx("slogan")}>
+        FIND A TIMESHARE RESORT
+      </h1>
       <div className={cx("favorite-item")}>
         <h2 className={cx("text-item")}>Our Comunity's Favorite Destination</h2>
-        <div className={cx("list-beat")}>
+        <div className={cx("list-item")}>
           {list.map((item, index) => {
             return <ListItemBox id={item.id} name={item.reName} />;
           })}
         </div>
       </div>
-      {/* <div className={cx("searchBox")}>
-        <input
-          className={cx("searchInput")}
-          type="text"
-          placeholder="Search Beat..."
-          value={search}
-          onChange={handleSearch}
-        />
-        <button className={cx("searchButton")} href="#">
-          <i class={cx("material-icons")}>
+      <div className={cx("feature-intro")}>
+        <h2 className={cx("text-item-feature")}>Features & Rentals</h2>
+        <div className={cx("feature-body")}>
+          <div className={cx("item")}>
+            <div className={cx("feature-icon")}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="60"
+                height="60"
+                viewBox="0 0 32 32"
+                fill="none"
+              >
+                <path
+                  d="M24.3175 21.9048H6.53968V9.33337H24.3175M24.3175 3.61909H23.0476V1.33337H20.5079V3.61909H10.3492V1.33337H7.80952V3.61909H6.53968C5.86612 3.61909 5.22014 3.8599 4.74386 4.28856C4.26757 4.71721 4 5.29859 4 5.9048V21.9048C4 22.511 4.26757 23.0924 4.74386 23.521C5.22014 23.9497 5.86612 24.1905 6.53968 24.1905H24.3175C24.991 24.1905 25.637 23.9497 26.1133 23.521C26.5896 23.0924 26.8571 22.511 26.8571 21.9048V5.9048C26.8571 5.29859 26.5896 4.71721 26.1133 4.28856C25.637 3.8599 24.991 3.61909 24.3175 3.61909ZM21.181 12.8305L19.8349 11.6191L13.6381 17.1962L10.946 14.7734L9.6 15.9848L13.6381 19.6191L21.181 12.8305Z"
+                  fill="#FFCC41"
+                />
+              </svg>
+            </div>
+            <span className={cx("feature-text")}>Valentine's Day</span>
+          </div>
+          <div className={cx("item")}>
+            <div className={cx("feature-icon")}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="60"
+                height="60"
+                viewBox="0 0 32 32"
+                fill="none"
+              >
+                <path
+                  d="M24.3175 21.9048H6.53968V9.33337H24.3175M24.3175 3.61909H23.0476V1.33337H20.5079V3.61909H10.3492V1.33337H7.80952V3.61909H6.53968C5.86612 3.61909 5.22014 3.8599 4.74386 4.28856C4.26757 4.71721 4 5.29859 4 5.9048V21.9048C4 22.511 4.26757 23.0924 4.74386 23.521C5.22014 23.9497 5.86612 24.1905 6.53968 24.1905H24.3175C24.991 24.1905 25.637 23.9497 26.1133 23.521C26.5896 23.0924 26.8571 22.511 26.8571 21.9048V5.9048C26.8571 5.29859 26.5896 4.71721 26.1133 4.28856C25.637 3.8599 24.991 3.61909 24.3175 3.61909ZM21.181 12.8305L19.8349 11.6191L13.6381 17.1962L10.946 14.7734L9.6 15.9848L13.6381 19.6191L21.181 12.8305Z"
+                  fill="#FFCC41"
+                />
+              </svg>
+            </div>
+            <span className={cx("feature-text")}>President Day</span>
+          </div>
+          <div className={cx("item")}>
+            <div className={cx("feature-icon")}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="55"
+                height="55"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M5.5 7C5.10218 7 4.72064 6.84196 4.43934 6.56066C4.15804 6.27936 4 5.89782 4 5.5C4 5.10218 4.15804 4.72064 4.43934 4.43934C4.72064 4.15804 5.10218 4 5.5 4C5.89782 4 6.27936 4.15804 6.56066 4.43934C6.84196 4.72064 7 5.10218 7 5.5C7 5.89782 6.84196 6.27936 6.56066 6.56066C6.27936 6.84196 5.89782 7 5.5 7ZM21.41 11.58L12.41 2.58C12.05 2.22 11.55 2 11 2H4C2.89 2 2 2.89 2 4V11C2 11.55 2.22 12.05 2.59 12.41L11.58 21.41C11.95 21.77 12.45 22 13 22C13.55 22 14.05 21.77 14.41 21.41L21.41 14.41C21.78 14.05 22 13.55 22 13C22 12.44 21.77 11.94 21.41 11.58Z"
+                  fill="#FFCC41"
+                  fill-opacity="0.97"
+                />
+              </svg>
+            </div>
+            <span className={cx("feature-text")}>Rentals with Flexible Cancellation</span>
+          </div>
+        </div>
+        <div className={cx("feature-body-bottom")}>
+          <div className={cx("item")}>
+            <div className={cx("feature-icon")}>
             <svg
-              className={cx("icon-search")}
-              xmlns="http://www.w3.org/2000/svg"
-              width="45"
-              height="45"
-              viewBox="0 0 35 35"
-              fill="none"
-            >
-              <path
-                d="M15.5 14H14.71L14.43 13.73C15.4439 12.554 16.0011 11.0527 16 9.5C16 8.21442 15.6188 6.95772 14.9046 5.8888C14.1903 4.81988 13.1752 3.98676 11.9874 3.49479C10.7997 3.00282 9.49279 2.87409 8.23192 3.1249C6.97104 3.3757 5.81285 3.99477 4.90381 4.90381C3.99477 5.81285 3.3757 6.97104 3.1249 8.23192C2.87409 9.49279 3.00282 10.7997 3.49479 11.9874C3.98676 13.1752 4.81988 14.1903 5.8888 14.9046C6.95772 15.6188 8.21442 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z"
-                fill="black"
-              />
-            </svg>
-          </i>
-        </button>
-      </div> */}
+                xmlns="http://www.w3.org/2000/svg"
+                width="55"
+                height="55"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M5.5 7C5.10218 7 4.72064 6.84196 4.43934 6.56066C4.15804 6.27936 4 5.89782 4 5.5C4 5.10218 4.15804 4.72064 4.43934 4.43934C4.72064 4.15804 5.10218 4 5.5 4C5.89782 4 6.27936 4.15804 6.56066 4.43934C6.84196 4.72064 7 5.10218 7 5.5C7 5.89782 6.84196 6.27936 6.56066 6.56066C6.27936 6.84196 5.89782 7 5.5 7ZM21.41 11.58L12.41 2.58C12.05 2.22 11.55 2 11 2H4C2.89 2 2 2.89 2 4V11C2 11.55 2.22 12.05 2.59 12.41L11.58 21.41C11.95 21.77 12.45 22 13 22C13.55 22 14.05 21.77 14.41 21.41L21.41 14.41C21.78 14.05 22 13.55 22 13C22 12.44 21.77 11.94 21.41 11.58Z"
+                  fill="#FFCC41"
+                  fill-opacity="0.97"
+                />
+              </svg>
+            </div>
+            <span className={cx("feature-text")}>Spring & Summer Day</span>
+          </div>
+          <div className={cx("item")}>
+            <div className={cx("feature-icon")}>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="55"
+                height="55"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M5.5 7C5.10218 7 4.72064 6.84196 4.43934 6.56066C4.15804 6.27936 4 5.89782 4 5.5C4 5.10218 4.15804 4.72064 4.43934 4.43934C4.72064 4.15804 5.10218 4 5.5 4C5.89782 4 6.27936 4.15804 6.56066 4.43934C6.84196 4.72064 7 5.10218 7 5.5C7 5.89782 6.84196 6.27936 6.56066 6.56066C6.27936 6.84196 5.89782 7 5.5 7ZM21.41 11.58L12.41 2.58C12.05 2.22 11.55 2 11 2H4C2.89 2 2 2.89 2 4V11C2 11.55 2.22 12.05 2.59 12.41L11.58 21.41C11.95 21.77 12.45 22 13 22C13.55 22 14.05 21.77 14.41 21.41L21.41 14.41C21.78 14.05 22 13.55 22 13C22 12.44 21.77 11.94 21.41 11.58Z"
+                  fill="#FFCC41"
+                  fill-opacity="0.97"
+                />
+              </svg>
+            </div>
+            <span className={cx("feature-text")}>Newest Timeshare Rentals</span>
+          </div>
+          <div className={cx("item")}>
+            <div className={cx("feature-icon")}>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="55"
+                height="55"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path
+                  d="M5.5 7C5.10218 7 4.72064 6.84196 4.43934 6.56066C4.15804 6.27936 4 5.89782 4 5.5C4 5.10218 4.15804 4.72064 4.43934 4.43934C4.72064 4.15804 5.10218 4 5.5 4C5.89782 4 6.27936 4.15804 6.56066 4.43934C6.84196 4.72064 7 5.10218 7 5.5C7 5.89782 6.84196 6.27936 6.56066 6.56066C6.27936 6.84196 5.89782 7 5.5 7ZM21.41 11.58L12.41 2.58C12.05 2.22 11.55 2 11 2H4C2.89 2 2 2.89 2 4V11C2 11.55 2.22 12.05 2.59 12.41L11.58 21.41C11.95 21.77 12.45 22 13 22C13.55 22 14.05 21.77 14.41 21.41L21.41 14.41C21.78 14.05 22 13.55 22 13C22 12.44 21.77 11.94 21.41 11.58Z"
+                  fill="#FFCC41"
+                  fill-opacity="0.97"
+                />
+              </svg>
+            </div>
+            <span className={cx("feature-text")}>Last-minutes Timeshare Rentals</span>
+          </div>
+        </div>
+      </div>
       <div className={cx("destination-img")}>
-        <img className={cx("box-img")} src={images.DestinationImg} alt="anh" />
+        <img className={cx("box-img")} style={{witdh: '1400px'}} src={images.DestinationImg} alt="anh" />
       </div>
       <div>
         <PaymentIntro />
