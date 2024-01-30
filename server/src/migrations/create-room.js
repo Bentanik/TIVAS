@@ -9,13 +9,10 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      desc: {
-        type: Sequelize.STRING
-      },
       typeOfProjectID: {
         type: Sequelize.INTEGER
       },
-      propertyID: {
+      typeRoomID: {
         type: Sequelize.INTEGER
       },
       createdAt: {

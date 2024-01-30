@@ -13,8 +13,8 @@ module.exports = (sequelize, DataTypes) => {
       Room.hasMany(models.TimeShare ,{
         foreignKey: 'roomID',
       });
-      Room.belongsTo(models.Property ,{
-        foreignKey: 'propertyID',
+      Room.belongsTo(models.TypeRoom ,{
+        foreignKey: 'typeRoomID',
       });
       Room.belongsTo(models.TypeOfProject ,{
         foreignKey: 'typeOfProjectID',
@@ -23,9 +23,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Room.init({
-    desc: DataTypes.STRING,
     typeOfProjectID: DataTypes.INTEGER,
-    propertyID: DataTypes.INTEGER
+    typeRoomID: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Room',
