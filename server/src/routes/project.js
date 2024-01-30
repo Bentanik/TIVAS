@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post(
   "/create",
-  uploadCloud.single('image'),
+  uploadCloud.array('image'),
   controllers.createNewProject
 );
 router.get("/getAll",controllers.getAllProject)

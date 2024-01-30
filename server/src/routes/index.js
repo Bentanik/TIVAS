@@ -3,13 +3,13 @@ import auth from "./auth";
 import user from "./user";
 import project from "./project";
 import room from "./room";
-import property from "./property"
+import typeroom from "./typeroom"
 
 const initRoutes = (app) => {
   app.use("/api/v1/auth", auth);
   app.use("/api/v1/user", user);
   app.use("/api/v1/project", project);
-  app.use("/api/v1/property", property)
+  app.use("/api/v1/property", typeroom);
   app.use("/api/v1/room", room);
 
   app.use(notFound);

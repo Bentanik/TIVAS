@@ -10,9 +10,8 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      TypeRoom.hasMany(models.Room ,{
-        foreignKey: 'typeRoomID',
-      });
+      TypeRoom.hasMany(models.Room, {foreignKey: 'typeRoomID'});
+      TypeRoom.hasMany(models.Image, {foreignKey: 'typeRoomID'});
       // define association here
     }
   }
@@ -24,7 +23,6 @@ module.exports = (sequelize, DataTypes) => {
     entertainment: DataTypes.STRING,
     features: DataTypes.STRING,
     policies: DataTypes.STRING,
-    images: DataTypes.STRING,
     description: DataTypes.STRING,
   }, {
     sequelize,
