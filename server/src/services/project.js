@@ -1,7 +1,7 @@
 import db from "../models";
 const cloudinary = require('cloudinary').v2;
 import "dotenv/config";
-import { Op } from "sequelize";
+import { Model, Op } from "sequelize";
 
 export const createNewProject = ({
     id,
@@ -23,6 +23,13 @@ export const createNewProject = ({
                     images: fileData?.path,
                 },
             })
+            const [TypeOfProject, created1] = await db.TypeOfProject.findOrCreate({
+                where: {projectID: id},
+                defaults: {
+                    projectID: id, 
+                    typeID: type,
+                }
+            })
             resolve({
                 err: created ? 0 : 1,
                 mess: created ? "Create Project Successfully." : "Project Name has been used!",
@@ -41,10 +48,10 @@ export const createNewProject = ({
     })
 }
 
-export const getAllProject = ({page, limit, orderType, orderBy}) => {
+export const getAllProject = ({ page, limit, orderType, orderBy }) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const queries = {raw: true, nest: true};
+            const queries = { raw: true, nest: true };
             const offset = (!page || +page <= 1) ? 0 : (+page - 1);
             const fLimit = (!limit || limit < 1) ? +process.env.LIMIT_PROJECT : limit;
             queries.offset = offset * fLimit;
@@ -59,7 +66,7 @@ export const getAllProject = ({page, limit, orderType, orderBy}) => {
 
             resolve({
                 err: response ? 0 : 1,
-                message: (response && response.length !== 0) ? `All of project in: page (${offset + 1}), limit (${fLimit}), orderType (${fOrderType}), orderBy (${fOrderBy})` : 'Can not find any Projects!', 
+                message: (response && response.length !== 0) ? `All of project in: page (${offset + 1}), limit (${fLimit}), orderType (${fOrderType}), orderBy (${fOrderBy})` : 'Can not find any Projects!',
                 data: response,
                 count: response ? response.length : 0,
             })
@@ -121,8 +128,8 @@ export const searchProject = ({ page, limit, orderType, orderBy, ...query }) => 
 
             //condition clause
             const whereClause = {};
-            for(const [key, value] of Object.entries(query)){
-                whereClause[key] = {[Op.substring]: value};
+            for (const [key, value] of Object.entries(query)) {
+                whereClause[key] = { [Op.substring]: value };
             }
 
             //Page and limit
@@ -137,7 +144,7 @@ export const searchProject = ({ page, limit, orderType, orderBy, ...query }) => 
             const fOrderType = (orderType === 'DESC') ? 'DESC' : 'ASC';
             const fOrderBy = (orderBy) ? orderBy : 'id';
             queries.order = [[fOrderBy, fOrderType]];
-            
+
 
             const response = await db.Project.findAndCountAll({
                 where: whereClause,
@@ -157,11 +164,11 @@ export const searchProject = ({ page, limit, orderType, orderBy, ...query }) => 
 }
 
 export const getTop10 = () => {
-    return new Promise( async(resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         try {
             const response = await db.Project.findAndCountAll({
                 limit: 10,
-                order: [['createdAt','DESC']],
+                order: [['createdAt', 'DESC']],
             })
             resolve({
                 err: response ? 0 : 1,
@@ -175,10 +182,16 @@ export const getTop10 = () => {
     })
 }
 
-export const getDetailsProject = ({id}) => {
-    return new Promise( async(resolve, reject) => {
+export const getDetailsProject = ({ id }) => {
+    return new Promise(async (resolve, reject) => {
         try {
-            const response = await db.Project.findByPk(id);
+            const response = await db.Project.findAll( {
+                nest: true,
+                include: [{
+                    model: db.TypeOfProject,
+                }]
+            });
+            console.log(response)
             resolve({
                 err: response ? 0 : 1,
                 message: response ? 'Project found' : `Can not find Project with id: ${id}`,
