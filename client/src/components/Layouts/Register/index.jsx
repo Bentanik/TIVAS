@@ -46,8 +46,6 @@ function Register({ handleAccessLogin, handleCloseRegister, trigger }) {
     }
   }, [stateFormRegister, registerPath, stateEmail?.email]);
 
-  console.log(registerPath);
-
   useEffect(() => {
     if (statusRegister.success) {
       toast.custom(

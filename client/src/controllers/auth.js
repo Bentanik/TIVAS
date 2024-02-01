@@ -6,9 +6,13 @@ import {
   logoutStart,
   logoutSuccess,
   registerError,
+  registerGoogleError,
+  registerGoogleStart,
+  registerGoogleSuccess,
   registerStart,
   registerSuccess,
   resetLogin,
+  resetSendMail,
   sendMailError,
   sendMailStart,
   sendMailSuccess,
@@ -99,15 +103,16 @@ export const register = async (dispatch, axiosInstance, form) => {
   }
 };
 
-export const loginGoogle = async (dispatch, navigate, axiosInstance, form) => {
+export const loginGoogle = async (dispatch, axiosInstance, form) => {
   dispatch(loginStart());
   try {
     const res = await services.loginGoogle(axiosInstance, form);
     if (res.err === 0) {
       dispatch(loginSuccess(res));
+      dispatch(resetSendMail());
     } else {
       if (res.register === false) {
-        navigate("/registerinformation");
+        dispatch(sendMailSuccess(res.registerGoogle));
         dispatch(resetLogin());
       } else {
         dispatch(loginError(res.mess));
@@ -115,5 +120,22 @@ export const loginGoogle = async (dispatch, navigate, axiosInstance, form) => {
     }
   } catch (err) {
     dispatch(loginError("Error"));
+  }
+};
+
+export const registerGoogle = async (dispatch, axiosInstance, form) => {
+  dispatch(registerGoogleStart());
+  dispatch(loginStart());
+  try {
+    const res = await services.registerGoogle(axiosInstance, form);
+    if (res.err === 0) {
+      dispatch(registerGoogleSuccess());
+      dispatch(loginSuccess(res));
+      dispatch(resetSendMail());
+    } else {
+      dispatch(registerGoogleError());
+    }
+  } catch (err) {
+    dispatch(registerGoogleError());
   }
 };

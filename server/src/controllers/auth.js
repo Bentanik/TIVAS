@@ -113,9 +113,8 @@ export const login = async (req, res) => {
 // Login google
 export const loginGoogle = async (req, res) => {
   const email = req.user.emails[0].value;
-  const id = req.user.id;
 
-  const response = await services.loginGoogle({ id, email });
+  const response = await services.loginGoogle({ email });
   const { refreshToken, ...rest } = response;
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
@@ -124,6 +123,59 @@ export const loginGoogle = async (req, res) => {
     sameSite: "strict",
   });
   return res.status(200).json(rest);
+};
+
+// Register google
+export const registerGoogle = async (req, res) => {
+  const { fullName, email, paymentMethod } = req.body;
+
+  try {
+    if (!fullName || !email || !paymentMethod) {
+      return missValue("Missing value!", res);
+    }
+
+    const setupIntent = await stripe.setupIntents.create({
+      payment_method: paymentMethod,
+    });
+
+    const paymentMethodId = setupIntent.payment_method;
+
+    const customer = await stripe.customers.create({
+      email: email,
+      name: fullName,
+      payment_method: paymentMethodId,
+      invoice_settings: {
+        default_payment_method: paymentMethodId,
+      },
+    });
+    if (customer) {
+      const reponses = await services.registerGoogle({
+        email,
+        fullName,
+        refundHistoryID: customer.id,
+      });
+      const { refreshToken, ...rest } = reponses;
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: false,
+        path: "/",
+        sameSite: "strict",
+      });
+      return res.status(200).json(rest);
+    } else {
+      return res.status(500).json({
+        err: 1,
+        mess: "Error register",
+      });
+    }
+  } catch (error) {
+    console.error("Error creating customer:", error);
+    return res.status(500).json({
+      error: 1,
+      message: "Failed to create customer",
+      success: false,
+    });
+  }
 };
 
 // Refresh token

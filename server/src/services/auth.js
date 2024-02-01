@@ -125,7 +125,7 @@ export const login = ({ username, email, password }) => {
   });
 };
 
-export const loginGoogle = ({ id, email, roleID = 3 }) => {
+export const loginGoogle = ({ email, roleID = 3 }) => {
   return new Promise(async (resolve, reject) => {
     try {
       const user = await db.User.findOne({
@@ -153,28 +153,46 @@ export const loginGoogle = ({ id, email, roleID = 3 }) => {
 
       // Google account is not registered
       if (!user) {
-        const client = createClient();
-        await client.connect();
-
-        // await client.setEx(email, 600, JSON.stringify(OTP));
+        resolve({
+          err: accessToken ? 0 : 1,
+          mess: accessToken
+            ? "Login successfully"
+            : "Email was used in account of system",
+          data: accessToken
+            ? {
+                id: user.id,
+                username: user.username || null,
+                roleID: user.roleID || roleID,
+              }
+            : null,
+          accessToken: `Bearer ${accessToken}`,
+          refreshToken,
+          register: user ? true : false,
+          registerGoogle: {
+            mess: !user
+              ? "Please fill in all information to register with your google account"
+              : "",
+            email: !user ? email : "",
+          },
+        });
+      } else {
+        resolve({
+          err: accessToken ? 0 : 1,
+          mess: accessToken
+            ? "Login successfully"
+            : "Email was used in account of system",
+          data: accessToken
+            ? {
+                id: user.id,
+                username: user.username || null,
+                roleID: user.roleID || roleID,
+              }
+            : null,
+          accessToken: `Bearer ${accessToken}`,
+          refreshToken,
+          register: user ? true : false,
+        });
       }
-
-      resolve({
-        err: accessToken ? 0 : 1,
-        mess: accessToken
-          ? "Login successfully"
-          : "Email was used in account of system",
-        data: accessToken
-          ? {
-              id: user.id,
-              username: user.username || null,
-              roleID: user.roleID || roleID,
-            }
-          : null,
-        accessToken: `Bearer ${accessToken}`,
-        refreshToken,
-        register: user ? true : false,
-      });
     } catch (error) {
       console.log(error);
       reject(error);
@@ -314,6 +332,52 @@ export const checkUserName = ({ username }) => {
         mess: user ? "User Name already exists " : "",
       });
     } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const registerGoogle = ({ email, fullName, refundHistoryID }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await db.User.create({
+        fullName,
+        email,
+        refundHistoryID,
+        type: "Google",
+        roleID: 3,
+      });
+
+      const accessToken = user ? generateAccessToken(user) : null;
+      const refreshToken = user ? generateRefreshToken(user) : null;
+      if (refreshToken) {
+        await db.User.update(
+          {
+            refreshToken,
+          },
+          {
+            where: { id: user.id },
+          }
+        );
+      }
+
+      resolve({
+        err: accessToken ? 0 : 1,
+        mess: accessToken
+          ? "Login successfully"
+          : "Email was used in account of system",
+        data: accessToken
+          ? {
+              id: user.id,
+              username: user.username || null,
+              roleID: user.roleID || roleID,
+            }
+          : null,
+        accessToken: `Bearer ${accessToken}`,
+        refreshToken,
+      });
+    } catch (err) {
+      console.log("Error: ", err);
       reject(err);
     }
   });

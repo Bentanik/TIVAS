@@ -3,7 +3,6 @@ import passport from "passport";
 import passportConfig from "../middlewares/passport";
 import * as controllers from "../controllers";
 
-
 const router = express.Router();
 
 //Verify by email register OTP
@@ -21,6 +20,8 @@ router.post(
   passport.authenticate("google-oauth-token", { session: false }),
   controllers.loginGoogle
 );
+
+router.post("/registergoogle", controllers.registerGoogle);
 
 // Refresh token
 router.post("/refreshtoken", controllers.refreshToken);

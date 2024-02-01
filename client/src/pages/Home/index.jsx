@@ -22,6 +22,7 @@ function Home() {
 
   const handleCloseLogin = () => {
     setLogin(false);
+    dispatch(resetSendMail());
     dispatch(resetLogin());
   };
 

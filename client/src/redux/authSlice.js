@@ -22,6 +22,11 @@ const initialState = {
     success: false,
     error: false,
   },
+  registerGoogle: {
+    isFetching: false,
+    success: false,
+    error: false,
+  }
 };
 
 const authSlice = createSlice({
@@ -107,6 +112,24 @@ const authSlice = createSlice({
       state.register.success = false;
       state.register.error = false;
     },
+    registerGoogleStart: (state) => {
+      state.registerGoogle.isFetching = true;
+    },
+    registerGoogleSuccess: (state) => {
+      state.registerGoogle.isFetching = false;
+      state.registerGoogle.success = true;
+      state.registerGoogle.error = false;
+    },
+    registerGoogleError: (state) => {
+      state.registerGoogle.isFetching = false;
+      state.registerGoogle.success = false;
+      state.registerGoogle.error = true;
+    },
+    resetRegisterGoogle: (state) => {
+      state.registerGoogle.isFetching = false;
+      state.registerGoogle.success = false;
+      state.registerGoogle.error = false;
+    },
   },
 });
 
@@ -128,6 +151,10 @@ export const {
   registerError,
   registerSuccess,
   resetRegister,
+  registerGoogleStart,
+  registerGoogleSuccess,
+  registerGoogleError,
+  resetRegisterGoogle,
 } = authSlice.actions;
 
 export default authSlice.reducer;

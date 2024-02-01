@@ -40,3 +40,7 @@ export const checkUsername = (axiosInstance, form) => {
 export const loginGoogle = (axiosInstance, form) => {
   return axiosInstance.post("/api/v1/auth/google", form);
 };
+
+export const registerGoogle = (axiosInstance, form) => {
+  return axiosInstance.post("/api/v1/auth/registergoogle", form);
+};
