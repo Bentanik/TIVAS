@@ -13,7 +13,7 @@ import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useGoogleLogin } from "@react-oauth/google";
 import ToastNotify from "~/components/ToastNotify";
-import { resetSendMail } from "~/redux/authSlice";
+import { resetLogin, resetSendMail } from "~/redux/authSlice";
 import CardContainerGoogle from "~/components/Layouts/CardRegisterGoogle/CardContainerGoogle";
 
 const cx = classNames.bind(styles);
@@ -38,7 +38,6 @@ function Login({ handleAccessRegister }) {
 
     const form = { loginValue, password };
     const err = validateLogin(form);
-    console.log(err);
     if (err.numberErrors !== 0) {
       setErrors(err);
     } else {
@@ -79,6 +78,16 @@ function Login({ handleAccessRegister }) {
       );
     }
   }, [dispatch, handleAccessRegister, stateEmail.error, stateEmail.success]);
+
+  useEffect(() => {
+    if (error !== "") {
+      toast.custom(
+        () => <ToastNotify type="error" title="Error" desc={error} />,
+        { duration: 2000 }
+      );
+      dispatch(resetLogin());
+    }
+  }, [dispatch, error]);
 
   return (
     <div className={cx("login-wrapper")}>
@@ -144,7 +153,6 @@ function Login({ handleAccessRegister }) {
           >
             <CircularProgress color="inherit" />
           </Backdrop>
-
         </div>
       ) : (
         <div>

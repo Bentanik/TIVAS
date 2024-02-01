@@ -127,10 +127,10 @@ export const loginGoogle = async (req, res) => {
 
 // Register google
 export const registerGoogle = async (req, res) => {
-  const { fullName, email, paymentMethod } = req.body;
+  const { username, fullName, email, paymentMethod } = req.body;
 
   try {
-    if (!fullName || !email || !paymentMethod) {
+    if (!username || !fullName || !email || !paymentMethod) {
       return missValue("Missing value!", res);
     }
 
@@ -150,6 +150,7 @@ export const registerGoogle = async (req, res) => {
     });
     if (customer) {
       const reponses = await services.registerGoogle({
+        username,
         email,
         fullName,
         refundHistoryID: customer.id,

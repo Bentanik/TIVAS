@@ -88,7 +88,7 @@ export const login = ({ username, email, password }) => {
         raw: true,
       });
       const isChecked =
-        user !== null && bcrypt.compareSync(password, user.password);
+        user?.type=="Local" && bcrypt.compareSync(password, user.password);
       const accessToken = isChecked ? generateAccessToken(user) : null;
       const refreshToken = isChecked ? generateRefreshToken(user) : null;
 
@@ -167,6 +167,7 @@ export const loginGoogle = ({ email, roleID = 3 }) => {
             : null,
           accessToken: `Bearer ${accessToken}`,
           refreshToken,
+          username: accessToken ? user.username : "",
           register: user ? true : false,
           registerGoogle: {
             mess: !user
@@ -337,10 +338,11 @@ export const checkUserName = ({ username }) => {
   });
 };
 
-export const registerGoogle = ({ email, fullName, refundHistoryID }) => {
+export const registerGoogle = ({ username, email, fullName, refundHistoryID }) => {
   return new Promise(async (resolve, reject) => {
     try {
       const user = await db.User.create({
+        username,
         fullName,
         email,
         refundHistoryID,
@@ -375,6 +377,7 @@ export const registerGoogle = ({ email, fullName, refundHistoryID }) => {
           : null,
         accessToken: `Bearer ${accessToken}`,
         refreshToken,
+        username: !user ? username: "",
       });
     } catch (err) {
       console.log("Error: ", err);

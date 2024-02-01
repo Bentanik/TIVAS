@@ -75,7 +75,7 @@ function Navigations({ triggerLogin, triggerRegister }) {
                   alt="Avatar"
                   className={cx("img")}
                 />
-                <h4 className={cx("show-name")}>Unknown</h4>
+                <h4 className={cx("show-name")}>{currentUser?.data.username}</h4>
                 <FontAwesomeIcon icon={faChevronDown} className={cx("icon")} />
               </div>
               <div className={cx("action")} onClick={handleLogout}>

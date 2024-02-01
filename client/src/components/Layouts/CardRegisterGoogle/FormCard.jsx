@@ -25,6 +25,7 @@ function FormCard() {
   const statusLogin = useSelector((state) => state.auth.login.isFetching);
 
   const [fullName, setFullName] = useState("");
+  const [username, setUserName] = useState("");
   const [fullNameSystem, setFullNameSystem] = useState("");
   const [address, setAddress] = useState("");
 
@@ -45,6 +46,7 @@ function FormCard() {
       try {
         const { id } = paymentMethod;
         registerGoogle(dispatch, axiosInstance, {
+          username: username,
           email: stateEmail.email,
           fullName: fullNameSystem,
           paymentMethod: id,
@@ -61,7 +63,13 @@ function FormCard() {
     <section className={cx("formCard-wrapper")}>
       <h2 className={cx("heading")}>Sign up</h2>
       <form className={cx("form-wrapper")} onSubmit={handleSubmit}>
-        <h3 className={cx("title")}>Full Name (Your full name)</h3>
+        <h3 className={cx("title")}>User information</h3>
+        <InputItem
+          type="text"
+          value={username}
+          setValue={setUserName}
+          placeholder="Username *"
+        />
         <InputItem
           type="text"
           value={fullNameSystem}

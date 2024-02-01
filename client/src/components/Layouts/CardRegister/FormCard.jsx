@@ -23,6 +23,8 @@ function FormCard() {
 
   const formRegister = useSelector((state) => state.formRegister.formValue);
 
+  
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const { error, paymentMethod } = await stripe.createPaymentMethod({
