@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       User.belongsTo(models.RoleCode, {
         foreignKey: 'roleID',
       });
-      User.hasMany(models.Reservation, {foreignKey: 'timeShareID'});      
+      User.hasMany(models.Reservation, {foreignKey: 'userID'});      
       User.hasOne(models.RefundHistory, {
         foreignKey: 'userID',
       });
