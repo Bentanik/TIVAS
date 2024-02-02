@@ -1,5 +1,5 @@
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InputItem from "~/components/InputItem";
 import classNames from "classnames/bind";
 import styles from "./CardForm.module.scss";
@@ -22,8 +22,6 @@ function FormCard() {
   const [address, setAddress] = useState("");
 
   const formRegister = useSelector((state) => state.formRegister.formValue);
-
-  
 
   const handleSubmit = async (event) => {
     event.preventDefault();

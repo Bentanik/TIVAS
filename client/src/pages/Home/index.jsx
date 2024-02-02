@@ -3,14 +3,17 @@ import styles from "./Home.module.scss";
 import Navigations from "~/components/Layouts/Navigations";
 import Footer from "~/components/Layouts/Footer";
 import Popup from "~/components/AuthPopup";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Login from "~/components/Layouts/Login";
 import { useDispatch, useSelector } from "react-redux";
 import { getAll } from "~/services";
 import createAxios from "~/configs/axios";
-import { resetLogin, resetSendMail } from "~/redux/authSlice";
+import { resetLogin, resetRegister, resetSendMail } from "~/redux/authSlice";
 import Register from "~/components/Layouts/Register";
 import { resetForm } from "~/redux/formRegisterSlice";
+import Pagination from "~/components/Pagination";
+import { Toaster, toast } from "sonner";
+import ToastNotify from "~/components/ToastNotify";
 
 const cx = classNames.bind(styles);
 
@@ -20,18 +23,22 @@ function Home() {
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.login.user);
 
+  const statusRegister = useSelector((state) => state.auth.register);
+
   const handleCloseLogin = () => {
     setLogin(false);
     dispatch(resetSendMail());
     dispatch(resetLogin());
   };
 
-  const handleCloseRegister = () => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleCloseRegister = useCallback(() => {
     setRegister(false);
     dispatch(resetSendMail());
     dispatch(resetForm());
+    dispatch(resetRegister());
     sessionStorage.removeItem("emailRegister");
-  };
+  });
 
   const handleAccessRegister = () => {
     setLogin(false);
@@ -43,12 +50,29 @@ function Home() {
     setRegister(false);
   };
 
+  useEffect(() => {
+    if (statusRegister.success) {
+      handleCloseRegister();
+      toast.custom(
+        () => (
+          <ToastNotify
+            type="success"
+            title="Success"
+            desc={"Your account registered successfully"}
+          />
+        ),
+        { duration: 2000 }
+      );
+    }
+  }, [dispatch, handleCloseRegister, statusRegister.success]);
+
   const axiosInstance = createAxios(dispatch, currentUser);
 
   const action = async () => {
     try {
       const res = await getAll(axiosInstance);
       console.log(res);
+      console.log(1);
     } catch (err) {
       console.log("Error");
     }
@@ -56,6 +80,8 @@ function Home() {
 
   return (
     <div className={cx("home-wrapper")}>
+      <Toaster position="top-right" richColors expand={true} />
+
       {/* Header */}
 
       <header className={cx("header")}>
@@ -64,6 +90,7 @@ function Home() {
       </header>
       {/* Main */}
       <main>
+        <div>{/* <Pagination /> */}</div>
         <div onClick={action}>Button</div>
       </main>
       {/* Footer */}
