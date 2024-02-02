@@ -9,9 +9,6 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      typeOfProjectID: {
-        type: Sequelize.INTEGER
-      },
       typeRoomID: {
         type: Sequelize.INTEGER
       },

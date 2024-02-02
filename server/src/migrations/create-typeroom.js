@@ -33,6 +33,9 @@ module.exports = {
       description: {
         type: Sequelize.STRING
       },
+      typeOfProjectID: {
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         type: "TIMESTAMP",
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),

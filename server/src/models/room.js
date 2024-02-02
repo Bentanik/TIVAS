@@ -16,9 +16,6 @@ module.exports = (sequelize, DataTypes) => {
       Room.belongsTo(models.TypeRoom ,{
         foreignKey: 'typeRoomID',
       });
-      Room.belongsTo(models.TypeOfProject ,{
-        foreignKey: 'typeOfProjectID',
-      });
       // define association here
     }
   }

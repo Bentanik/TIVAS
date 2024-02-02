@@ -14,6 +14,9 @@ module.exports = (sequelize, DataTypes) => {
       TimeShare.belongsTo(models.Room ,{
         foreignKey: 'roomID',
       });
+      TimeShare.belongsTo(models.User, {
+        foreignKey: 'userID'
+      })
       // define association here
     }
   }

@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       User.hasOne(models.RefundHistory, {
         foreignKey: 'userID',
       });
+      User.hasMany(models.TimeShare, {foreignKey: 'userID'});
     }
   }
   User.init(

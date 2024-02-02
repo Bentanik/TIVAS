@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       TypeRoom.hasMany(models.Room, {foreignKey: 'typeRoomID'});
+      TypeRoom.belongsTo(models.TypeOfProject, {foreignkey: 'typeOfProjectID'})
       TypeRoom.hasMany(models.Image, {foreignKey: 'typeRoomID'});
       // define association here
     }
@@ -24,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     features: DataTypes.STRING,
     policies: DataTypes.STRING,
     description: DataTypes.STRING,
+    typeOfProjectID: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'TypeRoom',
