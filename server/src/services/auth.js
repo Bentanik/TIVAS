@@ -1,7 +1,9 @@
 import db from "../models";
 import { Op } from "sequelize";
 import bcrypt from "bcrypt";
+import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
+import { createClient } from "redis";
 
 const hashPassword = (password) =>
   bcrypt.hashSync(password, bcrypt.genSaltSync(8));
@@ -14,7 +16,7 @@ export const generateAccessToken = (user) => {
       roleID: user.roleID,
     },
     process.env.JWT_ACCESS_KEY,
-    { expiresIn: "30s" }
+    { expiresIn: "10s" }
   );
 };
 
@@ -35,24 +37,20 @@ export const register = ({
   email,
   password,
   phoneNumber,
+  refundHistoryID,
   roleID = 3,
 }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const [user, created] = await db.User.findOrCreate({
-        where: {
-          [Op.or]: [{ username }, { email }],
-        },
-        defaults: {
-          username,
-          email,
-          password: hashPassword(password),
-          phoneNumber,
-          type: "Local",
-        },
+      const user = await db.User.create({
+        username,
+        email,
+        password: hashPassword(password),
+        phoneNumber,
+        refundHistoryID,
+        type: "Local",
       });
-      const accessToken = created ? generateAccessToken(user) : null;
-      const refreshToken = created ? generateRefreshToken(user) : null;
+      const refreshToken = user ? generateRefreshToken(user) : null;
       if (refreshToken) {
         await db.User.update(
           {
@@ -64,11 +62,10 @@ export const register = ({
         );
       }
       resolve({
-        err: accessToken ? 0 : 1,
-        mess: accessToken
+        err: refreshToken ? 0 : 1,
+        mess: refreshToken
           ? "Register successfully"
           : "Username or email is already in use",
-        accessToken: `Bearer ${accessToken}`,
         refreshToken,
       });
     } catch (err) {
@@ -77,6 +74,8 @@ export const register = ({
     }
   });
 };
+
+// Login
 
 export const login = ({ username, email, password }) => {
   return new Promise(async (resolve, reject) => {
@@ -89,7 +88,7 @@ export const login = ({ username, email, password }) => {
         raw: true,
       });
       const isChecked =
-        user !== null && bcrypt.compareSync(password, user.password);
+        user?.type=="Local" && bcrypt.compareSync(password, user.password);
       const accessToken = isChecked ? generateAccessToken(user) : null;
       const refreshToken = isChecked ? generateRefreshToken(user) : null;
 
@@ -129,20 +128,17 @@ export const login = ({ username, email, password }) => {
 export const loginGoogle = ({ email, roleID = 3 }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const [user, created] = await db.User.findOrCreate({
+      const user = await db.User.findOne({
         where: {
           email,
         },
-        defaults: {
-          email,
-          type: "Google",
-        },
+        raw: true,
       });
 
       const accessToken =
-        user.type === "Google" ? generateAccessToken(user) : null;
+        user?.type === "Google" ? generateAccessToken(user) : null;
       const refreshToken =
-        user.type === "Google" ? generateRefreshToken(user) : null;
+        user?.type === "Google" ? generateRefreshToken(user) : null;
 
       if (refreshToken) {
         await db.User.update(
@@ -155,27 +151,57 @@ export const loginGoogle = ({ email, roleID = 3 }) => {
         );
       }
 
-      resolve({
-        err: accessToken ? 0 : 1,
-        mess: accessToken
-          ? "Login successfully"
-          : "Email was used in account of system",
-        data: accessToken
-          ? {
-              id: user.id,
-              username: user.username || null,
-              roleID: user.roleID || roleID,
-            }
-          : null,
-        accessToken: `Bearer ${accessToken}`,
-        refreshToken,
-      });
+      // Google account is not registered
+      if (!user) {
+        resolve({
+          err: accessToken ? 0 : 1,
+          mess: accessToken
+            ? "Login successfully"
+            : "Email was used in account of system",
+          data: accessToken
+            ? {
+                id: user.id,
+                username: user.username || null,
+                roleID: user.roleID || roleID,
+              }
+            : null,
+          accessToken: `Bearer ${accessToken}`,
+          refreshToken,
+          username: accessToken ? user.username : "",
+          register: user ? true : false,
+          registerGoogle: {
+            mess: !user
+              ? "Please fill in all information to register with your google account"
+              : "",
+            email: !user ? email : "",
+          },
+        });
+      } else {
+        resolve({
+          err: accessToken ? 0 : 1,
+          mess: accessToken
+            ? "Login successfully"
+            : "Email was used in account of system",
+          data: accessToken
+            ? {
+                id: user.id,
+                username: user.username || null,
+                roleID: user.roleID || roleID,
+              }
+            : null,
+          accessToken: `Bearer ${accessToken}`,
+          refreshToken,
+          register: user ? true : false,
+        });
+      }
     } catch (error) {
       console.log(error);
       reject(error);
     }
   });
 };
+
+// export const registerGoogle = ({})
 
 export const refreshToken = ({ refreshToken }) => {
   return new Promise(async (resolve, reject) => {
@@ -216,6 +242,145 @@ export const refreshToken = ({ refreshToken }) => {
         }
       );
     } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const sendCodeEmail = ({ email }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const timeEmail = 120000;
+      const client = createClient();
+      await client.connect();
+
+      const user = await db.User.findOne({
+        where: { email },
+        raw: true,
+      });
+
+      if (!user) {
+        let transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: process.env.GOOGE_APP_EMAIL,
+            pass: process.env.GOOGLE_APP_PASSWORD,
+          },
+        });
+
+        const OTP = Math.floor(100000 + Math.random() * 900000);
+
+        let mailOptions = {
+          from: "Tivas",
+          to: `${email}`,
+          subject: "Confirm received email",
+          text: `Code: ${OTP}, valid for 2 minutes`,
+        };
+
+        transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log("Email sent: " + info.response);
+          }
+        });
+
+        await client.setEx(email, timeEmail / 1000, JSON.stringify(OTP));
+      }
+
+      resolve({
+        err: user ? 1 : 0,
+        mess: user
+          ? "This email already exists"
+          : "Please check the code in the email",
+        email: "",
+        time: user ? null : timeEmail,
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const checkRegister = ({ email, otp }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const client = createClient();
+      await client.connect();
+
+      const otpRedis = await client.get(email);
+      const isChecked = otpRedis && otpRedis === otp ? true : false;
+      resolve({
+        err: isChecked ? 0 : 1,
+        mess: isChecked ? "Successfully" : "Please check the code again!",
+        email: isChecked ? email : "",
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const checkUserName = ({ username }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await db.User.findOne({
+        where: { username },
+        raw: true,
+      });
+      resolve({
+        err: user ? 1 : 0,
+        mess: user ? "User Name already exists " : "",
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const registerGoogle = ({ username, email, fullName, refundHistoryID }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await db.User.create({
+        username,
+        fullName,
+        email,
+        refundHistoryID,
+        type: "Google",
+        roleID: 3,
+      });
+
+      const accessToken = user ? generateAccessToken(user) : null;
+      const refreshToken = user ? generateRefreshToken(user) : null;
+      if (refreshToken) {
+        await db.User.update(
+          {
+            refreshToken,
+          },
+          {
+            where: { id: user.id },
+          }
+        );
+      }
+
+      resolve({
+        err: accessToken ? 0 : 1,
+        mess: accessToken
+          ? "Login successfully"
+          : "Email was used in account of system",
+        data: accessToken
+          ? {
+              id: user.id,
+              username: user.username || null,
+              roleID: user.roleID || roleID,
+            }
+          : null,
+        accessToken: `Bearer ${accessToken}`,
+        refreshToken,
+        username: !user ? username: "",
+      });
+    } catch (err) {
+      console.log("Error: ", err);
       reject(err);
     }
   });
