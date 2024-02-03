@@ -11,6 +11,7 @@ import Login from "~/components/Layouts/Login";
 import { useDispatch, useSelector } from "react-redux";
 import { getAll } from "~/services";
 import createAxios from "~/configs/axios";
+import PageOwner from "~/components/PageOwner";
 import { resetLogin, resetRegister, resetSendMail } from "~/redux/authSlice";
 import Register from "~/components/Layouts/Register";
 import { resetForm } from "~/redux/formRegisterSlice";
@@ -28,7 +29,6 @@ const blog_link = {
 function Home() {
   const [login, setLogin] = useState(false);
   const [register, setRegister] = useState(false);
-
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.login.user);
 
@@ -90,7 +90,6 @@ function Home() {
   return (
     <div className={cx("home-wrapper")}>
       <Toaster position="top-right" richColors expand={true} />
-
       {/* Header */}
       <header className={cx("header")}>
         {/* Navigations */}

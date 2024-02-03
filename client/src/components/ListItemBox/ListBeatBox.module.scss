@@ -1,0 +1,22 @@
+.list-box {
+  .card-item {
+    .box-img {
+      width: 220px;
+      height: 220px;
+      display: flex;
+      justify-content: space-evenly;
+    }
+  }
+  .content {
+    .content-left {
+      .name {
+        color: #000;
+        font-family: "Roboto";
+        font-size: 2rem;
+        font-style: normal;
+        font-weight: 700;
+        margin-top: 8px;
+      }
+    }
+  }
+}
