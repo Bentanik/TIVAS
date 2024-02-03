@@ -4,6 +4,7 @@ import cors from "cors";
 
 import "dotenv/config";
 import "../connectionDB";
+
 import initRoutes from "./routes";
 
 const app = express();
@@ -16,8 +17,9 @@ app.use(
   })
 );
 
-app.use(cookieParser());
 
+app.use(cookieParser());
+  
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

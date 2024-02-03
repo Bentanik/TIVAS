@@ -25,6 +25,9 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
       },
+      refundHistoryID: {
+        type: Sequelize.STRING,
+      },
       roleID: {
         type: Sequelize.INTEGER,
         defaultValue: 3,

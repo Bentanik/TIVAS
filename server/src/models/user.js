@@ -29,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
       banStatus: DataTypes.BOOLEAN,
       roleID: DataTypes.INTEGER,
       refreshToken: DataTypes.STRING,
+      refundHistoryID: DataTypes.STRING,
       type: DataTypes.STRING,
     },
     {
