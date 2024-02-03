@@ -1,6 +1,10 @@
 import classNames from "classnames/bind";
 import styles from "./Home.module.scss";
 import Navigations from "~/components/Layouts/Navigations";
+
+import images from "~/assets";
+import { Link } from "react-router-dom";
+
 import Footer from "~/components/Layouts/Footer";
 import Popup from "~/components/AuthPopup";
 import { useCallback, useEffect, useState } from "react";
@@ -17,9 +21,15 @@ import ToastNotify from "~/components/ToastNotify";
 
 const cx = classNames.bind(styles);
 
+const blog_link = {
+    link: "/blog",
+};
+
 function Home() {
+
   const [login, setLogin] = useState(false);
   const [register, setRegister] = useState(false);
+
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.login.user);
 
@@ -78,23 +88,60 @@ function Home() {
     }
   };
 
-  return (
-    <div className={cx("home-wrapper")}>
-      <Toaster position="top-right" richColors expand={true} />
+    return (
+        <div className={cx("home-wrapper")}>
+            {/* Header */}
+            <header className={cx("header")}>
+                {/* Navigations */}
+                <Navigations triggerLogin={setLogin} />
+                {/* Hero */}
+                <div className={cx("hero-wrapper")}>
+                    <img
+                        src={images.heroImg}
+                        alt="Hero Image"
+                        className={cx("hero-img")}
+                    />
+                    <h1 className={cx("hero-title")}>
+                        Welcome to <span>Tivas</span>
+                    </h1>
+                </div>
+            </header>
+            {/* Main */}
+            <main className={cx("content")}>
+                {/* Owner Blog */}
+                <div className={cx("blog-wrapper")}>
+                    <div className={cx("blog-content")}>
+                        {/* Thumb Image */}
+                        <img
+                            src={images.thumbImg}
+                            alt="Thumb Image"
+                            className={cx("thumb-img")}
+                        />
+                        {/*Rigth content*/}
+                        <div className={cx("right-content")}>
+                            <h3 className={cx("right-header")}>
+                                Explore your home Time for payment
+                            </h3>
+                            <p className={cx("desc")}>
+                                We support flexible payments in stages to help
+                                you manage your finances conveniently, while
+                                ensuring your real estate purchase progress goes
+                                smoothly.
+                            </p>
 
-      {/* Header */}
-
-      <header className={cx("header")}>
-        {/* Navigations */}
-        <Navigations triggerLogin={setLogin} triggerRegister={setRegister} />
-      </header>
-      {/* Main */}
-      <main>
-        <div>{/* <Pagination /> */}</div>
-        <div onClick={action}>Button</div>
-      </main>
-      {/* Footer */}
-      <footer className={cx("footer")}>
+                            {/* <a href="!#"> */}
+                            <Link
+                                to={blog_link.link}
+                                className={cx("blog-link")}
+                            >
+                                Search Property
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            {/* Footer */}
+            <footer className={cx("footer")}>
         <Footer />
       </footer>
       {!currentUser && (
@@ -113,8 +160,8 @@ function Home() {
           )}
         </>
       )}
-    </div>
-  );
+        </div>
+    );
 }
 
 export default Home;

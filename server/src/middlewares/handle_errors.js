@@ -23,3 +23,11 @@ export const notAuth = (error, res) => {
     mess: err.message,
   });
 };
+
+export const badRequest = (error, res) => {
+  const err = createErrors.BadRequest(error);
+  return res.status(err.status).json({
+    err: 1,
+    mess: err.message,
+  });
+};
