@@ -13,9 +13,9 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'roleID',
       });
       User.hasMany(models.Reservation, {foreignKey: 'userID'});      
-      User.hasOne(models.RefundHistory, {
-        foreignKey: 'userID',
-      });
+      // User.hasOne(models.RefundHistory, {
+      //   foreignKey: 'userID',
+      // });
       User.hasMany(models.TimeShare, {foreignKey: 'userID'});
     }
   }
