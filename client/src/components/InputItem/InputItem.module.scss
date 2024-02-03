@@ -63,4 +63,13 @@
   &:focus {
     border: 1px solid #000;
   }
+
+  &.readOnly {
+    border: 1px solid #f2f2f2;
+    background: #f2f2f2;
+
+    color: #b5b5b5;
+
+    cursor: default;
+  }
 }

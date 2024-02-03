@@ -56,3 +56,39 @@ export const login = ({ loginValue, password }) => {
   }
   return errors;
 };
+
+export const register = ({
+  fullName,
+  username,
+  password,
+  confirmPassword,
+}) => {
+  const errors = {
+    confirmPassword: "",
+    numberErrors: 0,
+  };
+
+  const checkPassword = validatePassword(password);
+  const checkConfirmPassword = validatePassword(confirmPassword);
+
+  if (fullName === "") {
+    errors.numberErrors++;
+  }
+
+  if (username === "") {
+    errors.numberErrors++;
+  }
+
+  if (checkPassword.err === 1) {
+    errors.numberErrors++;
+  }
+
+  if (checkConfirmPassword.err === 1) {
+    errors.numberErrors++;
+  } else if (confirmPassword !== password) {
+    errors.confirmPassword = "Confirm passwords do not match";
+    errors.numberErrors++;
+  }
+
+  return errors;
+};

@@ -8,7 +8,11 @@ const images = {
   googleIcon: require("~/assets/images/googleIcon.svg").default,
   pageOwner: require("~/assets/images/pageOwner.png"),
   DestinationImg: require("~/assets/images/DestinationImg.png"),
-  Calendar: require("~/assets/images/Calendar.svg"),
+  Calendar: require("~/assets/images/Calendar.svg").default,
+  rightArrow: require("~/assets/images/rightArrow.svg").default,
+  thumbProject: require("~/assets/images/thumbProject.svg").default,
+  locateIcon: require("~/assets/images/locateIcon.svg").default,
+  listIcon: require("~/assets/images/listIcon.svg").default,
 };
 
 export default images;

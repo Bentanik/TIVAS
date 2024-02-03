@@ -5,32 +5,23 @@ import * as controllers from "../controllers";
 
 const router = express.Router();
 
+//Verify by email register OTP
+router.post("/sendmail", controllers.sendCodeEmail);
+router.post("/registerbyemail", controllers.checkRegister);
+router.post("/checkusernameregister", controllers.checkUserName);
+
 // Local
 router.post("/register", controllers.register);
 router.post("/login", controllers.login);
 
 // Google
-router.get(
+router.post(
   "/google",
-  passport.authenticate("google", {
-    scope: ["profile", "email"],
-    session: false,
-  })
-);
-router.get(
-  "/google/callback",
-  passport.authenticate("google", {
-    session: false,
-    // successRedirect: process.env.CLIENT_URL,
-  }),
+  passport.authenticate("google-oauth-token", { session: false }),
   controllers.loginGoogle
 );
 
-// router.post(
-//   "/google",
-//   passport.authenticate("google-plus-token", { session: false }),
-//   controllers.loginGoogle
-// );
+router.post("/registergoogle", controllers.registerGoogle);
 
 // Refresh token
 router.post("/refreshtoken", controllers.refreshToken);
