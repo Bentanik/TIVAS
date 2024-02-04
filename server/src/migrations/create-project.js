@@ -21,6 +21,12 @@ module.exports = {
       buildingStatus: {
         type: Sequelize.INTEGER
       },
+      thumbnailPathUrl: {
+        type: Sequelize.STRING
+      },
+      thumbnailPathName: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         type: "TIMESTAMP",
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),

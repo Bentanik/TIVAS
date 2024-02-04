@@ -55,15 +55,9 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
         try {
             //pagination and limit
             const queries = pagination({ page, limit, orderType, orderBy });
-            queries.nest = true;
             //queries.raw = true;
             const response = await db.Project.findAll({
-                include: {
-                    model: db.Image,
-                    attributes: ['pathUrl'],
-                    limit: 1,
-                },
-                attributes: ['id', 'name', 'location'],
+                attributes: ['id', 'name', 'location', 'thumbnailPathUrl'],
                 ...queries,
             })
             resolve({
@@ -142,11 +136,11 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
             //pagination and limit
             const queries = pagination({ page, limit, orderType, orderBy });
             queries.nest = true;
-            queries.raw = true;
+            //queries.raw = true;
             // queries.raw = true;
             const response = await db.Project.findAll({
                 where: whereClause,
-                attributes: ['id', 'name', 'location'],
+                attributes: ['id', 'name', 'location', 'thumbnailPathUrl'],
                 include: [
                     {
                         model: db.TypeOfProject,
@@ -164,13 +158,8 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
                             }
                         },
                     },
-                    {
-                        model: db.Image,
-                        as: 'Images',
-                        attributes: ['pathUrl'],
-                    }
                 ],
-                group: ['TypeOfProjects.projectID', 'Project.name', 'Project.id', 'Project.location', 'Project.buildingStatus', 'Project.createdAt', 'Project.updatedAt', 'Images.pathUrl'],
+                group: ['TypeOfProjects.projectID', 'Project.name', 'Project.location', 'Project.thumbnailPathUrl', 'Project.id'],
                 having: type ? (literal(`COUNT(TypeOfProjects.projectID) = ${type.length}`)) : literal((`COUNT(TypeOfProjects.projectID) > 0`)),
                 ...queries,
                 subQuery: false,
@@ -193,16 +182,9 @@ export const getTop10 = () => {
     return new Promise(async (resolve, reject) => {
         try {
             const response = await db.Project.findAll({
-                attributes: ['id', 'name', 'location', 'createdAt'],
+                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'createdAt'],
                 limit: 10,
                 order: [['createdAt', 'DESC']],
-                nest: true,
-                include: {
-                    model: db.Image,
-                    attributes: ['pathUrl'],
-                    limit: 1,
-                },
-                //raw: true,
             })
             resolve({
                 err: (response && response.length !== 0) ? 0 : 1,
@@ -221,7 +203,7 @@ export const getDetailsProject = ({ id }) => {
     return new Promise(async (resolve, reject) => {
         try {
             const response = await db.Project.findByPk(id, {
-                attributes: { exclude: ['createdAt', 'updatedAt'] },
+                attributes: { exclude: ['createdAt', 'updatedAt', 'thumbnailPathName'] },
                 nest: true,
                 //raw: true,
                 include: {

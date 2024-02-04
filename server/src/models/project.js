@@ -20,6 +20,8 @@ module.exports = (sequelize, DataTypes) => {
     description: DataTypes.STRING,
     buildingStatus: DataTypes.INTEGER,
     location: DataTypes.STRING,
+    thumbnailPathUrl: DataTypes.STRING,
+    thumbnailPathName: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'Project',
