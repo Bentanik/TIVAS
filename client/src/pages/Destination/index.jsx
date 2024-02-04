@@ -1,10 +1,10 @@
 import classNames from "classnames/bind";
 import styles from "./Destination.module.scss";
 import React, { useState } from "react";
-import ListItemBox from "../../components/ListItemBox";
+import ListItemBox from "~/components/ListItemBox";
 import Navigations from "~/components/Layouts/Navigations";
 import Footer from "~/components/Layouts/Footer";
-import PaymentIntro from "../../components/PaymentIntro/PaymentIntro";
+import PaymentIntro from "~/components/PaymentIntro/PaymentIntro";
 import images from "~/assets";
 const cx = classNames.bind(styles);
 const DATA = [

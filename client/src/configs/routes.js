@@ -1,5 +1,5 @@
 import Home from "~/pages/Home";
-import Destination from "~/pages/Destination"
+import Destination from "~/pages/Destination";
 import Search from "~/pages/Search";
 const routes = [
   {
@@ -11,11 +11,12 @@ const routes = [
     path: "/destination",
     component: Destination,
     layout: null,
-  }, {
-        path: "/search=",
-        component: Search,
-        layout: null,
-    },
+  },
+  {
+    path: "/search",
+    component: Search,
+    layout: null,
+  },
 ];
 
 export default routes;
