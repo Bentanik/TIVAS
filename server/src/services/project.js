@@ -56,8 +56,13 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
             //pagination and limit
             const queries = pagination({ page, limit, orderType, orderBy });
             queries.nest = true;
-            queries.raw = true;
+            //queries.raw = true;
             const response = await db.Project.findAll({
+                include: {
+                    model: db.Image,
+                    attributes: ['pathUrl'],
+                    limit: 1,
+                },
                 attributes: ['id', 'name', 'location'],
                 ...queries,
             })
@@ -142,24 +147,30 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
             const response = await db.Project.findAll({
                 where: whereClause,
                 attributes: ['id', 'name', 'location'],
-                include: {
-                    model: db.TypeOfProject,
-                    as: 'TypeOfProjects',
-                    required: true,
-                    attributes: [], // Assuming you want to exclude TypeOfProject attributes from the result
-                    include: {
-                        model: db.Type,
-                        as: 'Type',
-                        attributes: [], // Assuming you want to exclude Type attributes from the result
-                        where: {
-                            name: {
-                                [Op.in]: type ? type : ['Villa', 'Hotel']
+                include: [
+                    {
+                        model: db.TypeOfProject,
+                        as: 'TypeOfProjects',
+                        required: true,
+                        attributes: [], // Assuming you want to exclude TypeOfProject attributes from the result
+                        include: {
+                            model: db.Type,
+                            as: 'Type',
+                            attributes: [], // Assuming you want to exclude Type attributes from the result
+                            where: {
+                                name: {
+                                    [Op.in]: type ? type : ['Villa', 'Hotel']
+                                }
                             }
-                        }
+                        },
                     },
-                    
-                },
-                group: ['TypeOfProjects.projectID', 'Project.name', 'Project.id', 'Project.location', 'Project.buildingStatus', 'Project.createdAt', 'Project.updatedAt'],
+                    {
+                        model: db.Image,
+                        as: 'Images',
+                        attributes: ['pathUrl'],
+                    }
+                ],
+                group: ['TypeOfProjects.projectID', 'Project.name', 'Project.id', 'Project.location', 'Project.buildingStatus', 'Project.createdAt', 'Project.updatedAt', 'Images.pathUrl'],
                 having: type ? (literal(`COUNT(TypeOfProjects.projectID) = ${type.length}`)) : literal((`COUNT(TypeOfProjects.projectID) > 0`)),
                 ...queries,
                 subQuery: false,
@@ -181,16 +192,23 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
 export const getTop10 = () => {
     return new Promise(async (resolve, reject) => {
         try {
-            const response = await db.Project.findAndCountAll({
-                attributes: ['id', 'name', 'location'],
+            const response = await db.Project.findAll({
+                attributes: ['id', 'name', 'location', 'createdAt'],
                 limit: 10,
                 order: [['createdAt', 'DESC']],
-                raw: true,
+                nest: true,
+                include: {
+                    model: db.Image,
+                    attributes: ['pathUrl'],
+                    limit: 1,
+                },
+                //raw: true,
             })
             resolve({
                 err: (response && response.length !== 0) ? 0 : 1,
                 mess: (response && response.length !== 0) ? "Get top 10 new projects results" : "Can not find any Projects!",
                 data: response,
+                count: response ? response.length : 0,
             })
         } catch (error) {
             console.log(error);
@@ -203,9 +221,13 @@ export const getDetailsProject = ({ id }) => {
     return new Promise(async (resolve, reject) => {
         try {
             const response = await db.Project.findByPk(id, {
-                attributes: {exclude: ['createdAt', 'updatedAt']},
+                attributes: { exclude: ['createdAt', 'updatedAt'] },
                 nest: true,
-                raw: true,
+                //raw: true,
+                include: {
+                    model: db.Image,
+                    attributes: ['pathUrl'],
+                },
             });
             resolve({
                 err: response ? 0 : 1,
