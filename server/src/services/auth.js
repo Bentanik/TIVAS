@@ -5,6 +5,9 @@ import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 import { createClient } from "redis";
 
+import ejs from "ejs";
+const fs = require("fs");
+
 const hashPassword = (password) =>
   bcrypt.hashSync(password, bcrypt.genSaltSync(8));
 
@@ -88,7 +91,7 @@ export const login = ({ username, email, password }) => {
         raw: true,
       });
       const isChecked =
-        user?.type=="Local" && bcrypt.compareSync(password, user.password);
+        user?.type == "Local" && bcrypt.compareSync(password, user.password);
       const accessToken = isChecked ? generateAccessToken(user) : null;
       const refreshToken = isChecked ? generateRefreshToken(user) : null;
 
@@ -250,7 +253,7 @@ export const refreshToken = ({ refreshToken }) => {
 export const sendCodeEmail = ({ email }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const timeEmail = 120000;
+      const timeEmail = 300000;
       const client = createClient();
       await client.connect();
 
@@ -260,6 +263,14 @@ export const sendCodeEmail = ({ email }) => {
       });
 
       if (!user) {
+        const digit1 = Math.floor(Math.random() * 10);
+        const digit2 = Math.floor(Math.random() * 10);
+        const digit3 = Math.floor(Math.random() * 10);
+        const digit4 = Math.floor(Math.random() * 10);
+
+        const combinedNumber =
+          digit1 * 1000 + digit2 * 100 + digit3 * 10 + digit4;
+
         let transporter = nodemailer.createTransport({
           service: "gmail",
           auth: {
@@ -268,13 +279,24 @@ export const sendCodeEmail = ({ email }) => {
           },
         });
 
-        const OTP = Math.floor(100000 + Math.random() * 900000);
+        const emailTemplatePath = "src/template/EmailRegister/index.ejs";
+        const emailTemplate = fs.readFileSync(emailTemplatePath, "utf-8");
+
+        const data = {
+          email,
+          digit1,
+          digit2,
+          digit3,
+          digit4,
+        };
+
+        const renderedHtml = ejs.render(emailTemplate, data);
 
         let mailOptions = {
           from: "Tivas",
           to: `${email}`,
           subject: "Confirm received email",
-          text: `Code: ${OTP}, valid for 2 minutes`,
+          html: renderedHtml,
         };
 
         transporter.sendMail(mailOptions, function (error, info) {
@@ -285,7 +307,11 @@ export const sendCodeEmail = ({ email }) => {
           }
         });
 
-        await client.setEx(email, timeEmail / 1000, JSON.stringify(OTP));
+        await client.setEx(
+          email,
+          timeEmail / 1000,
+          JSON.stringify(combinedNumber)
+        );
       }
 
       resolve({
@@ -338,7 +364,12 @@ export const checkUserName = ({ username }) => {
   });
 };
 
-export const registerGoogle = ({ username, email, fullName, refundHistoryID }) => {
+export const registerGoogle = ({
+  username,
+  email,
+  fullName,
+  refundHistoryID,
+}) => {
   return new Promise(async (resolve, reject) => {
     try {
       const user = await db.User.create({
@@ -377,7 +408,7 @@ export const registerGoogle = ({ username, email, fullName, refundHistoryID }) =
           : null,
         accessToken: `Bearer ${accessToken}`,
         refreshToken,
-        username: !user ? username: "",
+        username: !user ? username : "",
       });
     } catch (err) {
       console.log("Error: ", err);
