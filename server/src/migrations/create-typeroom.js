@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Properties', {
+    await queryInterface.createTable('TypeRooms', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,14 +12,35 @@ module.exports = {
       name: {
         type: Sequelize.STRING
       },
-      images: {
+      bedrooms: {
+        type: Sequelize.INTEGER
+      },
+      persons: {
+        type: Sequelize.INTEGER
+      },
+      kitchen: {
+        type: Sequelize.STRING
+      },
+      entertainment: {
+        type: Sequelize.STRING
+      },
+      features: {
+        type: Sequelize.STRING
+      },
+      policies: {
         type: Sequelize.STRING
       },
       description: {
         type: Sequelize.STRING
       },
-      quantity: {
+      typeOfProjectID: {
         type: Sequelize.INTEGER
+      },
+      thumbnailPathUrl: {
+        type: Sequelize.STRING
+      },
+      thumbnailPathName: {
+        type: Sequelize.STRING
       },
       createdAt: {
         type: "TIMESTAMP",
@@ -34,6 +55,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Properties');
+    await queryInterface.dropTable('TypeRooms');
   }
 };
