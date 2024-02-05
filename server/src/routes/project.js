@@ -5,12 +5,12 @@ const router = express.Router();
 
 router.post(
   "/create",
-  uploadCloud.array('image'),
+  uploadCloud.array('thumbnail'),
   controllers.createNewProject
 );
 router.get("/getAll",controllers.getAllProject)
 router.delete("/delete/:id",controllers.deleteProjects)
-router.put("/update/:id",uploadCloud.single('image'),controllers.updateProjects)
+router.put("/update/:id",uploadCloud.single('thumbnail'),controllers.updateProjects)
 
 
 router.get(
