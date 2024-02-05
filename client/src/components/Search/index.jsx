@@ -7,36 +7,36 @@ import images from "~/assets";
 const cx = classNames.bind(styles);
 
 function Search() {
-  const [search, setSearch] = useState("");
+    const [search, setSearch] = useState("");
 
-  return (
-    <div className={cx("search-wrapper")}>
-      <TippyHeadless
-        render={(attrs) => (
-          <div className="box" tabIndex="-1" {...attrs}>
-            <div className={cx("search-result")}>Search result</div>
-          </div>
-        )}
-      >
-        <div className={cx("search")}>
-          {/* Input */}
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className={cx("search-input")}
-            placeholder="Search"
-          />
-          {/* Icon */}
-          <img
-            src={images.iconSearch}
-            alt="Search"
-            className={cx("icon-search")}
-          />
+    return (
+        <div className={cx("search-wrapper")}>
+            <TippyHeadless
+                render={(attrs) => (
+                    <div className="box" tabIndex="-1" {...attrs}>
+                        <div className={cx("search-result")}>Search result</div>
+                    </div>
+                )}
+            >
+                <div className={cx("search")}>
+                    {/* Input */}
+                    <input
+                        type="text"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className={cx("search-input")}
+                        placeholder="Search"
+                    />
+                    {/* Icon */}
+                    <img
+                        src={images.iconSearch}
+                        alt="Search"
+                        className={cx("icon-search")}
+                    />
+                </div>
+            </TippyHeadless>
         </div>
-      </TippyHeadless>
-    </div>
-  );
+    );
 }
 
 export default Search;

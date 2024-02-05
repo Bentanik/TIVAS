@@ -1,0 +1,99 @@
+@import url("https://fonts.cdnfonts.com/css/newsreader-2");
+@import url("https://fonts.cdnfonts.com/css/inter");
+
+.slogan {
+  display: flex;
+  justify-content: center;
+  color: #000;
+  font-family: "Roboto", sans-serif;
+  font-size: 3.5rem;
+  font-style: normal;
+  font-weight: 700;
+  margin-top: 116px;
+  margin-bottom: 50px;
+}
+.list-item {
+  display: flex;
+  justify-content: space-evenly;
+  grid-template-rows: 1fr;
+  gap: 20px;
+}
+.destination-intro {
+  .favorite-item {
+    padding: 0 220px 0 220px;
+    margin-bottom: 60px;
+    .text-item {
+      margin-top: 54px;
+      display: flex;
+      justify-content: start;
+      margin-bottom: 36px;
+      color: #000;
+      font-family: "Roboto";
+      font-size: 2.6rem;
+      font-weight: 700;
+    }
+  }
+  .destination-img {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 105px;
+    margin-top: 116px;
+  }
+}
+
+//* feature
+.feature-intro {
+  .feature-body {
+    display: flex;
+    justify-content: space-evenly;
+    gap: 80px;
+    .item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      .feature-icon {
+      }
+      .feature-text {
+        color: #000;
+        font-family: "Roboto", sans-serif;
+        font-size: 2rem;
+        font-style: normal;
+        font-weight: 300;
+      }
+    }
+  }
+  .feature-body-bottom {
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 20px;
+
+    .item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      .feature-icon {
+      }
+      .feature-text {
+        color: #000;
+        font-family: "Roboto", sans-serif;
+        font-size: 2rem;
+        font-style: normal;
+        font-weight: 300;
+      }
+    }
+  }
+}
+.text-item-feature {
+  margin-top: 54px;
+  display: flex;
+  margin-left: 224px;
+  margin-bottom: 36px;
+  color: #000;
+  font-family: "Roboto";
+  font-size: 2.6rem;
+  font-weight: 600;
+  margin-bottom: 60px;
+}
+.box-img{
+  width: 1400px;
+}
