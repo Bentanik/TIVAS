@@ -12,12 +12,11 @@ module.exports = (sequelize, DataTypes) => {
       User.belongsTo(models.RoleCode, {
         foreignKey: 'roleID',
       });
-      User.belongsToMany(models.TimeShare, {through: models.Reservation}, {
-        foreignKey: 'userID',
-      });
-      User.hasOne(models.RefundHistory, {
-        foreignKey: 'userID',
-      });
+      User.hasMany(models.Reservation, {foreignKey: 'userID'});      
+      // User.hasOne(models.RefundHistory, {
+      //   foreignKey: 'userID',
+      // });
+      User.hasMany(models.TimeShare, {foreignKey: 'userID'});
     }
   }
   User.init(

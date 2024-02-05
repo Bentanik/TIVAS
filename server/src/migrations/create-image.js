@@ -2,30 +2,24 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Projects', {
+    await queryInterface.createTable('Images', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      name: {
+      pathUrl: {
         type: Sequelize.STRING
       },
-      description: {
+      pathName: {
         type: Sequelize.STRING
       },
-      location: {
-        type: Sequelize.STRING
-      },
-      buildingStatus: {
+      projectID: {
         type: Sequelize.INTEGER
       },
-      thumbnailPathUrl: {
-        type: Sequelize.STRING
-      },
-      thumbnailPathName: {
-        type: Sequelize.STRING
+      typeRoomID: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         type: "TIMESTAMP",
@@ -40,6 +34,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Projects');
+    await queryInterface.dropTable('Images');
   }
 };
