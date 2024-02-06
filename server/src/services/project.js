@@ -9,7 +9,6 @@ export const createNewProject = ({
     name,
     description,
     buildingStatus,
-    location,
     type
 }, fileData) => {
     return new Promise(async (resolve, reject) => {
@@ -20,8 +19,7 @@ export const createNewProject = ({
                     name,
                     description,
                     buildingStatus,
-                    location,
-                    images: fileData?.path,
+                    thumbnail: fileData?.path,
                 },
             })
 
@@ -97,15 +95,13 @@ export const updateProject = ({
     name,
     description,
     buildingStatus,
-    location
-}, id) => {
+}, id,fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
             const updated = await db.Project.update({
                 name,
                 description,
                 buildingStatus,
-                location
             },
                 {
                     where: { id: id }
@@ -115,9 +111,15 @@ export const updateProject = ({
                 err: updated ? 0 : 1,
                 mess: updated ? "Update Project Successfully." : "Update Fail",
             })
+            if (fileData && !updated) {
+                cloudinary.uploader.destroy(fileData.filename)
+            }
         } catch (error) {
             console.log(error);
             reject(error);
+            if (fileData) {
+                cloudinary.uploader.destroy(fileData.filename)
+            }
         }
     })
 }

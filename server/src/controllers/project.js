@@ -6,8 +6,8 @@ const cloudinary = require("cloudinary").v2;
 
 //Create New Project
 export const createNewProject = async (req, res) => {
-  const { name, description, buildingStatus, location } = req.body;
-  if (!name || !description || !buildingStatus || !location) {
+  const { name, description, buildingStatus} = req.body;
+  if (!name || !description || !buildingStatus) {
     if (req.file) {
       cloudinary.uploader.destroy(req.file.filename);
     }
@@ -22,17 +22,16 @@ export const createNewProject = async (req, res) => {
   const response = await services.createNewProject(req.body, req.file);
   return res.status(200).json(response);
 };
-
+//Delete Project
 export const deleteProjects = async (req, res) => {
   const { id } = req.params;
   const response = await services.deleteProject(id);
   return res.status(200).json(response);
 };
-
+//Update Project
 export const updateProjects = async (req, res) => {
   const { id } = req.params;
-  console.log(req.body);
-  const response = await services.updateProject(req.body, id);
+  const response = await services.updateProject(req.body, id, req.file);
   return res.status(200).json(response);
 };
 //Get All Project
