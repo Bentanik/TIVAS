@@ -5,7 +5,7 @@ import Navigations from "~/components/Layouts/Navigations";
 import { Link } from "react-router-dom";
 
 import Footer from "~/components/Layouts/Footer";
-import images from "~/assets";
+import images from "~/assets/images";
 
 const cx = classNames.bind(styles);
 
@@ -14,14 +14,12 @@ const blog_link = {
 };
 
 function Home() {
-
-
   return (
     <div className={cx("home-wrapper")}>
       {/* Header */}
       <header className={cx("header")}>
         {/* Navigations */}
-        <Navigations />
+        <section className={cx("navigation")}><Navigations /></section>
         {/* Hero */}
         <div className={cx("hero-wrapper")}>
           <img

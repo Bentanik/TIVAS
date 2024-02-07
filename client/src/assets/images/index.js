@@ -13,6 +13,8 @@ const images = {
   thumbProject: require("~/assets/images/thumbProject.svg").default,
   locateIcon: require("~/assets/images/locateIcon.svg").default,
   listIcon: require("~/assets/images/listIcon.svg").default,
+  iconHome: require("~/assets/images/iconHome.png"),
+  resort: require("~/assets/images/resort.jpg"),
 };
 
 export default images;
