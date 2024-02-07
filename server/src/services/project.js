@@ -8,6 +8,7 @@ export const createNewProject = ({
     id,
     name,
     description,
+    location,
     buildingStatus,
     type
 }, fileData) => {
@@ -18,6 +19,7 @@ export const createNewProject = ({
                 defaults: {
                     name,
                     description,
+                    location,
                     buildingStatus,
                     thumbnail: fileData?.path,
                 },
@@ -94,13 +96,15 @@ export const deleteProject = (id) => {
 export const updateProject = ({
     name,
     description,
+    location,
     buildingStatus,
-}, id,fileData) => {
+}, id) => {
     return new Promise(async (resolve, reject) => {
         try {
             const updated = await db.Project.update({
                 name,
                 description,
+                location,
                 buildingStatus,
             },
                 {
