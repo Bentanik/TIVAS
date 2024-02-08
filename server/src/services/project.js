@@ -24,14 +24,15 @@ export const createNewProject = ({
                     thumbnail: fileData?.path,
                 },
             })
-
-            const [TypeOfProject, createdT] = await db.TypeOfProject.findOrCreate({
-                where: {},
-                defaults: {
-                    projectID: id,
-                    typeID: type == "Villa" ? 1 : 2,
+            let stringT = type.split(",");
+            if(created){
+                for (let i = 0; i < stringT.length; i++) {
+                    const TypeOfProject = await db.TypeOfProject.create({
+                        projectID: project.id,
+                        typeID: stringT[i] == "Villa" ? 1 :2,
+                })           
                 }
-            })
+            }
             resolve({
                 err: created ? 0 : 1,
                 mess: created ? "Create Project Successfully." : "Project Name has been used!",
@@ -98,7 +99,7 @@ export const updateProject = ({
     description,
     location,
     buildingStatus,
-}, id) => {
+}, id,fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
             const updated = await db.Project.update({
@@ -106,24 +107,18 @@ export const updateProject = ({
                 description,
                 location,
                 buildingStatus,
+                thumbnail: fileData?.path,
             },
                 {
                     where: { id: id }
                 })
-            console.log(updated);
             resolve({
                 err: updated ? 0 : 1,
                 mess: updated ? "Update Project Successfully." : "Update Fail",
             })
-            if (fileData && !updated) {
-                cloudinary.uploader.destroy(fileData.filename)
-            }
         } catch (error) {
             console.log(error);
             reject(error);
-            if (fileData) {
-                cloudinary.uploader.destroy(fileData.filename)
-            }
         }
     })
 }
