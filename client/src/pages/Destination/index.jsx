@@ -128,13 +128,11 @@ function Destination() {
     });
   };
 
-
-
   const renderTopResort = () => {
     return topResort.map((item, index) => {
       return (
         <div>
-          <div key={index} className={cx("box")}>
+          <div  className={cx("box")}>
             <Link to="#!">
               <img src={item.image} alt={item.name} className={cx("image")} />
               <section className={cx("content")}>

@@ -21,20 +21,21 @@ const cx = classNames.bind(styles);
 
 const LIST_NAV = [
   {
+    value: "Home",
+    link: "/home",
+  },
+  {
     value: "Destinations",
     link: "/destinations",
   },
+
   {
-    value: "Home",
-    link: "/home",
+    value: "News",
+    link: "/news",
   },
   {
-    value: "Home",
-    link: "/home",
-  },
-  {
-    value: "Home",
-    link: "/home",
+    value: "About",
+    link: "/about",
   },
 ];
 
