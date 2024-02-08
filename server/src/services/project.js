@@ -26,15 +26,15 @@ export const createNewProject = ({
             })
 
             const [TypeOfProject, createdT] = await db.TypeOfProject.findOrCreate({
-                where: { projectID: id },
+                where: {},
                 defaults: {
                     projectID: id,
                     typeID: type == "Villa" ? 1 : 2,
                 }
             })
             resolve({
-                err: (created && createdT) ? 0 : 1,
-                mess: (created && createdT) ? "Create Project Successfully." : "Project Name has been used!",
+                err: created ? 0 : 1,
+                mess: created ? "Create Project Successfully." : "Project Name has been used!",
             })
 
             if (fileData && !created) {
