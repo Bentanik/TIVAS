@@ -8,6 +8,7 @@ export const createNewProject = ({
     id,
     name,
     description,
+    location,
     buildingStatus,
     type
 }, fileData) => {
@@ -18,21 +19,23 @@ export const createNewProject = ({
                 defaults: {
                     name,
                     description,
+                    location,
                     buildingStatus,
                     thumbnail: fileData?.path,
                 },
             })
-
-            const [TypeOfProject, createdT] = await db.TypeOfProject.findOrCreate({
-                where: { projectID: id },
-                defaults: {
-                    projectID: id,
-                    typeID: type == "Villa" ? 1 : 2,
+            let stringT = type.split(",");
+            if(created){
+                for (let i = 0; i < stringT.length; i++) {
+                    const TypeOfProject = await db.TypeOfProject.create({
+                        projectID: project.id,
+                        typeID: stringT[i] == "Villa" ? 1 :2,
+                })           
                 }
-            })
+            }
             resolve({
-                err: (created && createdT) ? 0 : 1,
-                mess: (created && createdT) ? "Create Project Successfully." : "Project Name has been used!",
+                err: created ? 0 : 1,
+                mess: created ? "Create Project Successfully." : "Project Name has been used!",
             })
 
             if (fileData && !created) {
@@ -94,6 +97,7 @@ export const deleteProject = (id) => {
 export const updateProject = ({
     name,
     description,
+    location,
     buildingStatus,
 }, id,fileData) => {
     return new Promise(async (resolve, reject) => {
@@ -101,25 +105,20 @@ export const updateProject = ({
             const updated = await db.Project.update({
                 name,
                 description,
+                location,
                 buildingStatus,
+                thumbnail: fileData?.path,
             },
                 {
                     where: { id: id }
                 })
-            console.log(updated);
             resolve({
                 err: updated ? 0 : 1,
                 mess: updated ? "Update Project Successfully." : "Update Fail",
             })
-            if (fileData && !updated) {
-                cloudinary.uploader.destroy(fileData.filename)
-            }
         } catch (error) {
             console.log(error);
             reject(error);
-            if (fileData) {
-                cloudinary.uploader.destroy(fileData.filename)
-            }
         }
     })
 }

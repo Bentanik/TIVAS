@@ -31,7 +31,7 @@ export const deleteProjects = async (req, res) => {
 //Update Project
 export const updateProjects = async (req, res) => {
   const { id } = req.params;
-  const response = await services.updateProject(req.body, id, req.file);
+  const response = await services.updateProject(req.body, id,req.file);
   return res.status(200).json(response);
 };
 //Get All Project
