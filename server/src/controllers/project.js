@@ -54,7 +54,8 @@ export const getTop10 = async (req, res) => {
 
 //Get Project Details
 export const getDetailsProject = async (req, res) => {
-  const response = await services.getDetailsProject(req.params);
+  const { id } = req.params;
+  const response = await services.getDetailsProject(id);
   return res.status(200).json(response);
 }
 
