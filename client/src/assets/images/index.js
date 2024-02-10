@@ -17,6 +17,7 @@ const images = {
   resort: require("~/assets/images/resort.jpg"),
   blogResort: require("~/assets/images/BlogResort.jpg"),
   portrait: require("~/assets/images/Portrait.jpg"),
+  timeshareResort: require("~/assets/images/timeshareResort.jpg"),
 };
 
 export default images;
