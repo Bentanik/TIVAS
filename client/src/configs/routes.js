@@ -1,6 +1,7 @@
 import Home from "~/pages/Home";
 import Destination from "~/pages/Destination";
 import Search from "~/pages/Search";
+import UserProfile from "../pages/UserProfile";
 const routes = [
   {
     path: "/",
@@ -15,6 +16,11 @@ const routes = [
   {
     path: "/search",
     component: Search,
+    layout: null,
+  },
+  {
+    path: "/userprofile",
+    component: UserProfile,
     layout: null,
   },
 ];
