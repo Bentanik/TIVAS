@@ -78,11 +78,10 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
 export const deleteProject = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const deleted = await db.Project.destroy({
-                where: {
-                    id: id
-                }
-            })
+            const projectRespone = await db.Project.findByPk(id);
+            if(projectRespone){
+                cloudinary.uploader.destroy(projectRespone.thumbnailPathName);
+            }
             resolve({
                 err: deleted ? 0 : 1,
                 mess: deleted ? "Delete Successfully" : "Delete Fail",
