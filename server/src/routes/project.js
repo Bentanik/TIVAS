@@ -17,7 +17,18 @@ router.post(
 )
 router.get("/getAll",controllers.getAllProject)
 router.delete("/delete/:id",controllers.deleteProjects)
-router.put("/update/:id",uploadCloud.single('thumbnail'),controllers.updateProjects)
+router.put(
+  "/update/:id",
+  uploadCloud.fields([
+    {
+      name: 'thumbnail', maxCount: 1
+    },
+    {
+      name: 'images',
+    },
+  ]),
+  controllers.updateProjects
+)
 
 
 router.get(

@@ -4,6 +4,19 @@ import "dotenv/config";
 import { Model, Op, fn, col, literal } from "sequelize";
 import { pagination } from "../middlewares/pagination";
 
+const deleteProjectImage = (fileData) => {
+    if (fileData.thumbnail) {
+        for (let i = 0; i < fileData.thumbnail.length; i++) {
+            cloudinary.uploader.destroy(fileData.thumbnail[i].filename);
+        }
+    }
+    if (fileData.images) {
+        for (let i = 0; i < fileData.images.length; i++) {
+            cloudinary.uploader.destroy(fileData.images[i].filename);
+        }
+    }
+}
+
 export const createNewProject = ({
     id,
     name,
@@ -21,7 +34,8 @@ export const createNewProject = ({
                     description,
                     location,
                     buildingStatus,
-                    thumbnail: fileData?.path,
+                    thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : null,
+                    thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : null,
                 },
             })
             let stringT = type.split(",");
@@ -81,10 +95,20 @@ export const deleteProject = (id) => {
             const projectRespone = await db.Project.findByPk(id);
             if(projectRespone){
                 cloudinary.uploader.destroy(projectRespone.thumbnailPathName);
+                const imageProject = await db.Image.findAll({
+                    where: {
+                        projectID: id
+                    }
+                })
+                if(imageProject) {
+                    Promise.all(imageProject.map((image) => {
+                        cloudinary.uploader.destroy(image.pathName);
+                    }))
+                }
             }
             resolve({
-                err: deleted ? 0 : 1,
-                mess: deleted ? "Delete Successfully" : "Delete Fail",
+                err: projectRespone ? 0 : 1,
+                message: projectRespone ? 'Deleted Successfully.' : `Can not find Project with id: ${id}`
             })
         } catch (error) {
             console.log(error);
@@ -93,34 +117,93 @@ export const deleteProject = (id) => {
     })
 }
 
-export const updateProject = ({
+export const updateTypeRoom = ({
     name,
     description,
     location,
     buildingStatus,
+    thumbnailDeleted,
+    imagesDeleted,
 }, id,fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const updated = await db.Project.update({
-                name,
-                description,
-                location,
-                buildingStatus,
-                thumbnail: fileData?.path,
-            },
-                {
-                    where: { id: id }
+            let imageErrorMessage = [];
+            const imageProjectArray = [];
+            //Check TypeRoom is existed in DB
+            let projectResult = await db.TypeRoom.findByPk(id);
+            if (projectResult) {
+                //Delete images
+                if (imagesDeleted) {
+                    imagesDeleted = imagesDeleted.split(',');
+                    await Promise.all(imagesDeleted.map(async (image) => {
+                        const imageResult = await db.Image.findByPk(image);
+                        if (imageResult) {
+                            cloudinary.uploader.destroy(imageResult.pathName);
+                            await db.Image.destroy({
+                                where: {
+                                    id: image
+                                }
+                            });
+
+                        }
+                        else {
+                            imageErrorMessage.push(`(${image})`);
+                        }
+                    }));
+                }
+
+                //Delete or Update thumbnail
+                if ((parseInt(thumbnailDeleted) === 1) || fileData.thumbnail) {
+                    cloudinary.uploader.destroy(projectResult.thumbnailPathName);
+                }
+
+                //Update
+                await db.TypeRoom.update({
+                    name,
+                    description,
+                    location,
+                    buildingStatus,
+                    thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathUrl,
+                    thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathName,
+                }, {
+                    where: {
+                        id: id,
+                    }
                 })
+
+                //Import images to imageTable
+                if (fileData.images) {
+                    for (let i = 0; i < fileData.images.length; i++) {
+                        const image = {
+                            pathUrl: fileData.images[i].path,
+                            pathName: fileData.images[i].filename,
+                            projectID: id
+                        }
+                        imageProjectArray.push(image);
+                    }
+                    await db.Image.bulkCreate(imageProjectArray);
+                }
+
+                if (!projectResult && fileData) {
+                    deleteProjectImage(fileData);
+                }
+            }
             resolve({
-                err: updated ? 0 : 1,
-                mess: updated ? "Update Project Successfully." : "Update Fail",
-            })
+                err: projectResult ? 0 : 1,
+                message: projectResult ? 'Update Successfully.' : `Can not find TypeRoom with id: (${id})`,
+                messageImage: imageErrorMessage.length !== 0 ? `Can not find Image: ${imageErrorMessage.join(',')}` : null,
+            });
         } catch (error) {
-            console.log(error);
             reject(error);
+            console.log(error);
+            if (fileData) {
+                deleteProjectImage(fileData);
+            }
         }
     })
 }
+
+
 export const searchProject = ({ page, limit, orderType, orderBy, type, ...query }) => {
     return new Promise(async (resolve, reject) => {
         try {
