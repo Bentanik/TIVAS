@@ -315,7 +315,7 @@ export const getTop10 = () => {
     })
 }
 
-export const getDetailsProject = ({ id }) => {
+export const getDetailsProject = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
             const response = await db.Project.findByPk(id, {
@@ -324,7 +324,7 @@ export const getDetailsProject = ({ id }) => {
                 //raw: true,
                 include: {
                     model: db.Image,
-                    attributes: ['pathUrl'],
+                    attributes: ['id', 'pathUrl'],
                 },
             });
             resolve({
