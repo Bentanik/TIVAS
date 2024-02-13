@@ -27,39 +27,71 @@ export const createNewProject = ({
 }, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const [project, created] = await db.Project.findOrCreate({
-                where: { name },
-                defaults: {
-                    name,
-                    description,
-                    location,
-                    buildingStatus,
-                    thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : null,
-                    thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : null,
-                },
-            })
+            let typeInDBError = 0;
+            const imageProjectArray = [];
+            const typeErrorMessage = [];
+            let [project, created] = [];
+            console.log(created);
             let stringT = type.split(",");
-            if(created){
-                for (let i = 0; i < stringT.length; i++) {
-                    const TypeOfProject = await db.TypeOfProject.create({
-                        projectID: project.id,
-                        typeID: stringT[i] == "Villa" ? 1 :2,
-                })           
+            for (let i = 0; i < stringT.length; i++) {
+                let typeInDB = await db.Type.findOne({
+                    where: {
+                        name: stringT[i]
+                    }
+                })
+                if (!typeInDB) {
+                    typeInDBError = typeInDBError + 1;
+                    typeErrorMessage.push(stringT[i])
+                }
+            }
+            if (typeInDBError === 0) {
+                [project, created] = await db.Project.findOrCreate({
+                    where: { name },
+                    defaults: {
+                        name,
+                        description,
+                        location,
+                        buildingStatus,
+                        thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : null,
+                        thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : null,
+                    },
+                })
+                console.log(created)
+                if (created) {
+                    for (let i = 0; i < stringT.length; i++) {
+                        const TypeOfProject = await db.TypeOfProject.create({
+                            projectID: project.id,
+                            typeID: stringT[i] == "Villa" ? 1 : 2,
+                        })
+                    }
+
+                    //Import images to imageTable
+                    if (fileData.images) {
+                        for (let i = 0; i < fileData.images.length; i++) {
+                            const image = {
+                                pathUrl: fileData.images[i].path,
+                                pathName: fileData.images[i].filename,
+                                projectID: project.id
+                            }
+                            imageProjectArray.push(image);
+                        }
+                        await db.Image.bulkCreate(imageProjectArray);
+                    }
                 }
             }
             resolve({
                 err: created ? 0 : 1,
-                mess: created ? "Create Project Successfully." : "Project Name has been used!",
+                mess: typeInDBError > 0 ? `TypeOfProject: (${typeErrorMessage.join(',')}) not exist!` : created ? "Create Project Successfully." : "Project Name has been used!",
             })
-
             if (fileData && !created) {
-                cloudinary.uploader.destroy(fileData.filename)
+                console.log('123')
+                deleteProjectImage(fileData);
             }
         } catch (error) {
             console.log(error);
             reject(error);
             if (fileData) {
-                cloudinary.uploader.destroy(fileData.filename)
+                deleteProjectImage(fileData);
             }
         }
     })
@@ -93,18 +125,19 @@ export const deleteProject = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
             const projectRespone = await db.Project.findByPk(id);
-            if(projectRespone){
+            if (projectRespone) {
                 cloudinary.uploader.destroy(projectRespone.thumbnailPathName);
                 const imageProject = await db.Image.findAll({
                     where: {
                         projectID: id
                     }
                 })
-                if(imageProject) {
+                if (imageProject) {
                     Promise.all(imageProject.map((image) => {
                         cloudinary.uploader.destroy(image.pathName);
                     }))
                 }
+                await projectRespone.destroy();
             }
             resolve({
                 err: projectRespone ? 0 : 1,
@@ -117,20 +150,20 @@ export const deleteProject = (id) => {
     })
 }
 
-export const updateTypeRoom = ({
+export const updateProject = ({
     name,
     description,
     location,
     buildingStatus,
     thumbnailDeleted,
     imagesDeleted,
-}, id,fileData) => {
+}, id, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
             let imageErrorMessage = [];
             const imageProjectArray = [];
             //Check TypeRoom is existed in DB
-            let projectResult = await db.TypeRoom.findByPk(id);
+            let projectResult = await db.Project.findByPk(id);
             if (projectResult) {
                 //Delete images
                 if (imagesDeleted) {
@@ -158,7 +191,7 @@ export const updateTypeRoom = ({
                 }
 
                 //Update
-                await db.TypeRoom.update({
+                await db.Project.update({
                     name,
                     description,
                     location,
@@ -190,7 +223,7 @@ export const updateTypeRoom = ({
             }
             resolve({
                 err: projectResult ? 0 : 1,
-                message: projectResult ? 'Update Successfully.' : `Can not find TypeRoom with id: (${id})`,
+                message: projectResult ? 'Update Successfully.' : `Can not find Project with id: (${id})`,
                 messageImage: imageErrorMessage.length !== 0 ? `Can not find Image: ${imageErrorMessage.join(',')}` : null,
             });
         } catch (error) {

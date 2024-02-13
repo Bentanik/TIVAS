@@ -23,18 +23,18 @@ export const createNewProject = async (req, res) => {
   try {
       const { name, description, buildingStatus} = req.body;
       if (!name || !description || !buildingStatus) {
-        if (req.file) {
+        if (req.files) {
           deleteProjectImage(req.files);
         }
         return missValue("Missing value!", res);
       }
       if (!/^\d+$/.test(buildingStatus)) {
-        if (req.file) {
+        if (req.files) {
           deleteProjectImage(req.files);
         }
         return badRequest("Building Status is require an INTEGER!", res);
       }
-      const response = await services.createNewProject(req.body, req.file);
+      const response = await services.createNewProject(req.body, req.files);
       return res.status(200).json(response);
   } catch (error) {
     if(req.files){
@@ -53,7 +53,20 @@ export const deleteProjects = async (req, res) => {
 //Update Project
 export const updateProjects = async (req, res) => {
   const { id } = req.params;
-  const response = await services.updateProject(req.body, id, req.file);
+  const { name, description, buildingStatus} = req.body;
+  if (!name || !description || !buildingStatus) {
+    if (req.files) {
+      deleteProjectImage(req.files);
+    }
+    return missValue("Missing value!", res);
+  }
+  if (!/^\d+$/.test(buildingStatus)) {
+    if (req.files) {
+      deleteProjectImage(req.files);
+    }
+    return badRequest("Building Status is require an INTEGER!", res);
+  }
+  const response = await services.updateProject(req.body, id, req.files);
   return res.status(200).json(response);
 };
 //Get All Project

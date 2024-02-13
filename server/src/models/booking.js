@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       });
       Booking.hasOne(models.Contract ,{
         foreignKey: 'bookingID',
+        ondelete: 'cascade', hooks: true
       });
       // define association here
     }

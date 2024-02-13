@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      TimeShare.hasMany(models.Reservation, {foreignKey: 'timeShareID'});
+      TimeShare.hasMany(models.Reservation, {foreignKey: 'timeShareID', ondelete: 'cascade', hooks: true});
       TimeShare.belongsTo(models.Room ,{
         foreignKey: 'roomID',
       });
