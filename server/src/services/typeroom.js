@@ -16,39 +16,39 @@ const deleteTypeRoomImage = (fileData) => {
     }
 }
 
-export const createProperty = ({
-    name,
-    description,
-}, fileData) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const created = await db.Property.findOrCreate({
-                where: { name },
-                defaults: {
-                    name,
-                    description,
-                    images: fileData?.path,
-                    quantity: 0
-                },
-            })
+// export const createProperty = ({
+//     name,
+//     description,
+// }, fileData) => {
+//     return new Promise(async (resolve, reject) => {
+//         try {
+//             const created = await db.Property.findOrCreate({
+//                 where: { name },
+//                 defaults: {
+//                     name,
+//                     description,
+//                     images: fileData?.path,
+//                     quantity: 0
+//                 },
+//             })
 
-            resolve({
-                err: created ? 0 : 1,
-                mess: created ? "Create Property Successfully." : "Property Name has been used!",
-            })
+//             resolve({
+//                 err: created ? 0 : 1,
+//                 mess: created ? "Create Property Successfully." : "Property Name has been used!",
+//             })
 
-            if (fileData && !created) {
-                cloudinary.uploader.destroy(fileData.filename)
-            }
-        } catch (error) {
-            console.log(error);
-            reject(error);
-            if (fileData) {
-                cloudinary.uploader.destroy(fileData.filename)
-            }
-        }
-    })
-}
+//             if (fileData && !created) {
+//                 cloudinary.uploader.destroy(fileData.filename)
+//             }
+//         } catch (error) {
+//             console.log(error);
+//             reject(error);
+//             if (fileData) {
+//                 cloudinary.uploader.destroy(fileData.filename)
+//             }
+//         }
+//     })
+// }
 
 export const createTypeRoom = ({
     name,
@@ -61,6 +61,7 @@ export const createTypeRoom = ({
     description,
     projectID,
     type,
+    quantity,
 }, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -108,16 +109,27 @@ export const createTypeRoom = ({
                     })
 
                     //Import images to imageTable
-                    if (typeRoomResponse && fileData.images) {
-                        for (let i = 0; i < fileData.images.length; i++) {
-                            const image = {
-                                pathUrl: fileData.images[i].path,
-                                pathName: fileData.images[i].filename,
-                                typeRoomID: typeRoomResponse.id
+                    if (typeRoomResponse) {
+                        if (fileData.images) {
+                            for (let i = 0; i < fileData.images.length; i++) {
+                                const image = {
+                                    pathUrl: fileData.images[i].path,
+                                    pathName: fileData.images[i].filename,
+                                    typeRoomID: typeRoomResponse.id
+                                }
+                                imageTypeRoomArray.push(image);
                             }
-                            imageTypeRoomArray.push(image);
+                            await db.Image.bulkCreate(imageTypeRoomArray);
                         }
-                        await db.Image.bulkCreate(imageTypeRoomArray);
+                        if(quantity && (parseInt(quantity) !== 0)){
+                            const roomArray = [];
+                            for(let i = 0; i < quantity; i++){
+                                roomArray.push({
+                                    typeRoomID: typeRoomResponse.id
+                                })
+                            }
+                            await db.Room.bulkCreate(roomArray);
+                        }
                     }
                 }
             }
