@@ -4,94 +4,45 @@ import "dotenv/config";
 import { Model, Op, fn, col, literal } from "sequelize";
 import { pagination } from "../middlewares/pagination";
 
-const deleteProjectImage = (fileData) => {
-    if (fileData.thumbnail) {
-        for (let i = 0; i < fileData.thumbnail.length; i++) {
-            cloudinary.uploader.destroy(fileData.thumbnail[i].filename);
-        }
-    }
-    if (fileData.images) {
-        for (let i = 0; i < fileData.images.length; i++) {
-            cloudinary.uploader.destroy(fileData.images[i].filename);
-        }
-    }
-}
-
 export const createNewProject = ({
     id,
     name,
     description,
-    location,
     buildingStatus,
     type
 }, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
-            let typeInDBError = 0;
-            const imageProjectArray = [];
-            const typeErrorMessage = [];
-            let [project, created] = [];
-            console.log(created);
-            let stringT = type.split(",");
-            for (let i = 0; i < stringT.length; i++) {
-                let typeInDB = await db.Type.findOne({
-                    where: {
-                        name: stringT[i]
-                    }
-                })
-                if (!typeInDB) {
-                    typeInDBError = typeInDBError + 1;
-                    typeErrorMessage.push(stringT[i])
-                }
-            }
-            if (typeInDBError === 0) {
-                [project, created] = await db.Project.findOrCreate({
-                    where: { name },
-                    defaults: {
-                        name,
-                        description,
-                        location,
-                        buildingStatus,
-                        thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : null,
-                        thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : null,
-                    },
-                })
-                console.log(created)
-                if (created) {
-                    for (let i = 0; i < stringT.length; i++) {
-                        const TypeOfProject = await db.TypeOfProject.create({
-                            projectID: project.id,
-                            typeID: stringT[i] == "Villa" ? 1 : 2,
-                        })
-                    }
-
-                    //Import images to imageTable
-                    if (fileData.images) {
-                        for (let i = 0; i < fileData.images.length; i++) {
-                            const image = {
-                                pathUrl: fileData.images[i].path,
-                                pathName: fileData.images[i].filename,
-                                projectID: project.id
-                            }
-                            imageProjectArray.push(image);
-                        }
-                        await db.Image.bulkCreate(imageProjectArray);
-                    }
-                }
-            }
-            resolve({
-                err: created ? 0 : 1,
-                mess: typeInDBError > 0 ? `TypeOfProject: (${typeErrorMessage.join(',')}) not exist!` : created ? "Create Project Successfully." : "Project Name has been used!",
+            const [project, created] = await db.Project.findOrCreate({
+                where: { name },
+                defaults: {
+                    name,
+                    description,
+                    buildingStatus,
+                    thumbnail: fileData?.path,
+                },
             })
+
+            const [TypeOfProject, createdT] = await db.TypeOfProject.findOrCreate({
+                where: { projectID: id },
+                defaults: {
+                    projectID: id,
+                    typeID: type == "Villa" ? 1 : 2,
+                }
+            })
+            resolve({
+                err: (created && createdT) ? 0 : 1,
+                mess: (created && createdT) ? "Create Project Successfully." : "Project Name has been used!",
+            })
+
             if (fileData && !created) {
-                console.log('123')
-                deleteProjectImage(fileData);
+                cloudinary.uploader.destroy(fileData.filename)
             }
         } catch (error) {
             console.log(error);
             reject(error);
             if (fileData) {
-                deleteProjectImage(fileData);
+                cloudinary.uploader.destroy(fileData.filename)
             }
         }
     })
@@ -124,24 +75,14 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
 export const deleteProject = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const projectRespone = await db.Project.findByPk(id);
-            if (projectRespone) {
-                cloudinary.uploader.destroy(projectRespone.thumbnailPathName);
-                const imageProject = await db.Image.findAll({
-                    where: {
-                        projectID: id
-                    }
-                })
-                if (imageProject) {
-                    Promise.all(imageProject.map((image) => {
-                        cloudinary.uploader.destroy(image.pathName);
-                    }))
+            const deleted = await db.Project.destroy({
+                where: {
+                    id: id
                 }
-                await projectRespone.destroy();
-            }
+            })
             resolve({
-                err: projectRespone ? 0 : 1,
-                message: projectRespone ? 'Deleted Successfully.' : `Can not find Project with id: ${id}`
+                err: deleted ? 0 : 1,
+                mess: deleted ? "Delete Successfully" : "Delete Fail",
             })
         } catch (error) {
             console.log(error);
@@ -153,90 +94,35 @@ export const deleteProject = (id) => {
 export const updateProject = ({
     name,
     description,
-    location,
     buildingStatus,
-    thumbnailDeleted,
-    imagesDeleted,
-}, id, fileData) => {
+}, id,fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
-            let imageErrorMessage = [];
-            const imageProjectArray = [];
-            //Check TypeRoom is existed in DB
-            let projectResult = await db.Project.findByPk(id);
-            if (projectResult) {
-                //Delete images
-                if (imagesDeleted) {
-                    imagesDeleted = imagesDeleted.split(',');
-                    await Promise.all(imagesDeleted.map(async (image) => {
-                        const imageResult = await db.Image.findByPk(image);
-                        if (imageResult) {
-                            cloudinary.uploader.destroy(imageResult.pathName);
-                            await db.Image.destroy({
-                                where: {
-                                    id: image
-                                }
-                            });
-
-                        }
-                        else {
-                            imageErrorMessage.push(`(${image})`);
-                        }
-                    }));
-                }
-
-                //Delete or Update thumbnail
-                if ((parseInt(thumbnailDeleted) === 1) || fileData.thumbnail) {
-                    cloudinary.uploader.destroy(projectResult.thumbnailPathName);
-                }
-
-                //Update
-                await db.Project.update({
-                    name,
-                    description,
-                    location,
-                    buildingStatus,
-                    thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathUrl,
-                    thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathName,
-                }, {
-                    where: {
-                        id: id,
-                    }
+            const updated = await db.Project.update({
+                name,
+                description,
+                buildingStatus,
+            },
+                {
+                    where: { id: id }
                 })
-
-                //Import images to imageTable
-                if (fileData.images) {
-                    for (let i = 0; i < fileData.images.length; i++) {
-                        const image = {
-                            pathUrl: fileData.images[i].path,
-                            pathName: fileData.images[i].filename,
-                            projectID: id
-                        }
-                        imageProjectArray.push(image);
-                    }
-                    await db.Image.bulkCreate(imageProjectArray);
-                }
-
-                if (!projectResult && fileData) {
-                    deleteProjectImage(fileData);
-                }
-            }
+            console.log(updated);
             resolve({
-                err: projectResult ? 0 : 1,
-                message: projectResult ? 'Update Successfully.' : `Can not find Project with id: (${id})`,
-                messageImage: imageErrorMessage.length !== 0 ? `Can not find Image: ${imageErrorMessage.join(',')}` : null,
-            });
+                err: updated ? 0 : 1,
+                mess: updated ? "Update Project Successfully." : "Update Fail",
+            })
+            if (fileData && !updated) {
+                cloudinary.uploader.destroy(fileData.filename)
+            }
         } catch (error) {
-            reject(error);
             console.log(error);
+            reject(error);
             if (fileData) {
-                deleteProjectImage(fileData);
+                cloudinary.uploader.destroy(fileData.filename)
             }
         }
     })
 }
-
-
 export const searchProject = ({ page, limit, orderType, orderBy, type, ...query }) => {
     return new Promise(async (resolve, reject) => {
         try {
