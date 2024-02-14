@@ -2,7 +2,7 @@ import classNames from "classnames/bind";
 import styles from "./Login.module.scss";
 import InputItem from "~/components/InputItem";
 import { useEffect, useState } from "react";
-import images from "~/assets";
+import images from "~/assets/images";
 import { login as validateLogin } from "~/middlewares/Validates/validateForm";
 import { useDispatch, useSelector } from "react-redux";
 import { login, loginGoogle } from "~/controllers/auth";
