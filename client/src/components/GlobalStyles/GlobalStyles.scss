@@ -1,5 +1,6 @@
 @import "normalize.css";
 @import url("https://fonts.googleapis.com/css2?family=Aclonica&family=Inter:wght@300;400;500;600;700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800&family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800&family=Roboto:ital,wght@0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap");
+
 * {
     margin: 0;
     padding: 0;
@@ -43,4 +44,47 @@ body::-webkit-scrollbar-track {
 
 body::-webkit-scrollbar-thumb {
     background: #a8d8ea;
+}
+
+body {
+
+  .StripeElement {
+    background: #fff;
+    border: 1px solid #ababab;
+    padding: 18px 30px;
+    font-family: "Inter", sans-serif;
+  }
+
+  .StripeElement--focus {
+    border: 1px solid #000;
+  }
+
+  .StripeElement--invalid {
+    border-color: red;
+  }
+
+  .StripeElement--webkit-autofill {
+    background-color: #fefde5 !important;
+  }
+
+  .StripeElement ::placeholder {
+    color: #aab7c4;
+  }
+
+  .StripeElement .InputElement {
+    display: block;
+    margin-top: 10px;
+    font-size: 16px;
+    color: #495057;
+  }
+
+  .StripeElement .StripeElement--invalid .ErrorMessage {
+    color: #fa755a;
+  }
+
+  .CardTypeIcon {
+    width: 30px;
+    height: 20px;
+    margin-top: 10px;
+  }
 }

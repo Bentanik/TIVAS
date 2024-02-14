@@ -5,8 +5,27 @@ const router = express.Router();
 
 router.post(
   "/create",
-  uploadCloud.single('image'),
+  uploadCloud.array('thumbnail'),
   controllers.createNewProject
 );
+router.get("/getAll",controllers.getAllProject)
+router.delete("/delete/:id",controllers.deleteProjects)
+router.put("/update/:id",uploadCloud.single('thumbnail'),controllers.updateProjects)
+
+
+router.get(
+  "/search",
+  controllers.searchProject
+)
+
+router.get(
+  "/top10",
+  controllers.getTop10
+)
+
+router.get(
+  "/:id",
+  controllers.getDetailsProject
+)
 
 export default router;

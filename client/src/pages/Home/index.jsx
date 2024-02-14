@@ -2,17 +2,10 @@ import classNames from "classnames/bind";
 import styles from "./Home.module.scss";
 import Navigations from "~/components/Layouts/Navigations";
 
-import images from "~/assets";
 import { Link } from "react-router-dom";
 
 import Footer from "~/components/Layouts/Footer";
-import Popup from "~/components/AuthPopup";
-import { useState } from "react";
-import Login from "~/components/Layouts/Login";
-import { useDispatch, useSelector } from "react-redux";
-import { getAll } from "~/services";
-import createAxios from "~/configs/axios";
-import { resetLogin } from "~/redux/authSlice";
+import images from "~/assets";
 
 const cx = classNames.bind(styles);
 

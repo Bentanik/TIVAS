@@ -5,10 +5,10 @@ import * as controllers from "../controllers";
 
 const router = express.Router();
 
-router.get(
-  "/getAllUsers",
-  passport.authenticate("jwt", { session: false }),
-  controllers.getAll
-);
+// User is logged in
+// router.use(passport.authenticate("jwt", { session: false }));
+
+router.get("/getAllUsers", controllers.getAll);
+router.get("/sendmail", controllers.sendMail);
 
 export default router;

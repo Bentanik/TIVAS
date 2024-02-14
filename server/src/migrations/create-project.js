@@ -15,11 +15,17 @@ module.exports = {
       description: {
         type: Sequelize.STRING
       },
-      images: {
+      location: {
         type: Sequelize.STRING
       },
       buildingStatus: {
         type: Sequelize.INTEGER
+      },
+      thumbnailPathUrl: {
+        type: Sequelize.STRING
+      },
+      thumbnailPathName: {
+        type: Sequelize.STRING
       },
       createdAt: {
         type: "TIMESTAMP",

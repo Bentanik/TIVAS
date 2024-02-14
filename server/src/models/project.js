@@ -10,17 +10,18 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Project.belongsToMany(models.Type, {through:models.TypeOfProject} ,{
-        foreignKey: 'projectID',
-      })
+      Project.hasMany(models.TypeOfProject, {foreignKey: 'projectID'});
+      Project.hasMany(models.Image, {foreignKey: 'projectID'});
       // define association here
     }
   }
   Project.init({
     name: DataTypes.STRING,
     description: DataTypes.STRING,
-    images: DataTypes.STRING,
-    buildingStatus: DataTypes.INTEGER
+    buildingStatus: DataTypes.INTEGER,
+    location: DataTypes.STRING,
+    thumbnailPathUrl: DataTypes.STRING,
+    thumbnailPathName: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'Project',
