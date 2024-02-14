@@ -21,26 +21,25 @@ const blog_link = {
 };
 
 function Home() {
+    const [login, setLogin] = useState(false);
+    const dispatch = useDispatch();
+    const currentUser = useSelector((state) => state.auth.login.user);
 
-const [login, setLogin] = useState(false);
-  const dispatch = useDispatch();
-  const currentUser = useSelector((state) => state.auth.login.user);
+    const handleCloseLogin = () => {
+        setLogin(false);
+        dispatch(resetLogin());
+    };
 
-  const handleCloseLogin = () => {
-    setLogin(false);
-    dispatch(resetLogin());
-  };
+    const axiosInstance = createAxios(dispatch, currentUser);
 
-  const axiosInstance = createAxios(dispatch, currentUser);
-
-  const action = async () => {
-    try {
-      const res = await getAll(axiosInstance);
-      console.log(res);
-    } catch (err) {
-      console.log("Error");
-    }
-  };
+    const action = async () => {
+        try {
+            const res = await getAll(axiosInstance);
+            console.log(res);
+        } catch (err) {
+            console.log("Error");
+        }
+    };
 
     return (
         <div className={cx("home-wrapper")}>
@@ -52,7 +51,7 @@ const [login, setLogin] = useState(false);
                 <div className={cx("hero-wrapper")}>
                     <img
                         src={images.heroImg}
-                        alt="Hero Image"
+                        alt="Hero-Image"
                         className={cx("hero-img")}
                     />
                     <h1 className={cx("hero-title")}>
@@ -68,7 +67,7 @@ const [login, setLogin] = useState(false);
                         {/* Thumb Image */}
                         <img
                             src={images.thumbImg}
-                            alt="Thumb Image"
+                            alt="Thumb-Image"
                             className={cx("thumb-img")}
                         />
                         {/*Rigth content*/}
@@ -96,13 +95,13 @@ const [login, setLogin] = useState(false);
             </main>
             {/* Footer */}
             <footer className={cx("footer")}>
-        <Footer />
-      </footer>
-      {!currentUser && (
-        <Popup trigger={login} onClose={handleCloseLogin}>
-          <Login />
-        </Popup>
-      )}
+                <Footer />
+            </footer>
+            {!currentUser && (
+                <Popup trigger={login} onClose={handleCloseLogin}>
+                    <Login />
+                </Popup>
+            )}
         </div>
     );
 }
