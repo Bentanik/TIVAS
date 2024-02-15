@@ -5,6 +5,17 @@ import {
     logoutError,
     logoutStart,
     logoutSuccess,
+    registerError,
+    registerGoogleError,
+    registerGoogleStart,
+    registerGoogleSuccess,
+    registerStart,
+    registerSuccess,
+    resetLogin,
+    resetSendMail,
+    sendMailError,
+    sendMailStart,
+    sendMailSuccess,
 } from "~/redux/authSlice";
 import { resetForm } from "~/redux/formRegisterSlice";
 import * as services from "~/services";
@@ -47,25 +58,6 @@ export const login = async (dispatch, axiosInstance, form) => {
         } else {
             dispatch(loginError(res.mess));
         }
-    } catch (err) {
-        dispatch(loginError("Error"));
-    }
-};
-
-export const loginGoogle = async (dispatch, axiosInstance, form) => {
-    dispatch(loginStart());
-    try {
-        window.open(
-            `${process.env.REACT_APP_SERVER_URL}/api/v1/auth/google`,
-            "_self"
-        );
-        // const res =
-        // if (res.err === 0) {
-        //   dispatch(loginSuccess(res));
-        // } else {
-        //   dispatch(loginError(res.mess));
-        // }
-        dispatch(loginError("error"));
     } catch (err) {
         dispatch(loginError("Error"));
     }
