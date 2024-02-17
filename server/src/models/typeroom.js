@@ -26,8 +26,6 @@ module.exports = (sequelize, DataTypes) => {
     policies: DataTypes.STRING,
     description: DataTypes.STRING,
     typeOfProjectID: DataTypes.INTEGER,
-    thumbnailPathUrl: DataTypes.STRING,
-    thumbnailPathName: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'TypeRoom',

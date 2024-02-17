@@ -4,14 +4,9 @@ import "dotenv/config";
 import { Model, Op } from "sequelize";
 
 const deleteTypeRoomImage = (fileData) => {
-    if (fileData.thumbnail) {
-        for (let i = 0; i < fileData.thumbnail.length; i++) {
-            cloudinary.uploader.destroy(fileData.thumbnail[i].filename);
-        }
-    }
-    if (fileData.images) {
-        for (let i = 0; i < fileData.images.length; i++) {
-            cloudinary.uploader.destroy(fileData.images[i].filename);
+    if (fileData) {
+        for (let i = 0; i < fileData.length; i++) {
+            cloudinary.uploader.destroy(fileData[i].filename);
         }
     }
 }
@@ -104,23 +99,23 @@ export const createTypeRoom = ({
                         policies,
                         description,
                         typeOfProjectID: typeOfProjectResponse.id,
-                        thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : null,
-                        thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : null,
                     })
 
                     //Import images to imageTable
                     if (typeRoomResponse) {
-                        if (fileData.images) {
-                            for (let i = 0; i < fileData.images.length; i++) {
+                        if (fileData) {
+                            for (let i = 0; i < fileData.length; i++) {
                                 const image = {
-                                    pathUrl: fileData.images[i].path,
-                                    pathName: fileData.images[i].filename,
+                                    pathUrl: fileData[i].path,
+                                    pathName: fileData[i].filename,
                                     typeRoomID: typeRoomResponse.id
                                 }
                                 imageTypeRoomArray.push(image);
                             }
                             await db.Image.bulkCreate(imageTypeRoomArray);
                         }
+
+                        //Number of rooms
                         if(quantity && (parseInt(quantity) !== 0)){
                             const roomArray = [];
                             for(let i = 0; i < quantity; i++){
@@ -167,7 +162,6 @@ export const updateTypeRoom = (id, {
     features,
     policies,
     description,
-    thumbnailDeleted,
     imagesDeleted,
 }, fileData) => {
     return new Promise(async (resolve, reject) => {
@@ -197,11 +191,6 @@ export const updateTypeRoom = (id, {
                     }));
                 }
 
-                //Delete or Update thumbnail
-                if ((parseInt(thumbnailDeleted) === 1) || fileData.thumbnail) {
-                    cloudinary.uploader.destroy(typeRoomResult.thumbnailPathName);
-                }
-
                 //Update
                 await db.TypeRoom.update({
                     name,
@@ -212,8 +201,6 @@ export const updateTypeRoom = (id, {
                     features,
                     policies,
                     description,
-                    thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : (parseInt(thumbnailDeleted) === 1) ? null : typeRoomResult.thumbnailPathUrl,
-                    thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : (parseInt(thumbnailDeleted) === 1) ? null : typeRoomResult.thumbnailPathName,
                 }, {
                     where: {
                         id: id,
@@ -221,20 +208,16 @@ export const updateTypeRoom = (id, {
                 })
 
                 //Import images to imageTable
-                if (fileData.images) {
-                    for (let i = 0; i < fileData.images.length; i++) {
+                if (fileData) {
+                    for (let i = 0; i < fileData.length; i++) {
                         const image = {
-                            pathUrl: fileData.images[i].path,
-                            pathName: fileData.images[i].filename,
+                            pathUrl: fileData[i].path,
+                            pathName: fileData[i].filename,
                             typeRoomID: id
                         }
                         imageTypeRoomArray.push(image);
                     }
                     await db.Image.bulkCreate(imageTypeRoomArray);
-                }
-
-                if (!typeRoomResult && fileData) {
-                    deleteTypeRoomImage(fileData);
                 }
             }
             resolve({
@@ -242,6 +225,9 @@ export const updateTypeRoom = (id, {
                 message: typeRoomResult ? 'Update Successfully.' : `Can not find TypeRoom with id: (${id})`,
                 messageImage: imageErrorMessage.length !== 0 ? `Can not find Image: ${imageErrorMessage.join(',')}` : null,
             });
+            if (!typeRoomResult && fileData) {
+                deleteTypeRoomImage(fileData);
+            }
         } catch (error) {
             reject(error);
             console.log(error);
@@ -257,7 +243,6 @@ export const deleteTypeRoom = (id) => {
         try {
             const typeRoomResponse = await db.TypeRoom.findByPk(id);
             if (typeRoomResponse) {
-                cloudinary.uploader.destroy(typeRoomResponse.thumbnailPathName);
                 const imageTypeRoom = await db.Image.findAll({
                     where: {
                         typeRoomID: id,
