@@ -8,7 +8,7 @@ const routes = [
     layout: null,
   },
   {
-    path: "/destination",
+    path: "/destinations",
     component: Destination,
     layout: null,
   },

@@ -17,7 +17,6 @@ import { useCallback, useEffect, useState } from "react";
 import { resetLogin, resetRegister, resetSendMail } from "~/redux/authSlice";
 import { resetForm } from "~/redux/formRegisterSlice";
 
-
 const cx = classNames.bind(styles);
 
 const LIST_NAV = [
@@ -26,16 +25,17 @@ const LIST_NAV = [
     link: "/home",
   },
   {
-    value: "Home",
-    link: "/home",
+    value: "Destinations",
+    link: "/destinations",
+  },
+
+  {
+    value: "News",
+    link: "/news",
   },
   {
-    value: "Home",
-    link: "/home",
-  },
-  {
-    value: "Home",
-    link: "/home",
+    value: "About",
+    link: "/about",
   },
 ];
 
@@ -110,7 +110,9 @@ function Navigations() {
       <div className={cx("nav-wrapper")}>
         <div className={cx("container")}>
           {/* Logo */}
-          <h1 className={cx("logo")}>TIVAS</h1>
+          <Link to="/">
+            <h1 className={cx("logo")}>TIVAS</h1>
+          </Link>
           {/* Navbar */}
           <section className={cx("list-nav")}>{renderNavbar()}</section>
           {/* Search */}
