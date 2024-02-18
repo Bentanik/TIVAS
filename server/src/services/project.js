@@ -60,7 +60,7 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
             })
             resolve({
                 err: (response && response.length !== 0) ? 0 : 1,
-                message: (response && response.length !== 0) ? `Get all of projects results` : 'Can not find any projects!',
+                message: (response && response.length !== 0) ? `All Projects` : 'Can not find any projects!',
                 data: response,
                 count: response ? response.length : 0,
                 page: page
@@ -215,7 +215,7 @@ export const getDetailsProject = (id) => {
             });
             resolve({
                 err: response ? 0 : 1,
-                message: response ? `Project ${id} found` : `Can not find Project with id: ${id}`,
+                message: response ? `Project (${id}) found` : `Can not find Project (${id})`,
                 data: response,
             })
         } catch (error) {
