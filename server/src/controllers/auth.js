@@ -51,7 +51,7 @@ export const register = async (req, res) => {
     });
 
     const paymentMethodId = setupIntent.payment_method;
-
+    console.log(paymentMethod);
     const customer = await stripe.customers.create({
       email: email,
       name: fullName,
