@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       RoleCode.hasMany(models.User ,{
         foreignKey: 'roleID',
+        ondelete: 'cascade', hooks: true
       });
     }
   }

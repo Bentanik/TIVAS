@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       })
       TypeOfProject.hasMany(models.TypeRoom, {
         foreignKey: 'typeOfProjectID',
+        ondelete: 'cascade', hooks: true,
       })
       // define association here
     }
