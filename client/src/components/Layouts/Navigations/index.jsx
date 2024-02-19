@@ -73,7 +73,7 @@ function Navigations() {
   };
 
   useEffect(() => {
-    if (statusRegister.success) {
+    if (statusRegister?.success) {
       handleCloseRegister();
       toast.custom(
         () => (
@@ -86,7 +86,7 @@ function Navigations() {
         { duration: 2000 }
       );
     }
-  }, [dispatch, handleCloseRegister, statusRegister.success]);
+  }, [dispatch, handleCloseRegister, statusRegister?.success]);
 
   const axiosInstance = createAxios(dispatch, currentUser);
 

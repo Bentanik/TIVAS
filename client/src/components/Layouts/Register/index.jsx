@@ -75,7 +75,7 @@ function Register({ handleAccessLogin, handleCloseRegister, trigger }) {
       </Popup>
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={statusRegister.isFetching}
+        open={statusRegister?.isFetching}
       >
         <CircularProgress color="inherit" />
       </Backdrop>

@@ -25,9 +25,9 @@ function Login({ handleAccessRegister }) {
 
   const dispatch = useDispatch();
 
-  const currentUser = useSelector((state) => state.auth.login.user);
-  const error = useSelector((state) => state.auth.login.error);
-  const statusLogin = useSelector((state) => state.auth.login.isFetching);
+  const currentUser = useSelector((state) => state.auth.login?.user);
+  const error = useSelector((state) => state.auth.login?.error);
+  const statusLogin = useSelector((state) => state.auth.login?.isFetching);
 
   const stateEmail = useSelector((state) => state.auth.sendMail);
 
@@ -57,27 +57,27 @@ function Login({ handleAccessRegister }) {
   });
 
   useEffect(() => {
-    if (stateEmail.error !== "") {
+    if (stateEmail?.error !== "") {
       toast.custom(
         () => (
-          <ToastNotify type="error" title="Error" desc={stateEmail.error} />
+          <ToastNotify type="error" title="Error" desc={stateEmail?.error} />
         ),
         { duration: 2000 }
       );
       dispatch(resetSendMail());
-    } else if (stateEmail.success !== "") {
+    } else if (stateEmail?.success !== "") {
       toast.custom(
         () => (
           <ToastNotify
             type="success"
             title="Success"
-            desc={stateEmail.success}
+            desc={stateEmail?.success}
           />
         ),
         { duration: 2000 }
       );
     }
-  }, [dispatch, handleAccessRegister, stateEmail.error, stateEmail.success]);
+  }, [dispatch, handleAccessRegister, stateEmail?.error, stateEmail?.success]);
 
   useEffect(() => {
     if (error !== "") {
@@ -101,7 +101,7 @@ function Login({ handleAccessRegister }) {
                 value={loginValue}
                 setValue={setLoginValue}
                 placeholder="Username or email *"
-                errors={errors.loginValue}
+                errors={errors?.loginValue}
               />
               <div>
                 <InputItem
@@ -109,7 +109,7 @@ function Login({ handleAccessRegister }) {
                   value={password}
                   setValue={setPassword}
                   placeholder="Password *"
-                  errors={errors.password}
+                  errors={errors?.password}
                 />
                 <p className={cx("error")}>{error}</p>
               </div>
