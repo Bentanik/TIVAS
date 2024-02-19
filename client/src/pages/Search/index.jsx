@@ -19,7 +19,7 @@ import { resetLogin } from "~/redux/authSlice";
 
 const cx = classNames.bind(styles);
 
-function Search() {
+function ProfileUser() {
     const [login, setLogin] = useState(false);
     const dispatch = useDispatch();
     const currentUser = useSelector((state) => state.auth.login.user);
@@ -139,4 +139,4 @@ function Search() {
     );
 }
 
-export default Search;
+export default ProfileUser;

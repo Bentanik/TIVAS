@@ -1,5 +1,5 @@
 import classNames from "classnames/bind";
-import styles from "./UserProfile.module.scss";
+import styles from "./EditProfile.module.scss";
 import Navigations from "~/components/Layouts/Navigations";
 import Footer from "~/components/Layouts/Footer";
 

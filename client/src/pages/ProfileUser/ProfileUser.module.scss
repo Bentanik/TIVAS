@@ -1,0 +1,163 @@
+
+.user-info {
+  display: flex;
+  margin-top: 20px;
+}
+
+.profile-wrapper {
+  .profile {
+    .volt8A {
+      display: flex;
+      justify-content: center;
+      .form {
+        .left-content {
+          filter: drop-shadow(0 0 0.75rem rgb(202, 202, 202));
+          .header-text {
+            .bread-crumb {
+              display: flex;
+              justify-content: space-around;
+              .crumb-button {
+                position: relative;
+                width: 50%;
+                height: 40px;
+                border: none;
+                font-size: 1.2rem;
+                font-weight: 700;
+                font-family: "Roboto", sans-serif;
+                color: #222222;
+                &::after {
+                  position: absolute;
+                  bottom: 0;
+                  left: 0;
+                  content: "";
+                  width: 0;
+                  height: 2px;
+                  background-color: orange;
+                }
+
+                &:hover::after {
+                  width: 100%;
+                }
+              }
+            }
+            .item {
+              display: flex;
+              flex-direction: column;
+
+              .crumb-update {
+                font-family: "Roboto", sans-serif;
+                font-weight: 700 !important ;
+                margin: 0 auto;
+                font-size: 1.6rem;
+                color: #222;
+                display: grid;
+                justify-content: center;
+                .text-h5 {
+                  font-family: "Roboto", sans-serif;
+                  font-weight: 700 !important ;
+                  margin: 0 auto;
+                  font-size: 1.6rem;
+                  color: #222;
+                }
+                .update-button {
+                  width: 100%;
+                  height: 42px;
+                  background-color: orange;
+                  border: none;
+                  border-radius: 5px;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  font-family: "Roboto", sans-serif;
+                  font-weight: 600;
+                  font-size: 1.8rem;
+                  color: white;
+                  cursor: pointer;
+                  padding: 9px 19px;
+                  margin-top: 10px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+//Right content
+.right-content {
+  background-color: #f7f7f7;
+  width: 400px;
+  border-radius: 3px;
+  .user-img {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    flex-direction: column;
+    padding: 12px;
+    .box-img {
+      border-radius: 50%;
+      width: 50%;
+      height: 50%;
+    }
+    .right-content {
+      display: grid;
+      justify-content: center;
+      text-align: center;
+      margin-top: 30px;
+      row-gap: 5px;
+      .box-name {
+        font-family: "Roboto", sans-serif;
+        font-weight: 500;
+        font-size: 2rem;
+      }
+      .button {
+        width: 100%;
+        height: 32px;
+        background-color: orange;
+        border: none;
+        border-radius: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+        font-family: "Roboto", sans-serif;
+        font-weight: 500;
+        font-size: 1.4rem;
+        color: white;
+        cursor: pointer;
+      }
+      .edit-button {
+        width: 100%;
+        height: 32px;
+        background-color: white;
+        border: 0.5px solid #9c9c9c;
+        border-radius: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+        font-family: "Roboto", sans-serif;
+        font-weight: 500;
+        font-size: 1.4rem;
+        color: #000;
+        margin-top: 4px;
+        cursor: pointer;
+      }
+      .calendar {
+        font-family: "Roboto", sans-serif;
+        color: rgb(138, 138, 138);
+        display: flex;
+        align-items: center;
+        margin-top: 4px;
+      }
+      .location {
+        font-family: "Roboto", sans-serif;
+        color: rgb(138, 138, 138);
+        display: flex;
+        align-items: center;
+        margin-top: 4px;
+      }
+    }
+  }
+}
