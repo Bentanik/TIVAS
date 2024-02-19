@@ -3,8 +3,7 @@ import styles from "./AdminLayout.module.scss";
 import AdminHeader from "~/components/AdminHeader";
 import AdminSidebar from "~/components/AdminSidebar";
 import AdminContent from "~/components/AdminContent";
-
-import images from "~/assets";
+import images from "~/assets/images";
 import { Link } from "react-router-dom";
 
 import Footer from "~/components/Layouts/Footer";

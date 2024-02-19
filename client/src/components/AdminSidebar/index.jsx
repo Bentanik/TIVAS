@@ -2,7 +2,7 @@ import classNames from "classnames/bind";
 import styles from "./AdminSidebar.module.scss";
 import React, { useState } from "react";
 
-import images from "~/assets";
+import images from "~/assets/images";
 import { Link } from "react-router-dom";
 
 const cx = classNames.bind(styles);

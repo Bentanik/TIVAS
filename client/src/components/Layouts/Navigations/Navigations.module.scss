@@ -3,7 +3,6 @@
 }
 
 .nav-wrapper {
-    padding: 33px var(--home-padding) 0;
     .container {
         display: flex;
         align-items: center;
@@ -37,12 +36,12 @@
 
         &::after {
             position: absolute;
-            bottom: 0;
+            bottom: -8px;
             left: 0;
             content: "";
             width: 0;
             height: 2px;
-            background-color: #0866ff;
+            background-color: #235784;
             transition: all 0.5s;
         }
 
@@ -51,7 +50,7 @@
         }
 
         &:hover {
-            color: #0866ff;
+            color: #235784;
         }
     }
 }

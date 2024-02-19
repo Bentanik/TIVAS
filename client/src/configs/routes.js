@@ -1,6 +1,7 @@
 import Home from "~/pages/Home";
 import Search from "~/pages/Search";
 import Admin from "~/pages/Admin";
+import Destination from "~/pages/Destination";
 
 const routes = [
     {
@@ -16,6 +17,12 @@ const routes = [
     {
         path: "/admin",
         component: Admin,
+        layout: null,
+    },
+
+    {
+        path: "/destinations",
+        component: Destination,
         layout: null,
     },
 ];

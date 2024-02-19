@@ -2,7 +2,7 @@ import classNames from "classnames/bind";
 import styles from "./SearchPage.module.scss";
 import { useState } from "react";
 import TippyHeadless from "@tippyjs/react/headless";
-import images from "~/assets";
+import images from "~/assets/images";
 
 const cx = classNames.bind(styles);
 
@@ -13,10 +13,12 @@ function SearchPage() {
         <div className={cx("search-page-wrapper")}>
             <TippyHeadless
                 render={(attrs) => (
-                    <div className="box" tabIndex="-1" {...attrs}>
-                        <div className={cx("search-page-result")}>
-                            Search result
-                        </div>
+                    <div
+                        className={cx("search-result")}
+                        tabIndex="-1"
+                        {...attrs}
+                    >
+                        Search result
                     </div>
                 )}
             >
@@ -35,7 +37,7 @@ function SearchPage() {
                         alt="Search"
                         className={cx("icon-search")}
                     />
-                    <button className={cx("btn-search")}>Search</button>
+                    <button className={cx("btn-search")}>SEARCH</button>
                 </div>
             </TippyHeadless>
         </div>

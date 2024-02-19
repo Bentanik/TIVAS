@@ -2,7 +2,7 @@ import classNames from "classnames/bind";
 import styles from "./AdminHeader.module.scss";
 import Search from "~/components/Search";
 
-import images from "~/assets";
+import images from "~/assets/images";
 import { Link } from "react-router-dom";
 
 const cx = classNames.bind(styles);
