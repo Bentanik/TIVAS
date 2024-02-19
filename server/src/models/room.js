@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Room.hasMany(models.TimeShare ,{
         foreignKey: 'roomID',
+        ondelete: 'cascade', hooks: true
       });
       Room.belongsTo(models.TypeRoom ,{
         foreignKey: 'typeRoomID',

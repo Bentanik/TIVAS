@@ -5,12 +5,30 @@ const router = express.Router();
 
 router.post(
   "/create",
-  uploadCloud.array('thumbnail'),
+  uploadCloud.fields([
+    {
+      name: 'thumbnail', maxCount: 1
+    },
+    {
+      name: 'images'
+    },
+  ]),
   controllers.createNewProject
-);
+)
 router.get("/getAll",controllers.getAllProject)
 router.delete("/delete/:id",controllers.deleteProjects)
-router.put("/update/:id",uploadCloud.single('thumbnail'),controllers.updateProjects)
+router.put(
+  "/update/:id",
+  uploadCloud.fields([
+    {
+      name: 'thumbnail', maxCount: 1
+    },
+    {
+      name: 'images',
+    },
+  ]),
+  controllers.updateProjects
+)
 
 
 router.get(

@@ -87,7 +87,6 @@ function Navigations() {
             );
         }
     }, [dispatch, handleCloseRegister, statusRegister?.success]);
-
     const axiosInstance = createAxios(dispatch, currentUser);
 
     const renderNavbar = () => {
