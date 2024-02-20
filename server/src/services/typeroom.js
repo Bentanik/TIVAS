@@ -45,7 +45,7 @@ const deleteTypeRoomImage = (fileData) => {
 //     })
 // }
 
-export const createTypeRoom = ({
+export const createTypeRoom = (projectID, {
     name,
     bedrooms,
     persons,
@@ -54,32 +54,26 @@ export const createTypeRoom = ({
     features,
     policies,
     description,
-    projectID,
     type,
     quantity,
 }, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
-            let typeResponse;
-            let projectResponse;
             let typeOfProjectResponse;
             let typeRoomResponse;
             let imageResponse;
             const imageTypeRoomArray = [];
 
             //Find type is existed in DB
-            if (type) {
-                typeResponse = await db.Type.findOne({
-                    where: {
-                        name: type,
-                    }
-                });
-            }
+            const typeResponse = await db.Type.findOne({
+                where: {
+                    name: type,
+                }
+            });
 
             //Find project is existed in DB
-            if (projectID) {
-                projectResponse = await db.Project.findByPk(projectID);
-            }
+            const projectResponse = await db.Project.findByPk(projectID);
+
             //Find project has type
             if (typeResponse && projectResponse) {
                 typeOfProjectResponse = await db.TypeOfProject.findOne({
@@ -116,9 +110,9 @@ export const createTypeRoom = ({
                         }
 
                         //Number of rooms
-                        if(quantity && (parseInt(quantity) !== 0)){
+                        if (quantity && (parseInt(quantity) !== 0)) {
                             const roomArray = [];
-                            for(let i = 0; i < quantity; i++){
+                            for (let i = 0; i < quantity; i++) {
                                 roomArray.push({
                                     typeRoomID: typeRoomResponse.id
                                 })
