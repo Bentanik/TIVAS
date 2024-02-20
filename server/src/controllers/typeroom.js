@@ -34,7 +34,7 @@ export const createNewTypeRoom = async (req, res) => {
       }
       return missValue("Missing value!", res);
     }
-    if ((!/^\d+$/.test(bedrooms)) || (!/^\d+$/.test(persons)) || (!/^\d+$/.test(projectID)) (!/^\d+$/.test(quantity))) {
+    if ((!/^\d+$/.test(bedrooms)) || (!/^\d+$/.test(persons)) || (!/^\d+$/.test(projectID)) || (!/^\d+$/.test(quantity))) {
       if (req.files) {
         deleteTypeRoomImage(req.files);
       }
