@@ -10,8 +10,8 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Project.hasMany(models.TypeOfProject, {foreignKey: 'projectID'});
-      Project.hasMany(models.Image, {foreignKey: 'projectID'});
+      Project.hasMany(models.TypeOfProject, {foreignKey: 'projectID', ondelete: 'cascade', hooks: true});
+      Project.hasMany(models.Image, {foreignKey: 'projectID', ondelete: 'cascade', hooks: true});
       // define association here
     }
   }

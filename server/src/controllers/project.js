@@ -4,35 +4,69 @@ import * as services from "../services";
 import { response } from "express";
 const cloudinary = require("cloudinary").v2;
 
+
+const deleteProjectImage = (fileData) => {
+  if (fileData.thumbnail) {
+    for (let i = 0; i < fileData.thumbnail.length; i++) {
+      cloudinary.uploader.destroy(fileData.thumbnail[i].filename);
+    }
+  }
+  if (fileData.images) {
+    for (let i = 0; i < fileData.images.length; i++) {
+      cloudinary.uploader.destroy(fileData.images[i].filename);
+    }
+  }
+}
+
 //Create New Project
 export const createNewProject = async (req, res) => {
-  const { name, description, buildingStatus, location } = req.body;
-  if (!name || !description || !buildingStatus || !location) {
-    if (req.file) {
-      cloudinary.uploader.destroy(req.file.filename);
+  try {
+      const { name, description, buildingStatus} = req.body;
+      if (!name || !description || !buildingStatus) {
+        if (req.files) {
+          deleteProjectImage(req.files);
+        }
+        return missValue("Missing value!", res);
+      }
+      if (!/^\d+$/.test(buildingStatus)) {
+        if (req.files) {
+          deleteProjectImage(req.files);
+        }
+        return badRequest("Building Status is require an INTEGER!", res);
+      }
+      const response = await services.createNewProject(req.body, req.files);
+      return res.status(200).json(response);
+  } catch (error) {
+    if(req.files){
+      deleteProjectImage(req.files)
     }
-    return missValue("Missing value!", res);
+    console.log(error);
   }
-  if (!/^\d+$/.test(buildingStatus)) {
-    if (req.file) {
-      cloudinary.uploader.destroy(req.file.filename);
-    }
-    return badRequest("Building Status is require an INTEGER!", res);
-  }
-  const response = await services.createNewProject(req.body, req.file);
-  return res.status(200).json(response);
+  
 };
-
+//Delete Project
 export const deleteProjects = async (req, res) => {
   const { id } = req.params;
   const response = await services.deleteProject(id);
   return res.status(200).json(response);
 };
-
+//Update Project
 export const updateProjects = async (req, res) => {
   const { id } = req.params;
-  console.log(req.body);
-  const response = await services.updateProject(req.body, id);
+  const { name, description, buildingStatus} = req.body;
+  if (!name || !description || !buildingStatus) {
+    if (req.files) {
+      deleteProjectImage(req.files);
+    }
+    return missValue("Missing value!", res);
+  }
+  if (!/^\d+$/.test(buildingStatus)) {
+    if (req.files) {
+      deleteProjectImage(req.files);
+    }
+    return badRequest("Building Status is require an INTEGER!", res);
+  }
+  const response = await services.updateProject(req.body, id, req.files);
   return res.status(200).json(response);
 };
 //Get All Project
@@ -55,7 +89,8 @@ export const getTop10 = async (req, res) => {
 
 //Get Project Details
 export const getDetailsProject = async (req, res) => {
-  const response = await services.getDetailsProject(req.params);
+  const { id } = req.params;
+  const response = await services.getDetailsProject(id);
   return res.status(200).json(response);
 }
 

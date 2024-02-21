@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Type.hasMany(models.TypeOfProject, {foreignKey: 'typeID'})
+      Type.hasMany(models.TypeOfProject, {foreignKey: 'typeID', ondelete: 'cascade', hooks: true})
       // define association here
     }
   }
