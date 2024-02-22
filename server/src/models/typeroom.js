@@ -10,9 +10,9 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      TypeRoom.hasMany(models.Room, {foreignKey: 'typeRoomID'});
+      TypeRoom.hasMany(models.Room, {foreignKey: 'typeRoomID', ondelete: 'cascade', hooks: true});
       TypeRoom.belongsTo(models.TypeOfProject, {foreignkey: 'typeOfProjectID'})
-      TypeRoom.hasMany(models.Image, {foreignKey: 'typeRoomID'});
+      TypeRoom.hasMany(models.Image, {foreignKey: 'typeRoomID', ondelete: 'cascade', hooks: true});
       // define association here
     }
   }
@@ -26,8 +26,6 @@ module.exports = (sequelize, DataTypes) => {
     policies: DataTypes.STRING,
     description: DataTypes.STRING,
     typeOfProjectID: DataTypes.INTEGER,
-    thumbnailPathUrl: DataTypes.STRING,
-    thumbnailPathName: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'TypeRoom',

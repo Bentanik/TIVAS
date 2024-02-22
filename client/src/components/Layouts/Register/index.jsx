@@ -81,6 +81,26 @@ function Register({ handleAccessLogin, handleCloseRegister, trigger }) {
             </Backdrop>
         </div>
     );
+  return (
+    <div>
+      <Toaster position="top-right" richColors expand={true} />
+    
+      <Popup
+        trigger={trigger}
+        onClose={handleCloseRegister}
+        status={registerPath}
+        onPrevious={handleRegisterPrevious}
+      >
+        {renderRegister()}
+      </Popup>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={statusRegister?.isFetching}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    </div>
+  );
 }
 
 export default Register;
