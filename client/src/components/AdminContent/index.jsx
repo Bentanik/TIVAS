@@ -1,5 +1,6 @@
 import classNames from "classnames/bind";
 import styles from "./AdminContent.module.scss";
+import ViewProject from "~/components/ViewProject";
 
 import images from "~/assets/images";
 import { Link } from "react-router-dom";
@@ -30,7 +31,12 @@ function AdminContent() {
                 </div>
             </div>
             {/* Main Content */}
-            <div className={cx("main-content")}></div>
+            <div className={cx("main-content")}>
+                {/* Content */}
+                <div className={cx("content")}>
+                    <ViewProject />
+                </div>
+            </div>
         </div>
     );
 }
