@@ -28,17 +28,17 @@ export const createNewTypeRoom = async (req, res) => {
   try {
     const { projectID } = req.params;
     const { name, bedrooms, persons, kitchen, entertainment, features, policies, description, type, quantity } = req.body;
-    if (!name || !bedrooms || !persons || !description || !projectID || !type) {
+    if (!name || !bedrooms || !persons || !description || (!/^\d+$/.test(projectID)) || !type) {
       if (req.files) {
         deleteTypeRoomImage(req.files);
       }
       return missValue("Missing value!", res);
     }
-    if ((!/^\d+$/.test(bedrooms)) || (!/^\d+$/.test(persons)) || (!/^\d+$/.test(projectID)) || (!/^\d+$/.test(quantity))) {
+    if ((!/^\d+$/.test(bedrooms)) || (!/^\d+$/.test(persons)) || (!/^\d+$/.test(quantity))) {
       if (req.files) {
         deleteTypeRoomImage(req.files);
       }
-      return badRequest("bedrooms, persons, projectID, quantity are required an INTEGER!", res);
+      return badRequest("bedrooms, persons, quantity are required an INTEGER!", res);
     }
     if(bedrooms < 0 || persons < 0 || quantity < 0){
       return badRequest("bedrooms, persons, quantity must be higher than 0!", res)
@@ -68,17 +68,17 @@ export const updateTypeRoom = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, bedrooms, persons, kitchen, entertainment, features, policies, description, imagesDeleted } = req.body;
-    if (!name || !bedrooms || !persons || !description || !id) {
+    if (!name || !bedrooms || !persons || !description || (!/^\d+$/.test(id))) {
       if (req.files) {
         deleteTypeRoomImage(req.files);
       }
       return missValue("Missing value!", res);
     }
-    if ((!/^\d+$/.test(bedrooms)) || (!/^\d+$/.test(persons)) || (!/^\d+$/.test(id))) {
+    if ((!/^\d+$/.test(bedrooms)) || (!/^\d+$/.test(persons))) {
       if (req.files) {
         deleteTypeRoomImage(req.files);
       }
-      return badRequest("bedrooms, persons, typeRoomID are required an INTEGER!", res);
+      return badRequest("bedrooms, persons are required an INTEGER!", res);
     }
     if (imagesDeleted) {
       let imagesDeletedArray = imagesDeleted.split(',');
