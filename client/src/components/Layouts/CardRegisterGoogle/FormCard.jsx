@@ -42,6 +42,8 @@ function FormCard() {
       },
     });
 
+    console.log("Error", error);
+
     if (!error) {
       try {
         const { id } = paymentMethod;
