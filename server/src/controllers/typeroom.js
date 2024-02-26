@@ -26,21 +26,25 @@ const deleteTypeRoomImage = (fileData) => {
 
 export const createNewTypeRoom = async (req, res) => {
   try {
-    const { name, bedrooms, persons, kitchen, entertainment, features, policies, description, projectID, type } = req.body;
-    if (!name || !bedrooms || !persons || !description || !projectID || !type) {
+    const { projectID } = req.params;
+    const { name, bedrooms, persons, kitchen, entertainment, features, policies, description, type, quantity } = req.body;
+    if (!name || !bedrooms || !persons || !description || (!/^\d+$/.test(projectID)) || !type) {
       if (req.files) {
         deleteTypeRoomImage(req.files);
       }
       return missValue("Missing value!", res);
     }
-    if ((!/^\d+$/.test(bedrooms)) || (!/^\d+$/.test(persons)) || (!/^\d+$/.test(projectID))) {
+    if ((!/^\d+$/.test(bedrooms)) || (!/^\d+$/.test(persons)) || (!/^\d+$/.test(quantity))) {
       if (req.files) {
         deleteTypeRoomImage(req.files);
       }
-      return badRequest("bedrooms, persons, projectID are required an INTEGER!", res);
+      return badRequest("bedrooms, persons, quantity are required an INTEGER!", res);
+    }
+    if(bedrooms < 0 || persons < 0 || quantity < 0){
+      return badRequest("bedrooms, persons, quantity must be higher than 0!", res)
     }
 
-    const response = await services.createTypeRoom(req.body, req.files);
+    const response = await services.createTypeRoom(projectID, req.body, req.files);
     return res.status(200).json(response);
   } catch (error) {
     if (req.files) {
@@ -64,17 +68,17 @@ export const updateTypeRoom = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, bedrooms, persons, kitchen, entertainment, features, policies, description, imagesDeleted } = req.body;
-    if (!name || !bedrooms || !persons || !description || !id) {
+    if (!name || !bedrooms || !persons || !description || (!/^\d+$/.test(id))) {
       if (req.files) {
         deleteTypeRoomImage(req.files);
       }
       return missValue("Missing value!", res);
     }
-    if ((!/^\d+$/.test(bedrooms)) || (!/^\d+$/.test(persons)) || (!/^\d+$/.test(id))) {
+    if ((!/^\d+$/.test(bedrooms)) || (!/^\d+$/.test(persons))) {
       if (req.files) {
         deleteTypeRoomImage(req.files);
       }
-      return badRequest("bedrooms, persons, typeRoomID are required an INTEGER!", res);
+      return badRequest("bedrooms, persons are required an INTEGER!", res);
     }
     if (imagesDeleted) {
       let imagesDeletedArray = imagesDeleted.split(',');

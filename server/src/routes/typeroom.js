@@ -10,7 +10,7 @@ const router = express.Router();
 //   );
 
 router.post(
-  "/create",
+  "/create/:projectID",
   uploadCloud.array('images'),
   controllers.createNewTypeRoom
 )
