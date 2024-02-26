@@ -23,6 +23,30 @@ export const checkRegister = async (req, res) => {
   return res.status(200).json(response);
 };
 
+export const sendCodeForgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return missValue("Missing value!", res);
+  }
+
+  const response = await services.sendCodeForgotPassword(req.body);
+
+  return res.status(200).json(response);
+};
+
+export const checkResetPassword  = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return missValue("Missing value!", res);
+  }
+
+  const response = await services.checkResetPassword(req.body);
+  
+  return res.status(200).json(response);
+}
+
 export const checkUserName = async (req, res) => {
   const { username } = req.body;
   if (!username) return missValue("Missing value!", res);
@@ -195,6 +219,14 @@ export const refreshToken = async (req, res) => {
     sameSite: "strict",
   });
   return res.status(200).json(rest);
+};
+
+// Reset password
+export const resetPassword = async (req, res) => {
+  const { email, newPassword } = req.body;
+  
+  const response = await services.resetPassword(req.body);
+  return res.status(200).json(response);
 };
 
 //Logout

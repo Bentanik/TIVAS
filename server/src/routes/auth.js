@@ -7,12 +7,17 @@ const router = express.Router();
 
 //Verify by email register OTP
 router.post("/sendmail", controllers.sendCodeEmail);
+router.post("/sendmailforgotpassword", controllers.sendCodeForgotPassword);
+
+//
 router.post("/registerbyemail", controllers.checkRegister);
 router.post("/checkusernameregister", controllers.checkUserName);
+router.post("/resetpasswordbyemail", controllers.checkResetPassword);
 
 // Local
 router.post("/register", controllers.register);
 router.post("/login", controllers.login);
+router.post("/resetpassword", controllers.resetPassword);
 
 // Google
 router.post(
@@ -21,6 +26,7 @@ router.post(
   controllers.loginGoogle
 );
 
+//Register google
 router.post("/registergoogle", controllers.registerGoogle);
 
 // Refresh token
