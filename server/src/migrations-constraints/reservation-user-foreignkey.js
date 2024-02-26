@@ -11,7 +11,7 @@ module.exports = {
      */
     await queryInterface.addConstraint('Reservations', {
       type: 'foreign key',
-      name: 'user-reservation-fk',
+      name: 'reservation-user-fk',
       fields: ['userID'],
       references: {
         table: 'Users',
@@ -29,6 +29,6 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-    await queryInterface.removeConstraint('Reservations', 'user-reservation-fk');
+    await queryInterface.removeConstraint('Reservations', 'reservation-user-fk');
   }
 };

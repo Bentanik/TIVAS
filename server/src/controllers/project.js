@@ -21,8 +21,8 @@ const deleteProjectImage = (fileData) => {
 //Create New Project
 export const createNewProject = async (req, res) => {
   try {
-      const { name, description, buildingStatus} = req.body;
-      if (!name || !description || !buildingStatus) {
+      const { name, description, buildingStatus, location, type} = req.body;
+      if (!name || !description || !buildingStatus || !location || !type) {
         if (req.files) {
           deleteProjectImage(req.files);
         }

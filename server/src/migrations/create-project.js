@@ -21,6 +21,15 @@ module.exports = {
       buildingStatus: {
         type: Sequelize.INTEGER
       },
+      features: {
+        type: Sequelize.STRING
+      },
+      attractions: {
+        type: Sequelize.STRING
+      },
+      saleStatus: {
+        type: Sequelize.INTEGER
+      },
       thumbnailPathUrl: {
         type: Sequelize.STRING
       },

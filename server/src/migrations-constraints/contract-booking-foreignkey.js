@@ -9,12 +9,12 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    await queryInterface.addConstraint('Reservations', {
+    await queryInterface.addConstraint('Contracts', {
       type: 'foreign key',
-      name: 'timeshare-reservation-fk',
-      fields: ['timeShareID'],
+      name: 'contract-booking-fk',
+      fields: ['bookingID'],
       references: {
-        table: 'TimeShares',
+        table: 'Bookings',
         field: 'id',
       },
       onDelete: 'cascade',
@@ -29,6 +29,6 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-    await queryInterface.removeConstraint('Reservations', 'timeshare-reservation-fk');
+    await queryInterface.removeConstraint('Contracts', 'contract-booking-fk');
   }
 };
