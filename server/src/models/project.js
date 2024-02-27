@@ -17,12 +17,13 @@ module.exports = (sequelize, DataTypes) => {
   }
   Project.init({
     name: DataTypes.STRING,
-    description: DataTypes.STRING,
+    description: DataTypes.TEXT('long'),
     buildingStatus: DataTypes.INTEGER,
     location: DataTypes.STRING,
     features: DataTypes.STRING,
     attractions: DataTypes.STRING,
     saleStatus: DataTypes.INTEGER,
+    reservationPrice: DataTypes.DOUBLE,
     thumbnailPathUrl: DataTypes.STRING,
     thumbnailPathName: DataTypes.STRING,
   }, {

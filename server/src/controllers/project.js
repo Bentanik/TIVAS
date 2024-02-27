@@ -21,8 +21,8 @@ const deleteProjectImage = (fileData) => {
 //Create New Project
 export const createNewProject = async (req, res) => {
   try {
-      const { name, description, buildingStatus} = req.body;
-      if (!name || !description || !buildingStatus) {
+      const { name, description, buildingStatus, reservationPrice} = req.body;
+      if (!name || !description || !buildingStatus || !reservationPrice) {
         if (req.files) {
           deleteProjectImage(req.files);
         }
@@ -32,7 +32,19 @@ export const createNewProject = async (req, res) => {
         if (req.files) {
           deleteProjectImage(req.files);
         }
-        return badRequest("Building Status is require an INTEGER!", res);
+        return badRequest("Building Status is required an INTEGER!", res);
+      }
+      if(!/\b\d+(\.\d+)?\b/g.test(reservationPrice)){
+        if(req.files) {
+          deleteProjectImage(req.files);
+        }
+        return badRequest("Reservation Price is required a NUMBER!", res);
+      }
+      if(reservationPrice <= 0){
+        if(req.files) {
+          deleteProjectImage(req.files);
+        }
+        return badRequest("Reservation Price must be higher than 0!")
       }
       const response = await services.createNewProject(req.body, req.files);
       return res.status(200).json(response);
@@ -53,8 +65,8 @@ export const deleteProjects = async (req, res) => {
 //Update Project
 export const updateProjects = async (req, res) => {
   const { id } = req.params;
-  const { name, description, buildingStatus} = req.body;
-  if (!name || !description || !buildingStatus) {
+  const { name, description, buildingStatus, reservationPrice} = req.body;
+  if (!name || !description || !buildingStatus || !reservationPrice || !/^\d+$/.test(id)) {
     if (req.files) {
       deleteProjectImage(req.files);
     }
@@ -64,7 +76,19 @@ export const updateProjects = async (req, res) => {
     if (req.files) {
       deleteProjectImage(req.files);
     }
-    return badRequest("Building Status is require an INTEGER!", res);
+    return badRequest("Building Status is required an INTEGER!", res);
+  }
+  if(!/\b\d+(\.\d+)?\b/g.test(reservationPrice)){
+    if(req.files) {
+      deleteProjectImage(req.files);
+    }
+    return badRequest("Reservation Price is required a NUMBER!", res);
+  }
+  if(reservationPrice <= 0){
+    if(req.files) {
+      deleteProjectImage(req.files);
+    }
+    return badRequest("Reservation Price must be higher than 0!")
   }
   const response = await services.updateProject(req.body, id, req.files);
   return res.status(200).json(response);

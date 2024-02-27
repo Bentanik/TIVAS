@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     entertainment: DataTypes.STRING,
     features: DataTypes.STRING,
     policies: DataTypes.STRING,
-    description: DataTypes.STRING,
+    description: DataTypes.TEXT('long'),
     typeOfProjectID: DataTypes.INTEGER,
   }, {
     sequelize,

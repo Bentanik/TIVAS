@@ -26,13 +26,16 @@ export const createNewTimeShare = async (req, res) => {
         }
         const dateRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
         if(!dateRegex.test(startDate) || !dateRegex.test(endDate)){
-            return badRequest("Error: startDate or endDate must be like (dd/mm/yyyy) format!", res);
+            return badRequest("Start Date or End Date must be like (dd/mm/yyyy) format!", res);
         }
         if(!isValidDate(startDate) || !isValidDate(endDate)){
-            return badRequest("Error: startDate or endDate must be a valid date!", res)
+            return badRequest("Start Date or End Date must be a valid date!", res)
+        }
+        if(!/\b\d+(\.\d+)?\b/g.test(price)) {
+            return badRequest("Price is required a NUMBER!")
         }
         if(price < 0){
-            return badRequest("Error: price must be higher than 0!", res)
+            return badRequest("Price must be higher than 0!", res)
         }
         const response = await services.createNewTimeShare(typeRoomID, userID, req.body);
         return res.status(200).json(response);

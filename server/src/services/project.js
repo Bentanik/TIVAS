@@ -25,6 +25,7 @@ export const createNewProject = ({
     type,
     features,
     attractions,
+    reservationPrice,
 }, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -56,6 +57,7 @@ export const createNewProject = ({
                         features,
                         attractions,
                         saleStatus: 0,
+                        reservationPrice,
                         thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : null,
                         thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : null,
                     },
@@ -108,7 +110,7 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
             const queries = pagination({ page, limit, orderType, orderBy });
             //queries.raw = true;
             const response = await db.Project.findAll({
-                attributes: ['id', 'name', 'location', 'thumbnailPathUrl'],
+                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'reservationPrice'],
                 ...queries,
             })
             resolve({
@@ -163,7 +165,7 @@ export const updateProject = ({
     attractions,
     thumbnailDeleted,
     imagesDeleted,
-    saleStatus
+    reservationPrice,
 }, id, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -205,7 +207,7 @@ export const updateProject = ({
                     buildingStatus,
                     features,
                     attractions,
-                    saleStatus,
+                    reservationPrice,
                     thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathUrl,
                     thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathName,
                 }, {
@@ -266,7 +268,7 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
             // queries.raw = true;
             const response = await db.Project.findAll({
                 where: whereClause,
-                attributes: ['id', 'name', 'location', 'thumbnailPathUrl'],
+                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'reservationPrice'],
                 include: [
                     {
                         model: db.TypeOfProject,
@@ -308,7 +310,7 @@ export const getTop10 = () => {
     return new Promise(async (resolve, reject) => {
         try {
             const response = await db.Project.findAll({
-                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'createdAt'],
+                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'createdAt', 'reservationPrice'],
                 limit: 10,
                 order: [['createdAt', 'DESC']],
             })
