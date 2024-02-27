@@ -1,5 +1,15 @@
 // Simple Gallery
 
+body {
+    height: 3000px;
+}
+
+.content {
+    padding: 50px 0 0 100px;
+}
+
+// List Images
+
 .img {
     width: 315px;
     height: 200px;
@@ -22,13 +32,114 @@
 // Project Detail
 
 .list-img {
-    padding: 50px 0 0 100px;
+    // padding: 50px 0 0 100px;
     content: "";
     display: table;
     clear: both;
 }
 
+// Info Detail
+
 .info-detail {
-    background: red;
-    margin-top: 100px;
+    margin-top: 30px;
+
+    .title {
+        font-family: "Poppins", sans-serif;
+        font-style: normal;
+        font-weight: 700;
+    }
+    .desc {
+        margin-top: 25px;
+        font-family: "Poppins", sans-serif;
+        font-size: 1.8rem;
+        font-style: normal;
+        font-weight: 400;
+    }
+
+    .rate {
+        margin-top: 10px;
+        display: flex;
+
+        .rating {
+            font-family: "Poppins", sans-serif;
+            font-size: 1.9rem;
+            font-style: normal;
+            font-weight: 500;
+            align-self: center;
+            padding: 0 5px 0 5px;
+            background: #44bdd9;
+            margin-right: 10px;
+            border-radius: 5px;
+        }
+    }
+
+    .sub-title {
+        font-family: "Poppins", sans-serif;
+        font-weight: 500;
+    }
+
+    .amenities {
+        margin-top: 35px;
+
+        .row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+
+            .text-wrapper {
+                position: relative;
+                color: #000;
+                font-family: "Poppins", sans-serif;
+                font-size: 1.4rem;
+                font-style: normal;
+                font-weight: 300;
+                display: inline-block;
+                text-align: center;
+
+                &::after {
+                    position: absolute;
+                    bottom: 0px;
+                    left: 0;
+                    content: "";
+                    width: 0;
+                    height: 2px;
+                    background-color: #235784;
+                    transition: all 0.5s;
+                }
+                &:hover::after {
+                    width: 100%;
+                }
+            }
+        }
+
+        .list-amenities {
+            margin-top: 15px;
+            display: flex;
+            gap: 80px;
+
+            .item {
+                position: relative;
+                margin-top: 10px;
+                margin-left: 15px;
+                font-family: "Poppins", sans-serif;
+                font-size: 1.4rem;
+                font-style: normal;
+                font-weight: 400;
+
+                &::before {
+                    content: "•";
+                    position: absolute;
+                    left: -15px;
+                }
+            }
+        }
+    }
+}
+.all-room-type {
+    margin-top: 50px;
+    .title {
+        font-family: "Poppins", sans-serif;
+        font-style: normal;
+        font-weight: 700;
+    }
 }
