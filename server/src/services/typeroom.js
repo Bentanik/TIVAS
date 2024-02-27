@@ -49,10 +49,9 @@ export const createTypeRoom = (projectID, {
     name,
     bedrooms,
     persons,
-    kitchen,
-    entertainment,
-    features,
-    policies,
+    size,
+    bedTypes,
+    amenities,
     description,
     type,
     quantity,
@@ -96,15 +95,12 @@ export const createTypeRoom = (projectID, {
                             name,
                             bedrooms,
                             persons,
-                            kitchen: kitchen? kitchen : null,
-                            entertainment: entertainment? entertainment : null,
-                            features: features? features : null,
-                            policies: policies? policies : null,
+                            size,
+                            bedTypes,
+                            amenities,
                             description,
                             typeOfProjectID: typeOfProjectResponse.id,
                         })
-
-
 
                         //Import images to imageTable
                         if (typeRoomResponse) {
@@ -165,10 +161,9 @@ export const updateTypeRoom = (id, {
     name,
     bedrooms,
     persons,
-    kitchen,
-    entertainment,
-    features,
-    policies,
+    size,
+    bedTypes,
+    amenities,
     description,
     imagesDeleted,
 }, fileData) => {
@@ -223,11 +218,11 @@ export const updateTypeRoom = (id, {
                         name,
                         bedrooms,
                         persons,
-                        kitchen,
-                        entertainment,
-                        features,
-                        policies,
+                        size,
+                        bedTypes,
+                        amenities,
                         description,
+                        typeOfProjectID: typeOfProjectResponse.id,
                     }, {
                         where: {
                             id: id,

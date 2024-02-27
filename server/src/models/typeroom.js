@@ -20,10 +20,9 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     bedrooms: DataTypes.INTEGER,
     persons: DataTypes.INTEGER,
-    kitchen: DataTypes.STRING,
-    entertainment: DataTypes.STRING,
-    features: DataTypes.STRING,
-    policies: DataTypes.STRING,
+    size: DataTypes.DOUBLE,
+    bedTypes: DataTypes.STRING,
+    amenities: DataTypes.STRING,
     description: DataTypes.TEXT('long'),
     typeOfProjectID: DataTypes.INTEGER,
   }, {

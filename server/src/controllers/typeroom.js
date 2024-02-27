@@ -27,8 +27,8 @@ const deleteTypeRoomImage = (fileData) => {
 export const createNewTypeRoom = async (req, res) => {
   try {
     const { projectID } = req.params;
-    const { name, bedrooms, persons, kitchen, entertainment, features, policies, description, type, quantity } = req.body;
-    if (!name || !bedrooms || !persons || !description || (!/^\d+$/.test(projectID)) || !type) {
+    const { name, bedrooms, persons, description, type, quantity, size, bedTypes } = req.body;
+    if (!name || !bedrooms || !persons || !description || (!/^\d+$/.test(projectID)) || !type || !size || !bedTypes || !quantity) {
       if (req.files) {
         deleteTypeRoomImage(req.files);
       }
@@ -40,8 +40,14 @@ export const createNewTypeRoom = async (req, res) => {
       }
       return badRequest("bedrooms, persons, quantity are required an INTEGER!", res);
     }
-    if(bedrooms < 0 || persons < 0 || quantity < 0){
-      return badRequest("bedrooms, persons, quantity must be higher than 0!", res)
+    if(!/\b\d+(\.\d+)?\b/g.test(size)){
+      if(req.files) {
+        deleteProjectImage(req.files);
+      }
+      return badRequest("Size is required a NUMBER!", res);
+    }
+    if(bedrooms < 0 || persons < 0 || quantity < 0 || size < 0){
+      return badRequest("bedrooms, persons, quantity, size must be higher than 0!", res)
     }
 
     const response = await services.createTypeRoom(projectID, req.body, req.files);
@@ -67,8 +73,8 @@ export const createNewTypeRoom = async (req, res) => {
 export const updateTypeRoom = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, bedrooms, persons, kitchen, entertainment, features, policies, description, imagesDeleted } = req.body;
-    if (!name || !bedrooms || !persons || !description || (!/^\d+$/.test(id))) {
+    const { name, bedrooms, persons, description, imagesDeleted, size, bedTypes, } = req.body;
+    if (!name || !bedrooms || !persons || !description || (!/^\d+$/.test(id)) || !size || !bedTypes) {
       if (req.files) {
         deleteTypeRoomImage(req.files);
       }
@@ -78,7 +84,16 @@ export const updateTypeRoom = async (req, res) => {
       if (req.files) {
         deleteTypeRoomImage(req.files);
       }
-      return badRequest("bedrooms, persons are required an INTEGER!", res);
+      return badRequest("bedrooms, persons, quantity are required an INTEGER!", res);
+    }
+    if(!/\b\d+(\.\d+)?\b/g.test(size)){
+      if(req.files) {
+        deleteProjectImage(req.files);
+      }
+      return badRequest("Size is required a NUMBER!", res);
+    }
+    if(bedrooms < 0 || persons < 0 || size < 0){
+      return badRequest("bedrooms, persons, size must be higher than 0!", res)
     }
     if (imagesDeleted) {
       let imagesDeletedArray = imagesDeleted.split(',');
