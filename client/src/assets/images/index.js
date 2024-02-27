@@ -30,6 +30,9 @@ const images = {
     userIcon: require("~/assets/images/userIcon.svg").default,
     downArrow: require("~/assets/images/downArrow.svg").default,
     plusIcon: require("~/assets/images/plusIcon.svg").default,
+    onGoingIcon: require("~/assets/images/onGoingIcon.svg").default,
+    completeIcon: require("~/assets/images/completeIcon.svg").default,
+    pendingIcon: require("~/assets/images/pendingIcon.svg").default,
 };
 
 export default images;

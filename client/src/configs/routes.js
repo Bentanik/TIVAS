@@ -2,6 +2,7 @@ import Home from "~/pages/Home";
 import Search from "~/pages/Search";
 import Admin from "~/pages/Admin";
 import Destination from "~/pages/Destination";
+import ProjectDetail from "~/pages/ProjectDetail";
 
 const routes = [
     {
@@ -23,6 +24,12 @@ const routes = [
     {
         path: "/destinations",
         component: Destination,
+        layout: null,
+    },
+
+    {
+        path: "/project detail",
+        component: ProjectDetail,
         layout: null,
     },
 ];
