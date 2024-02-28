@@ -318,9 +318,11 @@ export const getAllTypeRoom = (projectID, { page, limit, orderType, orderBy }) =
                 ],
                 ...queries,
             })
-            if(response){
-                response.bedTypes = response.bedTypes.split(',');
-                response.amenities = response.amenities.split(',');
+            if (response) {
+                for (let i = 0; i < response.length; i++) {
+                    response[i].bedTypes = response[i].bedTypes.split(',');
+                    response[i].amenities = response[i].amenities.split(',');
+                }
             }
             resolve({
                 err: (response && response.length !== 0) ? 0 : 1,

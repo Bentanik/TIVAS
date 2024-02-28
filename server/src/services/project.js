@@ -123,9 +123,15 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
             const queries = pagination({ page, limit, orderType, orderBy });
             //queries.raw = true;
             const response = await db.Project.findAll({
-                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'reservationPrice', 'openDate'],
+                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'features', 'attractions'],
                 ...queries,
             })
+            if (response) {
+                for (let i = 0; i < response.length; i++) {
+                    response[i].features = response[i].features.split(',');
+                    response[i].attractions = response[i].attractions.split(',');
+                }
+            }
             resolve({
                 err: (response && response.length !== 0) ? 0 : 1,
                 message: (response && response.length !== 0) ? `Get all of projects results` : 'Can not find any projects!',
@@ -284,7 +290,7 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
             // queries.raw = true;
             const response = await db.Project.findAll({
                 where: whereClause,
-                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'reservationPrice', 'openDate'],
+                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'features', 'attractions'],
                 include: [
                     {
                         model: db.TypeOfProject,
@@ -308,6 +314,12 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
                 ...queries,
                 subQuery: false,
             });
+            if (response) {
+                for (let i = 0; i < response.length; i++) {
+                    response[i].features = response[i].features.split(',');
+                    response[i].attractions = response[i].attractions.split(',');
+                }
+            }
             resolve({
                 err: (response && response.length !== 0) ? 0 : 1,
                 mess: (response && response.length !== 0) ? `Search Projects Results` : "Can not find any Projects!",
@@ -326,10 +338,16 @@ export const getTop10 = () => {
     return new Promise(async (resolve, reject) => {
         try {
             const response = await db.Project.findAll({
-                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'createdAt', 'reservationPrice', 'openDate'],
+                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'createdAt', 'reservationPrice', 'openDate', 'features', 'attractions'],
                 limit: 10,
                 order: [['createdAt', 'DESC']],
             })
+            if (response) {
+                for (let i = 0; i < response.length; i++) {
+                    response[i].features = response[i].features.split(',');
+                    response[i].attractions = response[i].attractions.split(',');
+                }
+            }
             resolve({
                 err: (response && response.length !== 0) ? 0 : 1,
                 mess: (response && response.length !== 0) ? "Get top 10 new projects results" : "Can not find any Projects!",
@@ -355,6 +373,11 @@ export const getDetailsProject = (id) => {
                     attributes: ['id', 'pathUrl'],
                 },
             });
+            if (response) {
+                response.features = response.features.split(',');
+                response.attractions = response.attractions.split(',');
+            }
+            console.log(response.features);
             resolve({
                 err: response ? 0 : 1,
                 message: response ? `Project ${id} found` : `Can not find Project with id: ${id}`,
