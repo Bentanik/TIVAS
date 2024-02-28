@@ -6,9 +6,10 @@ import { Link } from "react-router-dom";
 
 import Footer from "~/components/Layouts/Footer";
 import images from "~/assets/images";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import Slider from "react-slick";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const cx = classNames.bind(styles);
 
@@ -70,6 +71,7 @@ const FEED_BACK = [
 
 const settingsFeedback = {
   infinite: true,
+  touchMove: false,
   speed: 500,
   slidesToShow: 1,
   slidesToScroll: 1,
@@ -125,8 +127,9 @@ function Home() {
       return (
         <div key={index} className={cx("timeshare-box")}>
           <Link to="#!">
-            <img
-              src={images.timeshareResort}
+            <LazyLoadImage
+              //   src={images.timeshareResort}
+              src="https://media-cdn-v2.laodong.vn/storage/newsportal/2023/8/26/1233821/Giai-Nhi-1--Nang-Tre.jpg"
               alt="Timeshare"
               className={cx("image")}
             />
@@ -285,7 +288,7 @@ function Home() {
     return listBlog.map((item, index) => {
       return (
         <div key={index} className={cx("blog")}>
-          <img src={item.image} alt="blog" className={cx("image")} />
+          <LazyLoadImage src={item.image} alt="blog" className={cx("image")} />
           <div className={cx("content")}>
             <h4 className={cx("title")}>{item.title}</h4>
             <p className={cx("desc")}>{item.desc}</p>
@@ -329,7 +332,11 @@ function Home() {
       return (
         <div key={index}>
           <div className={cx("feedback")}>
-            <img src={item.image} alt={item.name} className={cx("image")} />
+            <LazyLoadImage
+              src="https://d1hjkbq40fs2x4.cloudfront.net/2016-01-31/files/1045.jpg"
+              alt={item.name}
+              className={cx("image")}
+            />
             <div className={cx("content")}>
               <h3 className={cx("heading")}>What our guests say</h3>
               <div className={cx("review")}>

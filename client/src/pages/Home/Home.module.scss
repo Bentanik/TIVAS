@@ -414,10 +414,11 @@
     object-fit: cover;
   }
   &.feedback-next {
-    left: 48%;
+    right: 0;
   }
   &.feedback-prev {
-    left: 44%;
+    // left: 44%;
+    right: 50px;
   }
   &:hover {
     background-color: #235784;

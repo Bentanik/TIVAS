@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import ejs from "ejs";
+import db from "../models";
 
 const fs = require("fs");
 
@@ -46,6 +47,34 @@ export const sendMail = () => {
       resolve({
         err: 0,
         mess: "Okk",
+      });
+    } catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  });
+};
+
+export const getUser = ({ username }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const res = await db.User.findOne({
+        where: { username },
+        attributes: {
+          exclude: [
+            "password",
+            "banStatus",
+            "roleID",
+            "refreshToken",
+            "refundHistoryID",
+          ],
+        },
+        raw: true,
+      });
+      resolve({
+        err: res ? 0 : 1,
+        mess: res ? "Successully" : "No user data",
+        data: res ? res : null,
       });
     } catch (err) {
       console.log(err);

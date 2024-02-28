@@ -26,7 +26,7 @@ const initialState = {
     isFetching: false,
     success: false,
     error: false,
-  }
+  },
 };
 
 const authSlice = createSlice({

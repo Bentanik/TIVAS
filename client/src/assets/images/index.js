@@ -1,5 +1,5 @@
 const images = {
-  heroImg: require("~/assets/images/heroImg.svg").default,
+  heroImg: require("~/assets/images/heroImg.png"),
   thumbImg: require("~/assets/images/thumb.svg").default,
   iconSearch: require("~/assets/images/iconSearch.svg").default,
   twitterFooter: require("~/assets/images/twitterFooter.svg").default,
@@ -18,6 +18,18 @@ const images = {
   blogResort: require("~/assets/images/BlogResort.jpg"),
   portrait: require("~/assets/images/Portrait.jpg"),
   timeshareResort: require("~/assets/images/timeshareResort.jpg"),
+  whiteBell: require("~/assets/images/whiteBell.svg").default,
+  avatar: require("~/assets/images/avatar.png"),
+  dashboardIcon: require("~/assets/images/dashboardIcon.svg").default,
+  projectIcon: require("~/assets/images/projectIcon.svg").default,
+  timeshareIcon: require("~/assets/images/timeshareIcon.svg").default,
+  userIcon: require("~/assets/images/userIcon.svg").default,
+  downArrow: require("~/assets/images/downArrow.svg").default,
+  plusIcon: require("~/assets/images/plusIcon.svg").default,
+  iconHomeAdmin: require("~/assets/images/iconHomeAdmin.svg").default,
+  uploadImage: require("~/assets/images/cloud-upload-regular-240.png"),
+  trashIcon: require("~/assets/images/trash.png"),
+  unknown: require("~/assets/images/unknown.jpg"),
 };
 
 export default images;

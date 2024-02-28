@@ -69,6 +69,7 @@
   .action {
     font-family: "Poppins", sans-serif;
     user-select: none;
+    cursor: pointer;
     // Login
     .login {
       font-size: 1.7rem;
@@ -77,7 +78,6 @@
 
       &:hover {
         opacity: 0.8;
-        cursor: pointer;
       }
     }
     // Register
@@ -90,7 +90,6 @@
 
       &:hover {
         opacity: 0.8;
-        cursor: pointer;
       }
     }
     // Notification
@@ -112,6 +111,13 @@
         object-fit: cover;
         border-radius: 50%;
       }
+
+      .list-menu {
+        display: inline-flex;
+        align-items: center;
+        column-gap: 5px;
+      }
+
       .show-name {
         color: #000;
         font-size: 1.5rem;
@@ -122,4 +128,15 @@
       }
     }
   }
+}
+
+
+.avatar-result {
+  width: 250px;
+  max-height: min((100vh - 96px) - 60px, 734px);
+  min-height: 30px;
+  padding: 8px 0;
+  border-radius: 8px;
+  background: rgb(255, 255, 255);
+  box-shadow: rgb(0 0 0 / 12%) 0px 2px 12px;
 }
