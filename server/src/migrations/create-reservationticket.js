@@ -2,45 +2,24 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Projects', {
+    await queryInterface.createTable('ReservationTickets', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      name: {
+      code: {
         type: Sequelize.STRING
       },
-      description: {
-        type: Sequelize.TEXT('long')
-      },
-      location: {
-        type: Sequelize.STRING
-      },
-      buildingStatus: {
+      status: {
         type: Sequelize.INTEGER
       },
-      features: {
-        type: Sequelize.STRING
-      },
-      attractions: {
-        type: Sequelize.STRING
-      },
-      saleStatus: {
+      userID: {
         type: Sequelize.INTEGER
       },
-      reservationPrice: {
-        type: Sequelize.DOUBLE
-      },
-      openDate: {
-        type: Sequelize.DATE
-      },
-      thumbnailPathUrl: {
-        type: Sequelize.STRING
-      },
-      thumbnailPathName: {
-        type: Sequelize.STRING
+      projectID: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         type: "TIMESTAMP",
@@ -55,6 +34,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Projects');
+    await queryInterface.dropTable('ReservationTickets');
   }
 };

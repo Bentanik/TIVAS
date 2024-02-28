@@ -4,6 +4,20 @@ import * as services from "../services";
 import { response } from "express";
 const cloudinary = require("cloudinary").v2;
 
+const isValidDate = (dateString) => {
+  const parts = dateString.split('/');
+  const day = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10) - 1;
+  const year = parseInt(parts[2], 10);
+
+  const date = new Date(year, month, day);
+  console.log(date);
+  return (
+    date.getDate() === day &&
+    date.getMonth() === month &&
+    date.getFullYear() === year
+  )
+}
 
 const deleteProjectImage = (fileData) => {
   if (fileData.thumbnail) {
@@ -21,40 +35,47 @@ const deleteProjectImage = (fileData) => {
 //Create New Project
 export const createNewProject = async (req, res) => {
   try {
-      const { name, description, buildingStatus, reservationPrice} = req.body;
-      if (!name || !description || !buildingStatus || !reservationPrice) {
-        if (req.files) {
-          deleteProjectImage(req.files);
-        }
-        return missValue("Missing value!", res);
+    const { name, description, buildingStatus, reservationPrice, openDate } = req.body;
+    if (!name || !description || !buildingStatus || !reservationPrice || !openDate) {
+      if (req.files) {
+        deleteProjectImage(req.files);
       }
-      if (!/^\d+$/.test(buildingStatus)) {
-        if (req.files) {
-          deleteProjectImage(req.files);
-        }
-        return badRequest("Building Status is required an INTEGER!", res);
+      return missValue("Missing value!", res);
+    }
+    const dateRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+    if (!dateRegex.test(openDate)) {
+      return badRequest("Open Date must be like (dd/mm/yyyy) format!", res);
+    }
+    if (!isValidDate(openDate)) {
+      return badRequest("Open Date must be a valid date!", res)
+    }
+    if (!/^\d+$/.test(buildingStatus)) {
+      if (req.files) {
+        deleteProjectImage(req.files);
       }
-      if(!/\b\d+(\.\d+)?\b/g.test(reservationPrice)){
-        if(req.files) {
-          deleteProjectImage(req.files);
-        }
-        return badRequest("Reservation Price is required a NUMBER!", res);
+      return badRequest("Building Status is required an INTEGER!", res);
+    }
+    if (!/\b\d+(\.\d+)?\b/g.test(reservationPrice)) {
+      if (req.files) {
+        deleteProjectImage(req.files);
       }
-      if(reservationPrice <= 0){
-        if(req.files) {
-          deleteProjectImage(req.files);
-        }
-        return badRequest("Reservation Price must be higher than 0!")
+      return badRequest("Reservation Price is required a NUMBER!", res);
+    }
+    if (reservationPrice <= 0) {
+      if (req.files) {
+        deleteProjectImage(req.files);
       }
-      const response = await services.createNewProject(req.body, req.files);
-      return res.status(200).json(response);
+      return badRequest("Reservation Price must be higher than 0!")
+    }
+    const response = await services.createNewProject(req.body, req.files);
+    return res.status(200).json(response);
   } catch (error) {
-    if(req.files){
+    if (req.files) {
       deleteProjectImage(req.files)
     }
     console.log(error);
   }
-  
+
 };
 //Delete Project
 export const deleteProjects = async (req, res) => {
@@ -65,12 +86,19 @@ export const deleteProjects = async (req, res) => {
 //Update Project
 export const updateProjects = async (req, res) => {
   const { id } = req.params;
-  const { name, description, buildingStatus, reservationPrice} = req.body;
-  if (!name || !description || !buildingStatus || !reservationPrice || !/^\d+$/.test(id)) {
+  const { name, description, buildingStatus, reservationPrice, openDate } = req.body;
+  if (!name || !description || !buildingStatus || !reservationPrice || !/^\d+$/.test(id) || !openDate) {
     if (req.files) {
       deleteProjectImage(req.files);
     }
     return missValue("Missing value!", res);
+  }
+  const dateRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+  if (!dateRegex.test(openDate)) {
+    return badRequest("Open Date must be like (dd/mm/yyyy) format!", res);
+  }
+  if (!isValidDate(openDate)) {
+    return badRequest("Open Date must be a valid date!", res)
   }
   if (!/^\d+$/.test(buildingStatus)) {
     if (req.files) {
@@ -78,14 +106,14 @@ export const updateProjects = async (req, res) => {
     }
     return badRequest("Building Status is required an INTEGER!", res);
   }
-  if(!/\b\d+(\.\d+)?\b/g.test(reservationPrice)){
-    if(req.files) {
+  if (!/\b\d+(\.\d+)?\b/g.test(reservationPrice)) {
+    if (req.files) {
       deleteProjectImage(req.files);
     }
     return badRequest("Reservation Price is required a NUMBER!", res);
   }
-  if(reservationPrice <= 0){
-    if(req.files) {
+  if (reservationPrice <= 0) {
+    if (req.files) {
       deleteProjectImage(req.files);
     }
     return badRequest("Reservation Price must be higher than 0!")

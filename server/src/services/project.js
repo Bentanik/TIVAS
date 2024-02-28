@@ -4,6 +4,16 @@ import "dotenv/config";
 import { Model, Op, fn, col, literal } from "sequelize";
 import { pagination } from "../middlewares/pagination";
 
+const convertDate = (dateString) => {
+    const parts = dateString.split('/');
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1;
+    const year = parseInt(parts[2], 10);
+
+    const date = new Date(year, month, day);
+    return date;
+}
+
 const deleteProjectImage = (fileData) => {
     if (fileData.thumbnail) {
         for (let i = 0; i < fileData.thumbnail.length; i++) {
@@ -26,9 +36,11 @@ export const createNewProject = ({
     features,
     attractions,
     reservationPrice,
+    openDate,
 }, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
+            const openDateDB = convertDate(openDate);
             let typeInDBError = 0;
             const imageProjectArray = [];
             const typeErrorMessage = [];
@@ -58,6 +70,7 @@ export const createNewProject = ({
                         attractions,
                         saleStatus: 0,
                         reservationPrice,
+                        openDate: openDateDB,
                         thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : null,
                         thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : null,
                     },
@@ -110,7 +123,7 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
             const queries = pagination({ page, limit, orderType, orderBy });
             //queries.raw = true;
             const response = await db.Project.findAll({
-                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'reservationPrice'],
+                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'reservationPrice', 'openDate'],
                 ...queries,
             })
             resolve({
@@ -166,9 +179,11 @@ export const updateProject = ({
     thumbnailDeleted,
     imagesDeleted,
     reservationPrice,
+    openDate,
 }, id, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
+            const openDateDB = convertDate(openDate);
             let imageErrorMessage = [];
             const imageProjectArray = [];
             //Check TypeRoom is existed in DB
@@ -208,6 +223,7 @@ export const updateProject = ({
                     features,
                     attractions,
                     reservationPrice,
+                    openDate: openDateDB,
                     thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathUrl,
                     thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathName,
                 }, {
@@ -268,7 +284,7 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
             // queries.raw = true;
             const response = await db.Project.findAll({
                 where: whereClause,
-                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'reservationPrice'],
+                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'reservationPrice', 'openDate'],
                 include: [
                     {
                         model: db.TypeOfProject,
@@ -310,7 +326,7 @@ export const getTop10 = () => {
     return new Promise(async (resolve, reject) => {
         try {
             const response = await db.Project.findAll({
-                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'createdAt', 'reservationPrice'],
+                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'createdAt', 'reservationPrice', 'openDate'],
                 limit: 10,
                 order: [['createdAt', 'DESC']],
             })

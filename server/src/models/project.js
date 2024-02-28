@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Project.hasMany(models.TypeOfProject, {foreignKey: 'projectID', ondelete: 'cascade', hooks: true});
       Project.hasMany(models.Image, {foreignKey: 'projectID', ondelete: 'cascade', hooks: true});
+      Project.hasMany(models.ReservationTicket, {foreignKey: 'projectID', ondelete: 'cascade', hooks: true});
       // define association here
     }
   }
@@ -24,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     attractions: DataTypes.STRING,
     saleStatus: DataTypes.INTEGER,
     reservationPrice: DataTypes.DOUBLE,
+    openDate: DataTypes.DATE,
     thumbnailPathUrl: DataTypes.STRING,
     thumbnailPathName: DataTypes.STRING,
   }, {
