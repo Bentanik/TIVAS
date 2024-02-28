@@ -33,6 +33,11 @@ const images = {
     onGoingIcon: require("~/assets/images/onGoingIcon.svg").default,
     completeIcon: require("~/assets/images/completeIcon.svg").default,
     pendingIcon: require("~/assets/images/pendingIcon.svg").default,
+    bedIcon: require("~/assets/images/bedIcon.svg").default,
+    bathIcon: require("~/assets/images/bathIcon.svg").default,
+    kitchenIcon: require("~/assets/images/kitchenIcon.svg").default,
+    areaIcon: require("~/assets/images/areaIcon.svg").default,
+    personIcon: require("~/assets/images/personIcon.svg").default,
 };
 
 export default images;

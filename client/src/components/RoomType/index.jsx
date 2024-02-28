@@ -30,16 +30,16 @@ function RoomType() {
                                     </h2>
                                     <div className={cx("guest", "row")}>
                                         <img
-                                            className={cx("locate-icon")}
-                                            src={images.locateIcon}
+                                            className={cx("icon")}
+                                            src={images.personIcon}
                                             alt="Locate Icon"
                                         />
                                         <div className={cx("text")}>Guests</div>
                                     </div>
                                     <div className={cx("area", "row")}>
                                         <img
-                                            className={cx("locate-icon")}
-                                            src={images.locateIcon}
+                                            className={cx("icon")}
+                                            src={images.areaIcon}
                                             alt="Locate Icon"
                                         />
                                         <div className={cx("text")}>902</div>
@@ -52,16 +52,16 @@ function RoomType() {
                                     </div>
                                     <div className={cx("type-bed", "row")}>
                                         <img
-                                            className={cx("locate-icon")}
-                                            src={images.locateIcon}
+                                            className={cx("icon")}
+                                            src={images.bedIcon}
                                             alt="Locate Icon"
                                         />
                                         <div className={cx("text")}>1 King</div>
                                     </div>
                                     <div className={cx("bath", "row")}>
                                         <img
-                                            className={cx("locate-icon")}
-                                            src={images.locateIcon}
+                                            className={cx("icon")}
+                                            src={images.bathIcon}
                                             alt="Locate Icon"
                                         />
                                         <div className={cx("text")}>
@@ -70,8 +70,8 @@ function RoomType() {
                                     </div>
                                     <div className={cx("kitchen", "row")}>
                                         <img
-                                            className={cx("locate-icon")}
-                                            src={images.locateIcon}
+                                            className={cx("icon")}
+                                            src={images.kitchenIcon}
                                             alt="Locate Icon"
                                         />
                                         <div className={cx("text")}>

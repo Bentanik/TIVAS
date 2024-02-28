@@ -57,14 +57,14 @@ function ProjectDetail() {
                                 height: 641,
                             },
                             {
-                                largeURL: images.heroImg,
-                                thumbnailURL: images.heroImg,
+                                largeURL: images.timeshareResort,
+                                thumbnailURL: images.timeshareResort,
                                 width: 974,
                                 height: 641,
                             },
                             {
-                                largeURL: images.heroImg,
-                                thumbnailURL: images.heroImg,
+                                largeURL: images.resort,
+                                thumbnailURL: images.resort,
                                 width: 974,
                                 height: 641,
                             },

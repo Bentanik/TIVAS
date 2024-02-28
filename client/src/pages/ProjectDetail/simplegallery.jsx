@@ -37,6 +37,7 @@ function SimpleGallery(props) {
                         className={cx("img", {
                             "large-image": index === 0,
                             hidden: index > 4,
+                            fit: index < 5,
                         })}
                     />
                 </a>
