@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 
 import Footer from "~/components/Layouts/Footer";
 import images from "~/assets/images";
-// import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 const cx = classNames.bind(styles);
 
 const blog_link = {
@@ -17,6 +17,24 @@ const blog_link = {
 };
 
 function ProjectDetail() {
+    const [scrollToResortAmenities, setScrollToResortAmenities] =
+        useState(false);
+
+    useEffect(() => {
+        if (scrollToResortAmenities) {
+            const resortAmenitiesElement =
+                document.getElementById("resort-amenities");
+            if (resortAmenitiesElement) {
+                resortAmenitiesElement.scrollIntoView({ behavior: "smooth" });
+            }
+
+            setScrollToResortAmenities(false);
+        }
+    }, [scrollToResortAmenities]);
+
+    const handleSeeAllClick = () => {
+        setScrollToResortAmenities(true);
+    };
     return (
         <div className={cx("project-detail-wrapper")}>
             {/* Header */}
@@ -115,6 +133,7 @@ function ProjectDetail() {
                             <Link
                                 to="#resort-amenities"
                                 className={cx("text-wrapper")}
+                                onClick={handleSeeAllClick}
                             >
                                 See All
                             </Link>
@@ -155,9 +174,55 @@ function ProjectDetail() {
 
                 {/* Resort Amenities */}
                 <div className={cx("resort-amenities-wrapper")}>
-                    <h1 id={cx("resort-amenities")}>Resort Amenities</h1>
+                    <h1 id={cx("resort-amenities")} className={cx("title")}>
+                        Resort Amenities
+                    </h1>
+                    <div className={cx("resort-amenities-list")}>
+                        {/* Left */}
+                        <div className={cx("left-list")}>
+                            <div className={cx("item")}>Accessible Rooms</div>
+                            <div className={cx("item")}>
+                                Children Activities
+                            </div>
+                            <div className={cx("item")}>Concierge Services</div>
+                            <div className={cx("item")}>Family Rooms</div>
+
+                            <div className={cx("item")}>Fitness Center</div>
+                            <div className={cx("item")}>Hot Tub</div>
+                            <div className={cx("item")}>Non-Smoking Rooms</div>
+                        </div>
+                        {/* Between */}
+                        <div className={cx("between-list")}>
+                            <div className={cx("item")}>Laundry Facilities</div>
+                            <div className={cx("item")}>Non-Smoking Hotel</div>
+                            <div className={cx("item")}>
+                                Swimming Pool (Outdoor)
+                            </div>
+                            <div className={cx("item")}>Restaurant</div>
+                            <div className={cx("item")}>Spa</div>
+                            <div className={cx("item")}>Child Friendly</div>
+                            <div className={cx("item")}>
+                                Shuttle Bus Service
+                            </div>
+                        </div>
+                        {/* Right */}
+                        <div className={cx("right-list")}>
+                            <div className={cx("item")}>Business Center</div>
+                            <div className={cx("item")}>Meeting rooms</div>
+                            <div className={cx("item")}>Parking On-Site</div>
+                            <div className={cx("item")}>Pool Table</div>
+                            <div className={cx("item")}>
+                                Shuttle Bus Service
+                            </div>
+                            <div className={cx("item")}>Bar</div>
+                        </div>
+                    </div>
                 </div>
             </div>
+            {/* Footer */}
+            <footer className={cx("footer")}>
+                <Footer />
+            </footer>
         </div>
     );
 }
