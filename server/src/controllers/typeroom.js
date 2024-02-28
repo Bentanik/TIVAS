@@ -114,3 +114,25 @@ export const deleteTypeRoom = async(req, res) => {
     return internalServerError("Error at Server Side!", res);
   }
 }
+
+export const getAllTypeRoom = async(req, res) => {
+  try {
+    const {projectID} = req.params
+    const response = await services.getAllTypeRoom(projectID, req.query);
+    return res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    return internalServerError("Error at Server Side!", res);
+  }
+}
+
+export const getDetailsTypeRoom = async(req, res) => {
+  try {
+    const { id } = req.params;
+    const response = await services.getDetailsTypeRoom(id);
+    return res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    return internalServerError("Error at Server Side!", res);
+  }
+}

@@ -26,4 +26,14 @@ router.delete(
   controllers.deleteTypeRoom
 )
 
+router.get(
+  "/getAll/:projectID",
+  controllers.getAllTypeRoom
+)
+
+router.get(
+  "/:id",
+  controllers.getDetailsTypeRoom
+)
+
 export default router;
