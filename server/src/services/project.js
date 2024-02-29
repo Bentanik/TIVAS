@@ -14,6 +14,19 @@ const convertDate = (dateString) => {
     return date;
 }
 
+const compareDates = (d1, d2) => {
+    let date1 = new Date(d1).getTime();
+    let date2 = new Date(d2).getTime();
+  
+    if (date1 < date2) {
+      console.log(`${d1} is less than ${d2}`);
+    } else if (date1 > date2) {
+      console.log(`${d1} is greater than ${d2}`);
+    } else {
+      console.log(`Both dates are equal`);
+    }
+  };
+
 const deleteProjectImage = (fileData) => {
     if (fileData.thumbnail) {
         for (let i = 0; i < fileData.thumbnail.length; i++) {
@@ -226,7 +239,7 @@ export const updateProject = ({
                     if ((parseInt(thumbnailDeleted) === 1) || fileData.thumbnail) {
                         cloudinary.uploader.destroy(projectResult.thumbnailPathName);
                     }
-
+                    
                     //Update
                     await db.Project.update({
                         name,
@@ -395,6 +408,24 @@ export const getDetailsProject = (id) => {
                 message: response ? `Project ${id} found` : `Can not find Project with id: ${id}`,
                 data: response,
             })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
+export const changeDate = ({
+    openDate
+},id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const project = await db.Project.findOne({
+                where : {
+                    id
+                }
+            })
+            compareDates(convertDate(project.openDate),openDate)
         } catch (error) {
             console.log(error);
             reject(error);

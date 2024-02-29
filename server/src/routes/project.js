@@ -46,4 +46,6 @@ router.get(
   controllers.getDetailsProject
 )
 
+router.put("/changeOpenDate/:id",controllers.changeDate)
+
 export default router;
