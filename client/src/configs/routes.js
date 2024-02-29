@@ -28,7 +28,7 @@ const routes = [
     },
 
     {
-        path: "/project detail",
+        path: "/project-detail",
         component: ProjectDetail,
         layout: null,
     },
