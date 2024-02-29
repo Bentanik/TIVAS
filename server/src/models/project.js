@@ -12,17 +12,20 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Project.hasMany(models.TypeOfProject, {foreignKey: 'projectID', ondelete: 'cascade', hooks: true});
       Project.hasMany(models.Image, {foreignKey: 'projectID', ondelete: 'cascade', hooks: true});
+      Project.hasMany(models.ReservationTicket, {foreignKey: 'projectID', ondelete: 'cascade', hooks: true});
       // define association here
     }
   }
   Project.init({
     name: DataTypes.STRING,
-    description: DataTypes.STRING,
+    description: DataTypes.TEXT('long'),
     buildingStatus: DataTypes.INTEGER,
     location: DataTypes.STRING,
     features: DataTypes.STRING,
     attractions: DataTypes.STRING,
     saleStatus: DataTypes.INTEGER,
+    reservationPrice: DataTypes.DOUBLE,
+    openDate: DataTypes.DATE,
     thumbnailPathUrl: DataTypes.STRING,
     thumbnailPathName: DataTypes.STRING,
   }, {

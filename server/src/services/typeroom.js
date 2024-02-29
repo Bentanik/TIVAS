@@ -2,6 +2,8 @@ import db from "../models";
 const cloudinary = require('cloudinary').v2;
 import "dotenv/config";
 import { Model, Op } from "sequelize";
+import { pagination } from "../middlewares/pagination";
+
 
 const deleteTypeRoomImage = (fileData) => {
     if (fileData) {
@@ -49,10 +51,9 @@ export const createTypeRoom = (projectID, {
     name,
     bedrooms,
     persons,
-    kitchen,
-    entertainment,
-    features,
-    policies,
+    size,
+    bedTypes,
+    amenities,
     description,
     type,
     quantity,
@@ -96,15 +97,12 @@ export const createTypeRoom = (projectID, {
                             name,
                             bedrooms,
                             persons,
-                            kitchen: kitchen? kitchen : null,
-                            entertainment: entertainment? entertainment : null,
-                            features: features? features : null,
-                            policies: policies? policies : null,
+                            size,
+                            bedTypes,
+                            amenities,
                             description,
                             typeOfProjectID: typeOfProjectResponse.id,
                         })
-
-
 
                         //Import images to imageTable
                         if (typeRoomResponse) {
@@ -165,10 +163,9 @@ export const updateTypeRoom = (id, {
     name,
     bedrooms,
     persons,
-    kitchen,
-    entertainment,
-    features,
-    policies,
+    size,
+    bedTypes,
+    amenities,
     description,
     imagesDeleted,
 }, fileData) => {
@@ -223,11 +220,11 @@ export const updateTypeRoom = (id, {
                         name,
                         bedrooms,
                         persons,
-                        kitchen,
-                        entertainment,
-                        features,
-                        policies,
+                        size,
+                        bedTypes,
+                        amenities,
                         description,
+                        typeOfProjectID: typeOfProjectResponse.id,
                     }, {
                         where: {
                             id: id,
@@ -290,6 +287,77 @@ export const deleteTypeRoom = (id) => {
             resolve({
                 err: typeRoomResponse ? 0 : 1,
                 message: typeRoomResponse ? 'Deleted Successfully.' : `Can not find TypeRoom with id: ${id}`
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
+export const getAllTypeRoom = (projectID, { page, limit, orderType, orderBy }) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const queries = pagination({ page, limit, orderType, orderBy });
+            queries.nest = true;
+            const response = await db.TypeRoom.findAll({
+                attributes: ['id', 'name', 'bedrooms', 'persons', 'size', 'bedTypes', 'amenities'],
+                include: [
+                    {
+                        model: db.TypeOfProject,
+                        attributes: [],
+                        where: {
+                            projectID: projectID,
+                        }
+                    },
+                    {
+                        model: db.Image,
+                        attributes: ['id', 'pathUrl'],
+                        limit: 1,
+                    },
+                ],
+                ...queries,
+            })
+            if (response) {
+                for (let i = 0; i < response.length; i++) {
+                    response[i].bedTypes = response[i].bedTypes.split(',');
+                    response[i].amenities = response[i].amenities.split(',');
+                }
+            }
+            resolve({
+                err: (response && response.length !== 0) ? 0 : 1,
+                message: (response && response.length !== 0) ? `All TypeRooms of Project (${projectID})` : `Can not find any TypeRooms of Project (${projectID})`,
+                data: response,
+                count: response ? response.length : 0,
+                page: page
+            })
+
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
+export const getDetailsTypeRoom = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const response = await db.TypeRoom.findByPk(id, {
+                attributes: { exclude: ['createdAt', 'updatedAt', 'typeOfProjectID', 'TypeOfProjectId']},
+                nest: true,
+                include: {
+                    model: db.Image,
+                    attributes: ['id', 'pathUrl'],
+                },
+            });
+            if(response){
+                response.bedTypes = response.bedTypes.split(',');
+                response.amenities = response.amenities.split(',');
+            }
+            resolve({
+                err: response ? 0 : 1,
+                message: response ? `TypeRoom (${id}) found` : `Can not find TypeRoom (${id})`,
+                data: response
             })
         } catch (error) {
             console.log(error);

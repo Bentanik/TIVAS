@@ -9,17 +9,8 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      startDate: {
-        type: Sequelize.DATE
-      },
-      endDate: {
-        type: Sequelize.DATE
-      },
-      price: {
-        type: Sequelize.DOUBLE
-      },
-      numberOfYear: {
-        type: Sequelize.INTEGER
+      code: {
+        type: Sequelize.STRING
       },
       userID: {
         type: Sequelize.INTEGER

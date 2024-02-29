@@ -13,7 +13,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       description: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT('long')
       },
       location: {
         type: Sequelize.STRING
@@ -29,6 +29,12 @@ module.exports = {
       },
       saleStatus: {
         type: Sequelize.INTEGER
+      },
+      reservationPrice: {
+        type: Sequelize.DOUBLE
+      },
+      openDate: {
+        type: Sequelize.DATE
       },
       thumbnailPathUrl: {
         type: Sequelize.STRING
