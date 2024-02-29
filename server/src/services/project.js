@@ -17,15 +17,15 @@ const convertDate = (dateString) => {
 const compareDates = (d1, d2) => {
     let date1 = new Date(d1).getTime();
     let date2 = new Date(d2).getTime();
-  
+
     if (date1 < date2) {
-      console.log(`${d1} is less than ${d2}`);
+        console.log(`${d1} is less than ${d2}`);
     } else if (date1 > date2) {
-      console.log(`${d1} is greater than ${d2}`);
+        console.log(`${d1} is greater than ${d2}`);
     } else {
-      console.log(`Both dates are equal`);
+        console.log(`Both dates are equal`);
     }
-  };
+};
 
 const deleteProjectImage = (fileData) => {
     if (fileData.thumbnail) {
@@ -141,8 +141,10 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
             })
             if (response) {
                 for (let i = 0; i < response.length; i++) {
-                    if (response[i].features && response[i].attractions) {
+                    if (response[i].features) {
                         response[i].features = response[i].features.split(',');
+                    }
+                    if (response[i].attractions) {
                         response[i].attractions = response[i].attractions.split(',');
                     }
                 }
@@ -241,7 +243,7 @@ export const updateProject = ({
                     if ((parseInt(thumbnailDeleted) === 1) || fileData.thumbnail) {
                         cloudinary.uploader.destroy(projectResult.thumbnailPathName);
                     }
-                    
+
                     //Update
                     await db.Project.update({
                         name,
@@ -343,8 +345,10 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
             });
             if (response) {
                 for (let i = 0; i < response.length; i++) {
-                    if (response[i].features && response[i].attractions) {
+                    if (response[i].features) {
                         response[i].features = response[i].features.split(',');
+                    }
+                    if (response[i].attractions) {
                         response[i].attractions = response[i].attractions.split(',');
                     }
                 }
@@ -373,8 +377,10 @@ export const getTop10 = () => {
             })
             if (response) {
                 for (let i = 0; i < response.length; i++) {
-                    if (response[i].features && response[i].attractions) {
+                    if (response[i].features) {
                         response[i].features = response[i].features.split(',');
+                    }
+                    if (response[i].attractions) {
                         response[i].attractions = response[i].attractions.split(',');
                     }
                 }
@@ -395,22 +401,60 @@ export const getTop10 = () => {
 export const getDetailsProject = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const response = await db.Project.findByPk(id, {
+            let response = {};
+            const projectResponse = await db.Project.findByPk(id, {
                 attributes: { exclude: ['createdAt', 'updatedAt', 'thumbnailPathName'] },
                 nest: true,
                 //raw: true,
-                include: {
-                    model: db.Image,
-                    attributes: ['id', 'pathUrl'],
-                },
-            });
-            if (response) {
-                if (response.features && response.attractions) {
-                    response.features = response.features.split(',');
-                    response.attractions = response.attractions.split(',');
+                include: [
+                    {
+                        nest: true,
+                        model: db.Image,
+                        attributes: ['id', 'pathUrl'],
+                    },
+                ],
+            },
+            );
+            const typeRoomResponse = await db.TypeRoom.findAll({
+                attributes: ['id', 'name', 'bedrooms', 'persons', 'size', 'bedTypes', 'amenities'],
+                nest: true,
+                //raw: true,
+                include: [
+                    {
+                        model: db.TypeOfProject,
+                        attributes: [],
+                        where: {
+                            projectID: id,
+                        }
+                    },
+                    {
+                        model: db.Image,
+                        attributes: ['id', 'pathUrl'],
+                        limit: 1,
+                    },
+                ],
+            })
+            if (projectResponse) {
+                response.Project = { projectResponse }
+                if(response.Project.projectResponse.features){
+                    response.Project.projectResponse.features = response.Project.projectResponse.features.split(',')
+                }
+                if(response.Project.projectResponse.attractions){
+                    response.Project.projectResponse.attractions = response.Project.projectResponse.attractions.split(',')
+                }
+                if (typeRoomResponse) {
+                    response.typeRooms = { typeRoomResponse };
+                    for (let i = 0; i < response.typeRooms.typeRoomResponse.length; i++) {
+                        if (response.typeRooms.typeRoomResponse[i].bedTypes) {
+                            response.typeRooms.typeRoomResponse[i].bedTypes = response.typeRooms.typeRoomResponse[i].bedTypes.split(',');
+                        }
+                        if (response.typeRooms.typeRoomResponse[i].amenities) {
+                            response.typeRooms.typeRoomResponse[i].amenities = response.typeRooms.typeRoomResponse[i].amenities.split(',');
+                        }
+
+                    }
                 }
             }
-            console.log(response.features);
             resolve({
                 err: response ? 0 : 1,
                 message: response ? `Project ${id} found` : `Can not find Project with id: ${id}`,
@@ -425,15 +469,15 @@ export const getDetailsProject = (id) => {
 
 export const changeDate = ({
     openDate
-},id) => {
+}, id) => {
     return new Promise(async (resolve, reject) => {
         try {
             const project = await db.Project.findOne({
-                where : {
+                where: {
                     id
                 }
             })
-            compareDates(convertDate(project.openDate),openDate)
+            compareDates(convertDate(project.openDate), openDate)
         } catch (error) {
             console.log(error);
             reject(error);

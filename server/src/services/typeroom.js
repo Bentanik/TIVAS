@@ -320,10 +320,13 @@ export const getAllTypeRoom = (projectID, { page, limit, orderType, orderBy }) =
             })
             if (response) {
                 for (let i = 0; i < response.length; i++) {
-                    if (response[i].bedTypes && response[i].amenities) {
+                    if (response[i].bedTypes) {
                         response[i].bedTypes = response[i].bedTypes.split(',');
+                    }
+                    if (response[i].amenities) {
                         response[i].amenities = response[i].amenities.split(',');
                     }
+
                 }
             }
             resolve({
@@ -353,8 +356,10 @@ export const getDetailsTypeRoom = (id) => {
                 },
             });
             if (response) {
-                if (response.bedTypes && response.amenities) {
+                if (response.bedTypes) {
                     response.bedTypes = response.bedTypes.split(',');
+                }
+                if (response.amenities) {
                     response.amenities = response.amenities.split(',');
                 }
             }
