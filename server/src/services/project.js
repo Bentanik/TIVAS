@@ -425,7 +425,7 @@ export const getDetailsProject = (id) => {
                         attributes: [],
                         where: {
                             projectID: id,
-                        }
+                        },
                     },
                     {
                         model: db.Image,
@@ -433,23 +433,24 @@ export const getDetailsProject = (id) => {
                         limit: 1,
                     },
                 ],
+                order: [['Id', 'ASC']],
             })
             if (projectResponse) {
-                response.Project = { projectResponse }
-                if(response.Project.projectResponse.features){
-                    response.Project.projectResponse.features = response.Project.projectResponse.features.split(',')
+                response.Project =  projectResponse 
+                if(response.Project.features){
+                    response.Project.features = response.Project.features.split(',')
                 }
-                if(response.Project.projectResponse.attractions){
-                    response.Project.projectResponse.attractions = response.Project.projectResponse.attractions.split(',')
+                if(response.Project.attractions){
+                    response.Project.attractions = response.Project.attractions.split(',')
                 }
                 if (typeRoomResponse) {
-                    response.typeRooms = { typeRoomResponse };
-                    for (let i = 0; i < response.typeRooms.typeRoomResponse.length; i++) {
-                        if (response.typeRooms.typeRoomResponse[i].bedTypes) {
-                            response.typeRooms.typeRoomResponse[i].bedTypes = response.typeRooms.typeRoomResponse[i].bedTypes.split(',');
+                    response.typeRooms =  typeRoomResponse ;
+                    for (let i = 0; i < response.typeRooms.length; i++) {
+                        if (response.typeRooms[i].bedTypes) {
+                            response.typeRooms[i].bedTypes = response.typeRooms[i].bedTypes.split(',');
                         }
-                        if (response.typeRooms.typeRoomResponse[i].amenities) {
-                            response.typeRooms.typeRoomResponse[i].amenities = response.typeRooms.typeRoomResponse[i].amenities.split(',');
+                        if (response.typeRooms[i].amenities) {
+                            response.typeRooms[i].amenities = response.typeRooms[i].amenities.split(',');
                         }
 
                     }
