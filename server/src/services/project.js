@@ -128,8 +128,10 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
             })
             if (response) {
                 for (let i = 0; i < response.length; i++) {
-                    response[i].features = response[i].features.split(',');
-                    response[i].attractions = response[i].attractions.split(',');
+                    if (response[i].features && response[i].attractions) {
+                        response[i].features = response[i].features.split(',');
+                        response[i].attractions = response[i].attractions.split(',');
+                    }
                 }
             }
             resolve({
@@ -328,8 +330,10 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
             });
             if (response) {
                 for (let i = 0; i < response.length; i++) {
-                    response[i].features = response[i].features.split(',');
-                    response[i].attractions = response[i].attractions.split(',');
+                    if (response[i].features && response[i].attractions) {
+                        response[i].features = response[i].features.split(',');
+                        response[i].attractions = response[i].attractions.split(',');
+                    }
                 }
             }
             resolve({
@@ -356,8 +360,10 @@ export const getTop10 = () => {
             })
             if (response) {
                 for (let i = 0; i < response.length; i++) {
-                    response[i].features = response[i].features.split(',');
-                    response[i].attractions = response[i].attractions.split(',');
+                    if (response[i].features && response[i].attractions) {
+                        response[i].features = response[i].features.split(',');
+                        response[i].attractions = response[i].attractions.split(',');
+                    }
                 }
             }
             resolve({
@@ -386,8 +392,10 @@ export const getDetailsProject = (id) => {
                 },
             });
             if (response) {
-                response.features = response.features.split(',');
-                response.attractions = response.attractions.split(',');
+                if (response.features && response.attractions) {
+                    response.features = response.features.split(',');
+                    response.attractions = response.attractions.split(',');
+                }
             }
             console.log(response.features);
             resolve({
