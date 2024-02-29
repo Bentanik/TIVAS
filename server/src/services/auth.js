@@ -118,7 +118,9 @@ export const login = ({ username, email, password }) => {
           ? {
               id: user.id,
               username: user.username,
+              type: user?.type,
               roleID: user.roleID,
+              avatar: user.avatarURL,
             }
           : null,
         accessToken: `Bearer ${accessToken}`,
@@ -169,6 +171,7 @@ export const loginGoogle = ({ email, roleID = 3 }) => {
                 id: user.id,
                 username: user.username || null,
                 roleID: user.roleID || roleID,
+                avatar: user.avatarURL,
               }
             : null,
           accessToken: `Bearer ${accessToken}`,
@@ -193,6 +196,7 @@ export const loginGoogle = ({ email, roleID = 3 }) => {
                 id: user.id,
                 username: user.username || null,
                 roleID: user.roleID || roleID,
+                type: user?.type,
               }
             : null,
           accessToken: `Bearer ${accessToken}`,
@@ -371,6 +375,7 @@ export const registerGoogle = ({
   username,
   email,
   fullName,
+  phoneNumber,
   refundHistoryID,
 }) => {
   return new Promise(async (resolve, reject) => {
@@ -378,6 +383,7 @@ export const registerGoogle = ({
       const user = await db.User.create({
         username,
         fullName,
+        phoneNumber,
         email,
         refundHistoryID,
         type: "Google",
