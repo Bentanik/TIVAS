@@ -14,7 +14,7 @@ function ProjectResult() {
                 <div className={cx("left-content")}>
                     {/* Thumb Project */}
 
-                    <Link to="/detail">
+                    <Link to="/project-detail">
                         <img
                             className={cx("thumb-project")}
                             src={images.thumbProject}
@@ -66,16 +66,16 @@ function ProjectResult() {
 
                     {/* Project Desc */}
                     <div className={cx("project-desc")}>
-                        <p className={cx("desc")}>
-                            ASIA’S FIRST RIVERFRONT VILLAinspired by HAUTE
-                            COUTUREFor the very first time in Asia, ELIE SAAB,
-                            together with Masterise Homes, collaborated to
-                            launch a collection of exquisite villas by the
-                            river, creating a world defined by timeless elegance
-                            and beauty. The project introduces a new era of
-                            Branded Residences in Vietnam.
-                        </p>
+                        <p className={cx("desc")}>ASIA’S FIRST RIVERFRONT</p>
                     </div>
+                    <div className={cx("row")}>
+                        <div className={cx("date")}>Open day: 20/12/2024</div>
+
+                        <div className={cx("reservation-price")}>
+                            Reservation: 1.000.000 vnd
+                        </div>
+                    </div>
+
                     {/* Detail */}
                     <div className={cx("detail")}>
                         <Link to="/detail">
