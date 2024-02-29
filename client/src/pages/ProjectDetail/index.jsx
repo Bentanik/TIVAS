@@ -10,15 +10,49 @@ import { Link } from "react-router-dom";
 import Footer from "~/components/Layouts/Footer";
 import images from "~/assets/images";
 import { useState, useEffect } from "react";
+import axios from "axios";
+import { ThemeContext } from "@emotion/react";
+
 const cx = classNames.bind(styles);
+
+const data = null;
 
 const blog_link = {
     link: "/blog",
 };
 
 function ProjectDetail() {
+    // Get API from project detail
+    const [projectData, setProjectData] = useState({});
+
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const response = await axios.get(
+                    `${process.env.REACT_APP_SERVER_URL}/api/v1/project/1`
+                );
+                // setProjectData(response.data.data);
+            } catch (error) {
+                console.error("Có lỗi xảy ra:", error);
+            }
+        }
+        fetchData();
+    }, []);
+
+    // scrollToResortAmenities
+
     const [scrollToResortAmenities, setScrollToResortAmenities] =
         useState(false);
+
+    // axios
+    //     .get(`${process.env.REACT_APP_SERVER_URL}/api/v1/project/`, {
+    //         params: {
+    //             id: 1,
+    //         },
+    //     })
+    //     .then((res) => {
+
+    //     });
 
     useEffect(() => {
         if (scrollToResortAmenities) {
@@ -112,13 +146,11 @@ function ProjectDetail() {
             <div className={cx("content")}>
                 <div className={cx("info-detail")}>
                     <h1 className={cx("title")}>
-                        The Rivus Project from Thu Duc district, Ho Chi Minh
+                        {/* The Rivus Project from Thu Duc district, Ho Chi Minh */}
+                        {projectData.name}
                     </h1>
 
-                    <div className={cx("desc")}>
-                        The perfect place to use as a home base on your Disney
-                        World expedition.
-                    </div>
+                    <div className={cx("desc")}>{projectData.description}</div>
 
                     <div className={cx("rate")}>
                         <div className={cx("rating")}>4.5</div>
