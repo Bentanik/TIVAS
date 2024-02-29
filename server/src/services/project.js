@@ -18,7 +18,6 @@ const deleteProjectImage = (fileData) => {
 }
 
 export const createNewProject = ({
-    id,
     name,
     description,
     location,
