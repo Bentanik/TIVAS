@@ -16,3 +16,12 @@ export const activeTicket = async (req,res) => {
     const response = await services.activeTicket(id)
     return res.status(200).json(response)
 }
+
+export const checkTicket = async (req, res) => {
+    const { code } = req.body;
+    if(!code){
+        return missValue("Missing Value!", res);
+    }
+    const response = await services.checkTicket(req.body);
+    return res.status(200).json(response);
+}
