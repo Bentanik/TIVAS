@@ -15,7 +15,6 @@ import ToastNotify from "~/components/ToastNotify";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 
-
 function Register({ handleAccessLogin, handleCloseRegister, trigger }) {
   const dispatch = useDispatch();
 
@@ -49,8 +48,6 @@ function Register({ handleAccessLogin, handleCloseRegister, trigger }) {
     }
   }, [stateFormRegister, registerPath, stateEmail?.email]);
 
-
-
   const renderRegister = () => {
     if (registerPath === 0) {
       return <RegisterEmail handleAccessLogin={handleAccessLogin} />;
@@ -64,7 +61,7 @@ function Register({ handleAccessLogin, handleCloseRegister, trigger }) {
   return (
     <div>
       <Toaster position="top-right" richColors expand={true} />
-    
+
       <Popup
         trigger={trigger}
         onClose={handleCloseRegister}
@@ -74,8 +71,11 @@ function Register({ handleAccessLogin, handleCloseRegister, trigger }) {
         {renderRegister()}
       </Popup>
       <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={statusRegister.isFetching}
+        sx={{
+          color: "#fff",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+        }}
+        open={statusRegister?.isFetching}
       >
         <CircularProgress color="inherit" />
       </Backdrop>

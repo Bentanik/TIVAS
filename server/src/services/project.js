@@ -4,6 +4,16 @@ import "dotenv/config";
 import { Model, Op, fn, col, literal } from "sequelize";
 import { pagination } from "../middlewares/pagination";
 
+const convertDate = (dateString) => {
+    const parts = dateString.split('/');
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1;
+    const year = parseInt(parts[2], 10);
+
+    const date = new Date(year, month, day);
+    return date;
+}
+
 const deleteProjectImage = (fileData) => {
     if (fileData.thumbnail) {
         for (let i = 0; i < fileData.thumbnail.length; i++) {
@@ -22,10 +32,15 @@ export const createNewProject = ({
     description,
     location,
     buildingStatus,
-    type
+    type,
+    features,
+    attractions,
+    reservationPrice,
+    openDate,
 }, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
+            const openDateDB = convertDate(openDate);
             let typeInDBError = 0;
             const imageProjectArray = [];
             const typeErrorMessage = [];
@@ -51,6 +66,11 @@ export const createNewProject = ({
                         description,
                         location,
                         buildingStatus,
+                        features,
+                        attractions,
+                        saleStatus: 0,
+                        reservationPrice,
+                        openDate: openDateDB,
                         thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : null,
                         thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : null,
                     },
@@ -103,9 +123,15 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
             const queries = pagination({ page, limit, orderType, orderBy });
             //queries.raw = true;
             const response = await db.Project.findAll({
-                attributes: ['id', 'name', 'location', 'thumbnailPathUrl'],
+                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'features', 'attractions'],
                 ...queries,
             })
+            if (response) {
+                for (let i = 0; i < response.length; i++) {
+                    response[i].features = response[i].features.split(',');
+                    response[i].attractions = response[i].attractions.split(',');
+                }
+            }
             resolve({
                 err: (response && response.length !== 0) ? 0 : 1,
                 message: (response && response.length !== 0) ? `Get all of projects results` : 'Can not find any projects!',
@@ -154,75 +180,96 @@ export const updateProject = ({
     description,
     location,
     buildingStatus,
+    features,
+    attractions,
     thumbnailDeleted,
     imagesDeleted,
+    reservationPrice,
+    openDate,
 }, id, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
+            let nameDuplicated;
+            const openDateDB = convertDate(openDate);
             let imageErrorMessage = [];
             const imageProjectArray = [];
             //Check TypeRoom is existed in DB
             let projectResult = await db.Project.findByPk(id);
             if (projectResult) {
-                //Delete images
-                if (imagesDeleted) {
-                    imagesDeleted = imagesDeleted.split(',');
-                    await Promise.all(imagesDeleted.map(async (image) => {
-                        const imageResult = await db.Image.findByPk(image);
-                        if (imageResult) {
-                            cloudinary.uploader.destroy(imageResult.pathName);
-                            await db.Image.destroy({
-                                where: {
-                                    id: image
-                                }
-                            });
-
-                        }
-                        else {
-                            imageErrorMessage.push(`(${image})`);
-                        }
-                    }));
-                }
-
-                //Delete or Update thumbnail
-                if ((parseInt(thumbnailDeleted) === 1) || fileData.thumbnail) {
-                    cloudinary.uploader.destroy(projectResult.thumbnailPathName);
-                }
-
-                //Update
-                await db.Project.update({
-                    name,
-                    description,
-                    location,
-                    buildingStatus,
-                    thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathUrl,
-                    thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathName,
-                }, {
+                nameDuplicated = db.Project.findOne({
                     where: {
-                        id: id,
+                        name
                     }
                 })
+                if (!nameDuplicated) {
+                    //Delete images
+                    if (imagesDeleted) {
+                        imagesDeleted = imagesDeleted.split(',');
+                        await Promise.all(imagesDeleted.map(async (image) => {
+                            const imageResult = await db.Image.findByPk(image);
+                            if (imageResult) {
+                                cloudinary.uploader.destroy(imageResult.pathName);
+                                await db.Image.destroy({
+                                    where: {
+                                        id: image
+                                    }
+                                });
 
-                //Import images to imageTable
-                if (fileData.images) {
-                    for (let i = 0; i < fileData.images.length; i++) {
-                        const image = {
-                            pathUrl: fileData.images[i].path,
-                            pathName: fileData.images[i].filename,
-                            projectID: id
-                        }
-                        imageProjectArray.push(image);
+                            }
+                            else {
+                                imageErrorMessage.push(`(${image})`);
+                            }
+                        }));
                     }
-                    await db.Image.bulkCreate(imageProjectArray);
-                }
 
-                if (!projectResult && fileData) {
-                    deleteProjectImage(fileData);
+                    //Delete or Update thumbnail
+                    if ((parseInt(thumbnailDeleted) === 1) || fileData.thumbnail) {
+                        cloudinary.uploader.destroy(projectResult.thumbnailPathName);
+                    }
+
+                    //Update
+                    await db.Project.update({
+                        name,
+                        description,
+                        location,
+                        buildingStatus,
+                        features,
+                        attractions,
+                        reservationPrice,
+                        openDate: openDateDB,
+                        thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathUrl,
+                        thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathName,
+                    }, {
+                        where: {
+                            id: id,
+                        }
+                    })
+
+                    //Import images to imageTable
+                    if (fileData.images) {
+                        for (let i = 0; i < fileData.images.length; i++) {
+                            const image = {
+                                pathUrl: fileData.images[i].path,
+                                pathName: fileData.images[i].filename,
+                                projectID: id
+                            }
+                            imageProjectArray.push(image);
+                        }
+                        await db.Image.bulkCreate(imageProjectArray);
+                    }
+
+                    if (!projectResult && fileData) {
+                        deleteProjectImage(fileData);
+                    }
                 }
             }
             resolve({
-                err: projectResult ? 0 : 1,
-                message: projectResult ? 'Update Successfully.' : `Can not find Project with id: (${id})`,
+                err: !nameDuplicated ? 0 : 1,
+                message: !projectResult ?
+                    `Can not find Project with id: (${id})`
+                    : nameDuplicated ?
+                        'Project Name has been used!'
+                        : 'Update Successfully.',
                 messageImage: imageErrorMessage.length !== 0 ? `Can not find Image: ${imageErrorMessage.join(',')}` : null,
             });
         } catch (error) {
@@ -255,7 +302,7 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
             // queries.raw = true;
             const response = await db.Project.findAll({
                 where: whereClause,
-                attributes: ['id', 'name', 'location', 'thumbnailPathUrl'],
+                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'features', 'attractions'],
                 include: [
                     {
                         model: db.TypeOfProject,
@@ -279,6 +326,12 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
                 ...queries,
                 subQuery: false,
             });
+            if (response) {
+                for (let i = 0; i < response.length; i++) {
+                    response[i].features = response[i].features.split(',');
+                    response[i].attractions = response[i].attractions.split(',');
+                }
+            }
             resolve({
                 err: (response && response.length !== 0) ? 0 : 1,
                 mess: (response && response.length !== 0) ? `Search Projects Results` : "Can not find any Projects!",
@@ -297,10 +350,16 @@ export const getTop10 = () => {
     return new Promise(async (resolve, reject) => {
         try {
             const response = await db.Project.findAll({
-                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'createdAt'],
+                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'createdAt', 'reservationPrice', 'openDate', 'features', 'attractions'],
                 limit: 10,
                 order: [['createdAt', 'DESC']],
             })
+            if (response) {
+                for (let i = 0; i < response.length; i++) {
+                    response[i].features = response[i].features.split(',');
+                    response[i].attractions = response[i].attractions.split(',');
+                }
+            }
             resolve({
                 err: (response && response.length !== 0) ? 0 : 1,
                 mess: (response && response.length !== 0) ? "Get top 10 new projects results" : "Can not find any Projects!",
@@ -326,6 +385,11 @@ export const getDetailsProject = (id) => {
                     attributes: ['id', 'pathUrl'],
                 },
             });
+            if (response) {
+                response.features = response.features.split(',');
+                response.attractions = response.attractions.split(',');
+            }
+            console.log(response.features);
             resolve({
                 err: response ? 0 : 1,
                 message: response ? `Project ${id} found` : `Can not find Project with id: ${id}`,

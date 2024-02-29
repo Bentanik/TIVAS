@@ -2,7 +2,7 @@ import classNames from "classnames/bind";
 import styles from "./Login.module.scss";
 import InputItem from "~/components/InputItem";
 import { useEffect, useState } from "react";
-import images from "~/assets";
+import images from "~/assets/images";
 import { login as validateLogin } from "~/middlewares/Validates/validateForm";
 import { useDispatch, useSelector } from "react-redux";
 import { login, loginGoogle } from "~/controllers/auth";
@@ -18,7 +18,7 @@ import CardContainerGoogle from "~/components/Layouts/CardRegisterGoogle/CardCon
 
 const cx = classNames.bind(styles);
 
-function Login({ handleAccessRegister }) {
+function Login({ handleAccessRegister, handleAccessForgotPassword }) {
   const [loginValue, setLoginValue] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
@@ -44,7 +44,11 @@ function Login({ handleAccessRegister }) {
       setErrors({});
       if (err.email)
         login(dispatch, axiosInstance, { email: loginValue, password });
-      else login(dispatch, axiosInstance, { username: loginValue, password });
+      else
+        login(dispatch, axiosInstance, {
+          username: loginValue,
+          password,
+        });
     }
   };
 
@@ -116,8 +120,14 @@ function Login({ handleAccessRegister }) {
             </div>
             <div className={cx("footer")}>
               <p className={cx("text")}>
-                Forgot your <span className={cx("link")}>username </span>
-                or <span className={cx("link")}>password</span>?
+                Forgot your{" "}
+                <span
+                  className={cx("link")}
+                  onClick={handleAccessForgotPassword}
+                >
+                  password
+                </span>
+                ?
               </p>
               <button
                 type={
@@ -148,7 +158,10 @@ function Login({ handleAccessRegister }) {
           </form>
 
           <Backdrop
-            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            sx={{
+              color: "#fff",
+              zIndex: (theme) => theme.zIndex.drawer + 1,
+            }}
             open={statusLogin}
           >
             <CircularProgress color="inherit" />

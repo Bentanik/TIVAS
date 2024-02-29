@@ -5,14 +5,9 @@ import { response } from "express";
 const cloudinary = require("cloudinary").v2;
 
 const deleteTypeRoomImage = (fileData) => {
-  if (fileData.thumbnail) {
-    for (let i = 0; i < fileData.thumbnail.length; i++) {
-      cloudinary.uploader.destroy(fileData.thumbnail[i].filename);
-    }
-  }
-  if (fileData.images) {
-    for (let i = 0; i < fileData.images.length; i++) {
-      cloudinary.uploader.destroy(fileData.images[i].filename);
+  if (fileData) {
+    for (let i = 0; i < fileData.length; i++) {
+      cloudinary.uploader.destroy(fileData[i].filename);
     }
   }
 }
@@ -31,21 +26,31 @@ const deleteTypeRoomImage = (fileData) => {
 
 export const createNewTypeRoom = async (req, res) => {
   try {
-    const { name, bedrooms, persons, kitchen, entertainment, features, policies, description, projectID, type } = req.body;
-    if (!name || !bedrooms || !persons || !description || !projectID || !type) {
+    const { projectID } = req.params;
+    const { name, bedrooms, persons, description, type, quantity, size, bedTypes } = req.body;
+    if (!name || !bedrooms || !persons || !description || (!/^\d+$/.test(projectID)) || !type || !size || !bedTypes || !quantity) {
       if (req.files) {
         deleteTypeRoomImage(req.files);
       }
       return missValue("Missing value!", res);
     }
-    if ((!/^\d+$/.test(bedrooms)) || (!/^\d+$/.test(persons)) || (!/^\d+$/.test(projectID))) {
+    if ((!/^\d+$/.test(bedrooms)) || (!/^\d+$/.test(persons)) || (!/^\d+$/.test(quantity))) {
       if (req.files) {
         deleteTypeRoomImage(req.files);
       }
-      return badRequest("bedrooms, persons, projectID are required an INTEGER!", res);
+      return badRequest("bedrooms, persons, quantity are required an INTEGER!", res);
+    }
+    if(!/\b\d+(\.\d+)?\b/g.test(size)){
+      if(req.files) {
+        deleteProjectImage(req.files);
+      }
+      return badRequest("Size is required a NUMBER!", res);
+    }
+    if(bedrooms < 0 || persons < 0 || quantity < 0 || size < 0){
+      return badRequest("bedrooms, persons, quantity, size must be higher than 0!", res)
     }
 
-    const response = await services.createTypeRoom(req.body, req.files);
+    const response = await services.createTypeRoom(projectID, req.body, req.files);
     return res.status(200).json(response);
   } catch (error) {
     if (req.files) {
@@ -68,29 +73,38 @@ export const createNewTypeRoom = async (req, res) => {
 export const updateTypeRoom = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, bedrooms, persons, kitchen, entertainment, features, policies, description, imagesDeleted } = req.body;
-    if (!name || !bedrooms || !persons || !description || !id) {
+    const { name, bedrooms, persons, description, imagesDeleted, size, bedTypes, } = req.body;
+    if (!name || !bedrooms || !persons || !description || (!/^\d+$/.test(id)) || !size || !bedTypes) {
       if (req.files) {
         deleteTypeRoomImage(req.files);
       }
       return missValue("Missing value!", res);
     }
-    if ((!/^\d+$/.test(bedrooms)) || (!/^\d+$/.test(persons)) || (!/^\d+$/.test(id))) {
+    if ((!/^\d+$/.test(bedrooms)) || (!/^\d+$/.test(persons))) {
       if (req.files) {
         deleteTypeRoomImage(req.files);
       }
-      return badRequest("bedrooms, persons, typeRoomID are required an INTEGER!", res);
+      return badRequest("bedrooms, persons, quantity are required an INTEGER!", res);
+    }
+    if(!/\b\d+(\.\d+)?\b/g.test(size)){
+      if(req.files) {
+        deleteProjectImage(req.files);
+      }
+      return badRequest("Size is required a NUMBER!", res);
+    }
+    if(bedrooms < 0 || persons < 0 || size < 0){
+      return badRequest("bedrooms, persons, size must be higher than 0!", res)
     }
     if (imagesDeleted) {
       let imagesDeletedArray = imagesDeleted.split(',');
-      imagesDeletedArray.map((image) => {
+      Promise.all(imagesDeletedArray.map((image) => {
         if ((!/^\d+$/.test(image))) {
           if (req.files) {
             deleteTypeRoomImage(req.files);
           }
           return badRequest("imagesDeleted is required a string contains of an array of INTEGER!", res);
         }
-      })
+      }))
     }
     const response = await services.updateTypeRoom(id, req.body, req.files);
     return res.status(200).json(response);
@@ -113,6 +127,28 @@ export const deleteTypeRoom = async(req, res) => {
   try {
     const { id } = req.params;
     const response = await services.deleteTypeRoom(id);
+    return res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    return internalServerError("Error at Server Side!", res);
+  }
+}
+
+export const getAllTypeRoom = async(req, res) => {
+  try {
+    const {projectID} = req.params
+    const response = await services.getAllTypeRoom(projectID, req.query);
+    return res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    return internalServerError("Error at Server Side!", res);
+  }
+}
+
+export const getDetailsTypeRoom = async(req, res) => {
+  try {
+    const { id } = req.params;
+    const response = await services.getDetailsTypeRoom(id);
     return res.status(200).json(response);
   } catch (error) {
     console.log(error);

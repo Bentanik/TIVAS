@@ -10,34 +10,30 @@ const router = express.Router();
 //   );
 
 router.post(
-  "/create",
-  uploadCloud.fields([
-    {
-      name: 'thumbnail', maxCount: 1
-    },
-    {
-      name: 'images'
-    },
-  ]),
+  "/create/:projectID",
+  uploadCloud.array('images'),
   controllers.createNewTypeRoom
 )
 
 router.put(
   "/update/:id",
-  uploadCloud.fields([
-    {
-      name: 'thumbnail', maxCount: 1
-    },
-    {
-      name: 'images',
-    },
-  ]),
+  uploadCloud.array('images'),
   controllers.updateTypeRoom
 )
 
 router.delete(
   "/delete/:id",
   controllers.deleteTypeRoom
+)
+
+router.get(
+  "/getAll/:projectID",
+  controllers.getAllTypeRoom
+)
+
+router.get(
+  "/:id",
+  controllers.getDetailsTypeRoom
 )
 
 export default router;
