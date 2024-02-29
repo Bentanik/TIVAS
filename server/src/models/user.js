@@ -30,6 +30,8 @@ module.exports = (sequelize, DataTypes) => {
       roleID: DataTypes.INTEGER,
       refreshToken: DataTypes.STRING,
       refundHistoryID: DataTypes.STRING,
+      avatarURL: DataTypes.STRING,
+      avatarPathName: DataTypes.STRING,
       type: DataTypes.STRING,
     },
     {

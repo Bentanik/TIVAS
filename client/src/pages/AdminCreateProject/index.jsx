@@ -62,7 +62,12 @@ function AdminCreateProject() {
     // URL.revokeObjectURL(image.preview);
   };
 
-  const handleSubmit = () => {};
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const data = new FormData();
+
+    
+  };
 
   return (
     <div className={cx("wrapper")}>
@@ -177,7 +182,9 @@ function AdminCreateProject() {
           </div>
         </div>
 
-        <div className={cx("action")}>Submit</div>
+        <button type="submit" className={cx("action")}>
+          Submit
+        </button>
       </form>
     </div>
   );

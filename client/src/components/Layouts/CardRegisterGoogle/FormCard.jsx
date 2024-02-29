@@ -26,6 +26,7 @@ function FormCard() {
 
   const [fullName, setFullName] = useState("");
   const [username, setUserName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [fullNameSystem, setFullNameSystem] = useState("");
   const [address, setAddress] = useState("");
 
@@ -51,6 +52,7 @@ function FormCard() {
           username: username,
           email: stateEmail.email,
           fullName: fullNameSystem,
+          phoneNumber: phoneNumber,
           paymentMethod: id,
         });
       } catch (error) {
@@ -77,6 +79,12 @@ function FormCard() {
           value={fullNameSystem}
           setValue={setFullNameSystem}
           placeholder="Full Name *"
+        />
+         <InputItem
+          type="text"
+          value={phoneNumber}
+          setValue={setPhoneNumber}
+          placeholder="Phone Number *"
         />
         <h3 className={cx("title")}>Card Information</h3>
         <InputItem

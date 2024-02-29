@@ -62,7 +62,7 @@ const authSlice = createSlice({
     },
     loginSuccess: (state, action) => {
       state.login.isFetching = false;
-      state.login.user = action.payload;
+      state.login.user = action.payload;  
       state.login.error = "";
     },
     loginError: (state, action) => {
