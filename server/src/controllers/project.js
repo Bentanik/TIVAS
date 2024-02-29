@@ -35,8 +35,8 @@ const deleteProjectImage = (fileData) => {
 //Create New Project
 export const createNewProject = async (req, res) => {
   try {
-    const { name, description, buildingStatus, reservationPrice, openDate } = req.body;
-    if (!name || !description || !buildingStatus || !reservationPrice || !openDate) {
+    const { name, description, buildingStatus, location, reservationPrice, openDate } = req.body;
+    if (!name || !description || !buildingStatus || !location || !reservationPrice || !openDate) {
       if (req.files) {
         deleteProjectImage(req.files);
       }
@@ -86,8 +86,8 @@ export const deleteProjects = async (req, res) => {
 //Update Project
 export const updateProjects = async (req, res) => {
   const { id } = req.params;
-  const { name, description, buildingStatus, reservationPrice, openDate } = req.body;
-  if (!name || !description || !buildingStatus || !reservationPrice || !/^\d+$/.test(id) || !openDate) {
+  const { name, description, buildingStatus, location, reservationPrice, openDate } = req.body;
+  if (!name || !description || !buildingStatus || !location || !reservationPrice || !/^\d+$/.test(id) || !openDate) {
     if (req.files) {
       deleteProjectImage(req.files);
     }
