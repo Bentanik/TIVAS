@@ -189,75 +189,87 @@ export const updateProject = ({
 }, id, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
+            let nameDuplicated;
             const openDateDB = convertDate(openDate);
             let imageErrorMessage = [];
             const imageProjectArray = [];
             //Check TypeRoom is existed in DB
             let projectResult = await db.Project.findByPk(id);
             if (projectResult) {
-                //Delete images
-                if (imagesDeleted) {
-                    imagesDeleted = imagesDeleted.split(',');
-                    await Promise.all(imagesDeleted.map(async (image) => {
-                        const imageResult = await db.Image.findByPk(image);
-                        if (imageResult) {
-                            cloudinary.uploader.destroy(imageResult.pathName);
-                            await db.Image.destroy({
-                                where: {
-                                    id: image
-                                }
-                            });
-
-                        }
-                        else {
-                            imageErrorMessage.push(`(${image})`);
-                        }
-                    }));
-                }
-
-                //Delete or Update thumbnail
-                if ((parseInt(thumbnailDeleted) === 1) || fileData.thumbnail) {
-                    cloudinary.uploader.destroy(projectResult.thumbnailPathName);
-                }
-
-                //Update
-                await db.Project.update({
-                    name,
-                    description,
-                    location,
-                    buildingStatus,
-                    features,
-                    attractions,
-                    reservationPrice,
-                    openDate: openDateDB,
-                    thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathUrl,
-                    thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathName,
-                }, {
+                nameDuplicated = db.Project.findOne({
                     where: {
-                        id: id,
+                        name
                     }
                 })
+                if (!nameDuplicated) {
+                    //Delete images
+                    if (imagesDeleted) {
+                        imagesDeleted = imagesDeleted.split(',');
+                        await Promise.all(imagesDeleted.map(async (image) => {
+                            const imageResult = await db.Image.findByPk(image);
+                            if (imageResult) {
+                                cloudinary.uploader.destroy(imageResult.pathName);
+                                await db.Image.destroy({
+                                    where: {
+                                        id: image
+                                    }
+                                });
 
-                //Import images to imageTable
-                if (fileData.images) {
-                    for (let i = 0; i < fileData.images.length; i++) {
-                        const image = {
-                            pathUrl: fileData.images[i].path,
-                            pathName: fileData.images[i].filename,
-                            projectID: id
-                        }
-                        imageProjectArray.push(image);
+                            }
+                            else {
+                                imageErrorMessage.push(`(${image})`);
+                            }
+                        }));
                     }
-                    await db.Image.bulkCreate(imageProjectArray);
-                }
 
-                if (!projectResult && fileData) {
-                    deleteProjectImage(fileData);
+                    //Delete or Update thumbnail
+                    if ((parseInt(thumbnailDeleted) === 1) || fileData.thumbnail) {
+                        cloudinary.uploader.destroy(projectResult.thumbnailPathName);
+                    }
+
+                    //Update
+                    await db.Project.update({
+                        name,
+                        description,
+                        location,
+                        buildingStatus,
+                        features,
+                        attractions,
+                        reservationPrice,
+                        openDate: openDateDB,
+                        thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathUrl,
+                        thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathName,
+                    }, {
+                        where: {
+                            id: id,
+                        }
+                    })
+
+                    //Import images to imageTable
+                    if (fileData.images) {
+                        for (let i = 0; i < fileData.images.length; i++) {
+                            const image = {
+                                pathUrl: fileData.images[i].path,
+                                pathName: fileData.images[i].filename,
+                                projectID: id
+                            }
+                            imageProjectArray.push(image);
+                        }
+                        await db.Image.bulkCreate(imageProjectArray);
+                    }
+
+                    if (!projectResult && fileData) {
+                        deleteProjectImage(fileData);
+                    }
                 }
             }
             resolve({
-                err: projectResult ? 0 : 1,
-                message: projectResult ? 'Update Successfully.' : `Can not find Project with id: (${id})`,
+                err: !nameDuplicated ? 0 : 1,
+                message: !projectResult ?
+                    `Can not find Project with id: (${id})`
+                    : nameDuplicated ?
+                        'Project Name has been used!'
+                        : 'Update Successfully.',
                 messageImage: imageErrorMessage.length !== 0 ? `Can not find Image: ${imageErrorMessage.join(',')}` : null,
             });
         } catch (error) {
