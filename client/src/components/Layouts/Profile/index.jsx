@@ -8,6 +8,7 @@ import { getMyUser } from "~/controllers/user";
 import { useDispatch, useSelector } from "react-redux";
 import createAxios from "~/configs/axios";
 import { Backdrop, CircularProgress } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 
@@ -20,18 +21,25 @@ function Profile() {
 
   const avatarRef = useRef();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const currentUser = useSelector((state) => state.auth.login.user);
   const axiosInstance = createAxios(dispatch, currentUser);
 
   useEffect(() => {
+    if (currentUser === null) {
+      navigate("/");
+    }
+  }, [currentUser, navigate]);
+
+  useEffect(() => {
     const fetchDataUser = async () => {
-      const res = await getMyUser(axiosInstance, "vynmvse170255");
+      const res = await getMyUser(axiosInstance, currentUser?.data?.username);
       if (res?.err === 0) {
         setIsLoading(true);
         setUsername(res?.data?.username);
         setFullName(res?.data?.fullName);
-        setNumberPhone(res?.data?.numberPhone);
+        setNumberPhone(res?.data?.phoneNumber);
       } else {
         setIsLoading(false);
         setUsername("");
@@ -69,7 +77,7 @@ function Profile() {
       {isLoading !== "" && (
         <div>
           <h2 className={cx("heading")}>My profile</h2>
-          <h3 className={cx("title")}>This is account login by Google</h3>
+          <h3 className={cx("title")}>{currentUser?.data?.type === "Google" && "This is account login by Google"}</h3>
           <div className={cx("profile")}>
             <form onSubmit={handleSubmit}>
               <div className={cx("form")}>
@@ -98,7 +106,8 @@ function Profile() {
                         id="full_name"
                         className={cx("input")}
                         placeholder="Enter FullName"
-                        value={(e) => setFullName(e.target.value)}
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
                       />
                     </div>
                     <div className={cx("input_compo")}>
@@ -110,7 +119,8 @@ function Profile() {
                         id="number_phone"
                         className={cx("input")}
                         placeholder="Enter Number phone"
-                        value={(e) => setNumberPhone(e.target.value)}
+                        value={numberPhone}
+                        onChange={(e) => setNumberPhone(e.target.value)}
                       />
                     </div>
                     {/* <div className={cx("input_compo")}>
