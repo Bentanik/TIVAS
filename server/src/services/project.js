@@ -196,7 +196,7 @@ export const updateProject = ({
             //Check TypeRoom is existed in DB
             let projectResult = await db.Project.findByPk(id);
             if (projectResult) {
-                nameDuplicated = db.Project.findOne({
+                nameDuplicated = await db.Project.findOne({
                     where: {
                         name
                     }

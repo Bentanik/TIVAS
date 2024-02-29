@@ -7,4 +7,19 @@ router.post(
     controllers.createNewTimeShare,
 )
 
+router.get(
+    "/getAll",
+    controllers.getAllTimeShare,
+)
+
+router.get(
+    "/getAll/:projectID",
+    controllers.getAllTimeShareOfProject,
+)
+
+router.get(
+    "/:id",
+    controllers.getDetailsTimeShare,
+)
+
 export default router;
