@@ -21,7 +21,6 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Room.init({
-    typeOfProjectID: DataTypes.INTEGER,
     typeRoomID: DataTypes.INTEGER
   }, {
     sequelize,

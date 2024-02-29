@@ -12,6 +12,7 @@ function Search() {
     return (
         <div className={cx("search-wrapper")}>
             <TippyHeadless
+                placement="bottom"
                 render={(attrs) => (
                     <div className="box" tabIndex="-1" {...attrs}>
                         <div className={cx("search-result")}>Search result</div>

@@ -18,20 +18,17 @@ module.exports = {
       persons: {
         type: Sequelize.INTEGER
       },
-      kitchen: {
+      size: {
+        type: Sequelize.DOUBLE
+      },
+      bedTypes: {
         type: Sequelize.STRING
       },
-      entertainment: {
-        type: Sequelize.STRING
-      },
-      features: {
-        type: Sequelize.STRING
-      },
-      policies: {
+      amenities: {
         type: Sequelize.STRING
       },
       description: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT('long')
       },
       typeOfProjectID: {
         type: Sequelize.INTEGER

@@ -13,6 +13,7 @@
     --home-padding: 13px;
     --footer-bg: #2e2100;
     --error-color: #a50016;
+    --admin-sidebar-bg: #fff;
 }
 
 html {
@@ -26,6 +27,7 @@ body {
     text-rendering: optimizespeed;
     color: var(--text-color);
     overflow-y: overlay;
+    background-color: #f1f1f1;
 }
 
 a {

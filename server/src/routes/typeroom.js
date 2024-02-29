@@ -10,7 +10,7 @@ const router = express.Router();
 //   );
 
 router.post(
-  "/create",
+  "/create/:projectID",
   uploadCloud.array('images'),
   controllers.createNewTypeRoom
 )
@@ -24,6 +24,16 @@ router.put(
 router.delete(
   "/delete/:id",
   controllers.deleteTypeRoom
+)
+
+router.get(
+  "/getAll/:projectID",
+  controllers.getAllTypeRoom
+)
+
+router.get(
+  "/:id",
+  controllers.getDetailsTypeRoom
 )
 
 export default router;

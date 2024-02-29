@@ -1,5 +1,7 @@
 import nodemailer from "nodemailer";
 import ejs from "ejs";
+import db from "../models";
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const fs = require("fs");
 
@@ -46,6 +48,37 @@ export const sendMail = () => {
       resolve({
         err: 0,
         mess: "Okk",
+      });
+    } catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  });
+};
+
+export const getUser = ({ username }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const res = await db.User.findOne({
+        where: { username },
+        attributes: {
+          exclude: ["password", "banStatus", "roleID", "refreshToken"],
+        },
+        raw: true,
+      });
+
+      const customer = res
+        ? await stripe.paymentMethods.list({
+            customer: res.refundHistoryID,
+            type: "card", 
+          })
+        : null;
+      console.log("Card: ", customer.data[0].card);
+      console.log("billing_details: ", customer.data[0].billing_details);
+      resolve({
+        err: res ? 0 : 1,
+        mess: res ? "Successully" : "No user data",
+        data: res ? res : null,
       });
     } catch (err) {
       console.log(err);

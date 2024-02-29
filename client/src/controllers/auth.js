@@ -17,6 +17,16 @@ import {
     sendMailStart,
     sendMailSuccess,
 } from "~/redux/authSlice";
+import {
+    forgotError,
+    forgotStart,
+    forgotSuccess,
+    resetForgot,
+    sendMailPasswordError,
+    sendMailPasswordStart,
+    sendMailPasswordSuccess,
+    setEmailForgotPassword,
+} from "~/redux/forgotPasswordSlice";
 import { resetForm } from "~/redux/formRegisterSlice";
 import * as services from "~/services";
 
@@ -137,5 +147,50 @@ export const registerGoogle = async (dispatch, axiosInstance, form) => {
         }
     } catch (err) {
         dispatch(registerGoogleError());
+    }
+};
+
+export const sendMailForgot = async (dispatch, axiosInstance, form) => {
+    dispatch(sendMailPasswordStart());
+    try {
+        const res = await services.sendMailForgotPassword(axiosInstance, form);
+        if (res.err === 0) {
+            dispatch(sendMailPasswordSuccess(res));
+        } else {
+            dispatch(sendMailPasswordError(res.mess));
+        }
+    } catch (err) {
+        dispatch(sendMailPasswordError("Error"));
+        console.log(err);
+    }
+};
+
+export const resetPasswordByEmail = async (dispatch, axiosInstance, form) => {
+    dispatch(sendMailPasswordStart());
+    try {
+        const res = await services.resetPasswordByEmail(axiosInstance, form);
+        if (res.err === 0) {
+            dispatch(sendMailPasswordSuccess(res));
+            dispatch(setEmailForgotPassword(res.email));
+        } else {
+            dispatch(sendMailPasswordError(res.mess));
+        }
+    } catch (err) {
+        dispatch(sendMailPasswordError("Error"));
+    }
+};
+
+export const forgotPassword = async (dispatch, axiosInstance, form) => {
+    dispatch(forgotStart());
+    try {
+        const res = await services.forgotPassword(axiosInstance, form);
+        if (res.err === 0) {
+            dispatch(forgotSuccess(res.mess));
+        } else {
+            dispatch(forgotError(res.mess));
+        }
+    } catch (err) {
+        dispatch(forgotError());
+        console.log(err);
     }
 };
