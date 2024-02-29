@@ -26,11 +26,11 @@ function Profile() {
   const currentUser = useSelector((state) => state.auth.login.user);
   const axiosInstance = createAxios(dispatch, currentUser);
 
-  useEffect(() => {
-    if (currentUser === null) {
-      navigate("/");
-    }
-  }, [currentUser, navigate]);
+  // useEffect(() => {
+  //   if (currentUser === null) {
+  //     navigate("/");
+  //   }
+  // }, [currentUser, navigate]);
 
   useEffect(() => {
     const fetchDataUser = async () => {

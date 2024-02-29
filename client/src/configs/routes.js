@@ -20,19 +20,13 @@ const routes = [
         layout: null,
     },
     {
-        path: "/admin",
-        component: Admin,
-        layout: null,
-    },
-
-    {
         path: "/destinations",
         component: Destination,
         layout: null,
     },
 
     {
-        path: "/project-detail",
+        path: "/projectdetail/:id",
         component: ProjectDetail,
         layout: null,
     },
