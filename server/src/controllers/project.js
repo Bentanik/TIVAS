@@ -133,6 +133,12 @@ export const searchProject = async (req, res) => {
   return res.status(200).json(response);
 }
 
+export const searchNameAndLocationProject = async (req, res) => {
+  const { info, limit } = req.params;
+  const response = await services.searchNameAndLocationProject(info, limit);
+  return res.status(200).json(response);
+}
+
 //Get Top 10 New Projects
 export const getTop10 = async (req, res) => {
   const response = await services.getTop10();

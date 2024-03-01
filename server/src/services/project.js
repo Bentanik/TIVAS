@@ -367,6 +367,55 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
     })
 }
 
+export const searchNameAndLocationProject = (info, limit) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            console.log(limit);
+            let limitDB;
+            if((/^\d+$/.test(limit))){
+                limitDB = parseInt(limit)
+            }else{
+                limitDB = 3
+            }
+            let response = {};
+            const bestMatch = await db.Project.findAll({
+                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'features', 'attractions'],
+                where: {
+                    name: { [Op.substring]: info },
+                    location: { [Op.substring]: info}
+                },
+                limit: limitDB,
+            })
+            const projectByNameResponse = await db.Project.findAll({
+                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'features', 'attractions'],
+                where: {
+                    name: { [Op.substring]: info }
+                },
+                limit: limitDB,
+            })
+
+            const projectByLocationResponse = await db.Project.findAll({
+                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'features', 'attractions'],
+                where: {
+                    location: { [Op.substring]: info}
+                },
+                limit: limitDB,
+            })
+            response.bestMatch = bestMatch
+            response.ProjectName = projectByNameResponse;
+            response.ProjectLocation = projectByLocationResponse;
+            resolve({
+                err: response ? 0 : 1,
+                message: response ? 'Search Projects Results' : 'Can not find any Project!',
+                data: response ? response : null,
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
 export const getTop10 = () => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -436,15 +485,15 @@ export const getDetailsProject = (id) => {
                 order: [['Id', 'ASC']],
             })
             if (projectResponse) {
-                response.Project =  projectResponse 
-                if(response.Project.features){
+                response.Project = projectResponse
+                if (response.Project.features) {
                     response.Project.features = response.Project.features.split(',')
                 }
-                if(response.Project.attractions){
+                if (response.Project.attractions) {
                     response.Project.attractions = response.Project.attractions.split(',')
                 }
                 if (typeRoomResponse) {
-                    response.typeRooms =  typeRoomResponse ;
+                    response.typeRooms = typeRoomResponse;
                     for (let i = 0; i < response.typeRooms.length; i++) {
                         if (response.typeRooms[i].bedTypes) {
                             response.typeRooms[i].bedTypes = response.typeRooms[i].bedTypes.split(',');
