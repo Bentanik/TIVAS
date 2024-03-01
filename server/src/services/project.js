@@ -450,12 +450,35 @@ export const getTop10 = () => {
 export const getDetailsProject = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
-            let response = {};
+            const response = {};
             const projectResponse = await db.Project.findByPk(id, {
                 attributes: { exclude: ['createdAt', 'updatedAt', 'thumbnailPathName'] },
                 nest: true,
                 //raw: true,
                 include: [
+                    {
+                        model: db.TypeOfProject,
+                        attributes: ['id'],
+                        include: {
+                            model: db.TypeRoom,
+                            attributes: ['id', 'name', 'bedrooms', 'persons', 'size', 'bedTypes', 'amenities'],
+                            include: [
+                                {
+                                    model: db.TypeOfProject,
+                                    attributes: [],
+                                    where: {
+                                        projectID: id,
+                                    },
+                                },
+                                {
+                                    model: db.Image,
+                                    attributes: ['id', 'pathUrl'],
+                                    limit: 1,
+                                },
+                            ],
+                        },
+                        order: [['id', 'ASC']],
+                    },
                     {
                         nest: true,
                         model: db.Image,
@@ -464,51 +487,69 @@ export const getDetailsProject = (id) => {
                 ],
             },
             );
-            const typeRoomResponse = await db.TypeRoom.findAll({
-                attributes: ['id', 'name', 'bedrooms', 'persons', 'size', 'bedTypes', 'amenities'],
-                nest: true,
-                //raw: true,
-                include: [
-                    {
-                        model: db.TypeOfProject,
-                        attributes: [],
-                        where: {
-                            projectID: id,
-                        },
-                    },
-                    {
-                        model: db.Image,
-                        attributes: ['id', 'pathUrl'],
-                        limit: 1,
-                    },
-                ],
-                order: [['Id', 'ASC']],
-            })
+            
             if (projectResponse) {
-                response.Project = projectResponse
-                if (response.Project.features) {
-                    response.Project.features = response.Project.features.split(',')
+                response.Project = {
+                    id: projectResponse.id,
+                    name: projectResponse.name,
+                    description: projectResponse.description,
+                    buildingStatus: projectResponse.buildingStatus,
+                    location: projectResponse.location,
+                    features: projectResponse.features?.split(','),
+                    attractions: projectResponse.attractions?.split(','),
+                    saleStatus: projectResponse.saleStatus,
+                    reservationPrice: projectResponse.reservationPrice,
+                    openDate: projectResponse.openDate,
+                    thumbnailPathUrl: projectResponse.thumbnailPathUrl,
+                    images: projectResponse.Images
                 }
-                if (response.Project.attractions) {
-                    response.Project.attractions = response.Project.attractions.split(',')
-                }
-                if (typeRoomResponse) {
-                    response.typeRooms = typeRoomResponse;
-                    for (let i = 0; i < response.typeRooms.length; i++) {
-                        if (response.typeRooms[i].bedTypes) {
-                            response.typeRooms[i].bedTypes = response.typeRooms[i].bedTypes.split(',');
-                        }
-                        if (response.typeRooms[i].amenities) {
-                            response.typeRooms[i].amenities = response.typeRooms[i].amenities.split(',');
-                        }
 
-                    }
+                response.TypeRoom = [];
+                for(let i = 0; i < projectResponse.TypeOfProjects.length; i++){
+                        for(let j = 0; j < projectResponse.TypeOfProjects[i].TypeRooms.length; j++){
+                            response.TypeRoom.push({
+                                id: projectResponse.TypeOfProjects[i].TypeRooms[j].id,
+                                name: projectResponse.TypeOfProjects[i].TypeRooms[j].name,
+                                bedrooms: projectResponse.TypeOfProjects[i].TypeRooms[j].bedrooms,
+                                persons: projectResponse.TypeOfProjects[i].TypeRooms[j].persons,
+                                bedTypes: projectResponse.TypeOfProjects[i].TypeRooms[j].bedTypes.split(','),
+                                amenities: projectResponse.TypeOfProjects[i].TypeRooms[j].amenities?.split(','),
+                                images: projectResponse.TypeOfProjects[i].TypeRooms[j].Images
+                            })
+                        }
+                        
                 }
+
+
+                // response.Project = {
+
+                // }
+                // response.TypeRoom = {
+
+                // }
+                // if (response.Project.features) {
+                //     response.Project.features = response.Project.features.split(',')
+                // }
+                // if (response.Project.attractions) {
+                //     response.Project.attractions = response.Project.attractions.split(',')
+                // }
+                // if (typeRoomResponse) {
+                //     response.typeRooms = typeRoomResponse;
+                //     for (let i = 0; i < response.typeRooms.length; i++) {
+                //         if (response.typeRooms[i].bedTypes) {
+                //             response.typeRooms[i].bedTypes = response.typeRooms[i].bedTypes.split(',');
+                //         }
+                //         if (response.typeRooms[i].amenities) {
+                //             response.typeRooms[i].amenities = response.typeRooms[i].amenities.split(',');
+                //         }
+
+                //     }
+                // }
             }
             resolve({
                 err: response ? 0 : 1,
                 message: response ? `Project ${id} found` : `Can not find Project with id: ${id}`,
-                data: response,
+                data: projectResponse,
             })
         } catch (error) {
             console.log(error);
