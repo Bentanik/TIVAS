@@ -11,8 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       TimeShare.hasMany(models.Reservation, {foreignKey: 'timeShareID', ondelete: 'cascade', hooks: true});
-      TimeShare.belongsTo(models.Room ,{
-        foreignKey: 'roomID',
+      TimeShare.belongsTo(models.TypeRoom ,{
+        foreignKey: 'typeRoomID',
       });
       TimeShare.belongsTo(models.User, {
         foreignKey: 'userID'
@@ -25,7 +25,8 @@ module.exports = (sequelize, DataTypes) => {
     startDate: DataTypes.DATE,
     endDate: DataTypes.DATE,
     saleStatus: DataTypes.INTEGER,
-    roomID: DataTypes.INTEGER,
+    quantity: DataTypes.INTEGER,
+    typeRoomID: DataTypes.INTEGER,
     userID: DataTypes.INTEGER
   }, {
     sequelize,

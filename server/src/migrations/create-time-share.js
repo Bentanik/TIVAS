@@ -21,7 +21,10 @@ module.exports = {
       saleStatus: {
         type: Sequelize.INTEGER
       },
-      roomID: {
+      quantity: {
+        type: Sequelize.INTEGER
+      },
+      typeRoomID: {
         type: Sequelize.INTEGER
       },
       userID: {

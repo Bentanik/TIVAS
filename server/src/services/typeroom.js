@@ -101,6 +101,7 @@ export const createTypeRoom = (projectID, {
                             bedTypes,
                             amenities,
                             description,
+                            quantity,
                             typeOfProjectID: typeOfProjectResponse.id,
                         })
 
@@ -116,17 +117,6 @@ export const createTypeRoom = (projectID, {
                                     imageTypeRoomArray.push(image);
                                 }
                                 await db.Image.bulkCreate(imageTypeRoomArray);
-                            }
-
-                            //Number of rooms
-                            if (quantity && (parseInt(quantity) !== 0)) {
-                                const roomArray = [];
-                                for (let i = 0; i < quantity; i++) {
-                                    roomArray.push({
-                                        typeRoomID: typeRoomResponse.id
-                                    })
-                                }
-                                await db.Room.bulkCreate(roomArray);
                             }
                         }
                     }
@@ -320,13 +310,10 @@ export const getAllTypeRoom = (projectID, { page, limit, orderType, orderBy }) =
             })
             if (response) {
                 for (let i = 0; i < response.length; i++) {
-                    if (response[i].bedTypes) {
-                        response[i].bedTypes = response[i].bedTypes.split(',');
-                    }
+                    response[i].bedTypes = response[i].bedTypes.split(',');
                     if (response[i].amenities) {
                         response[i].amenities = response[i].amenities.split(',');
                     }
-
                 }
             }
             resolve({
@@ -356,9 +343,7 @@ export const getDetailsTypeRoom = (id) => {
                 },
             });
             if (response) {
-                if (response.bedTypes) {
-                    response.bedTypes = response.bedTypes.split(',');
-                }
+                response.bedTypes = response.bedTypes.split(',');
                 if (response.amenities) {
                     response.amenities = response.amenities.split(',');
                 }

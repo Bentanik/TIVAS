@@ -34,23 +34,15 @@ export const createNewTimeShare = (
             const userResponse = await db.User.findByPk(userID);
 
             if (typeRoomResponse && userResponse) {
-                const { count, rows } = await db.Room.findAndCountAll({
-                    where: {
-                        typeRoomID,
-                    }
+                await db.TimeShare.create({
+                    price,
+                    startDate: startDateDB,
+                    endDate: endDateDB,
+                    userID,
+                    saleStatus: 0,
+                    typeRoomID,
+                    quantity: typeRoomResponse.quantity,
                 })
-                const timeShareArray = [];
-                for (let i = 0; i < count; i++) {
-                    timeShareArray.push({
-                        price,
-                        startDate: startDateDB,
-                        endDate: endDateDB,
-                        saleStatus: 0,
-                        roomID: rows[i].id,
-                        userID: userID,
-                    })
-                }
-                await db.TimeShare.bulkCreate(timeShareArray);
             }
 
             resolve({
@@ -81,57 +73,25 @@ export const getAllTimeShare = ({
             queries.nest = true;
             queries.raw = true;
             const response = await db.TimeShare.findAll({
-                attributes: ['price', 'startDate', 'endDate', 'saleStatus', 'createdAt'],
-                ...queries,
-                group: ['createdAt', 'price', 'startDate', 'endDate', 'saleStatus']
-            })
-
-            //Get Id, TypeRoom and Project
-            if (response && response.length !== 0) {
-                for (let i = 0; i < response.length; i++) {
-                    const timeShareResponse = await db.TimeShare.findOne({
-                        where: {
-                            createdAt: response[i].createdAt,
-                        }
-                    })
-                    response[i].id = timeShareResponse.id
-                    response[i].createdAt = undefined;
-                    const roomResponse = await db.Room.findByPk(timeShareResponse.roomID, {
-                        nest: true,
-                        required: true,
+                attributes: ['id', 'price', 'startDate', 'endDate', 'saleStatus', 'createdAt'],
+                include: {
+                    model: db.TypeRoom,
+                    attributes: ['name', 'persons'],
+                    include: {
+                        model: db.TypeOfProject,
+                        attributes: ['id'],
                         include: {
-                            model: db.TypeRoom,
-                            attributes: ['name', 'persons'],
-                            required: true,
-                            include: {
-                                model: db.TypeOfProject,
-                                attributes: ['id'],
-                                required: true,
-                                include: {
-                                    model: db.Project,
-                                    attributes: ['name', 'location', 'thumbnailPathUrl'],
-                                }
-                            }
+                            model: db.Project,
+                            attributes: ['name', 'location', 'thumbnailPathUrl']
                         }
-                    })
-                    if (roomResponse) {
-                        response[i].TypeRoom = {
-                            name: roomResponse.TypeRoom.name,
-                            persons: roomResponse.TypeRoom.persons
-                        };
-                        response[i].Project = {
-                            name: roomResponse.TypeRoom.TypeOfProject.Project.name,
-                            location: roomResponse.TypeRoom.TypeOfProject.Project.location,
-                            thumbnailPathUrl: roomResponse.TypeRoom.TypeOfProject.Project.thumbnailPathUrl
-                        };
-                        //response[i].Project = roomResponse.TypeRoom.TypeOfProject.Project;
                     }
-                }
-            }
+                },
+                ...queries,
+            })
 
             resolve({
                 err: (response && response.length !== 0) ? 0 : 1,
-                message: (response && response.length !== 0) ? `All TimeShares` : `Can not find any TimeShares`,
+                message: (response && response.length !== 0) ? `All TimeShares Result` : `Can not find any TimeShares`,
                 data: response,
                 count: response ? response.length : 0,
                 page: page
@@ -153,117 +113,32 @@ export const getAllTimeShareOfProject = (projectID, {
 ) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const queries = {}
+            const queries = pagination({ page, limit, orderType, orderBy });
             queries.nest = true;
             queries.raw = true;
             const projectResponse = await db.Project.findByPk(projectID);
             let response;
-            const fOrderType = (orderType === 'DESC') ? 'DESC' : 'ASC';
-            const fOrderBy = (orderBy) ? orderBy : 'id';
-            queries.order = [[fOrderBy, fOrderType]];
-
-            const typeOfProjectResponse = await db.TypeOfProject.findOne({
-                where: {
-                    projectID,
-                }
-            })
             if (projectResponse) {
-                const roomResponse = await db.Room.findAll({
+                response = await db.TimeShare.findAll({
+                    attributes: ['id', 'price', 'startDate', 'endDate', 'saleStatus', 'createdAt'],
                     include: {
                         model: db.TypeRoom,
-                        attributes: ['id'],
+                        attributes: ['name', 'persons'],
                         required: true,
                         include: {
                             model: db.TypeOfProject,
-                            as: 'TypeOfProject',
                             attributes: ['id'],
-                            required: true,
+                            where: {
+                                projectID
+                            },
                             include: {
                                 model: db.Project,
-                                attributes: ['id'],
-                                required: true,
-                                where: {
-                                    id: projectID,
-                                }
-                            }
-                        }
-                    }
-                })
-                response = await db.TimeShare.findAll({
-                    attributes: ['price', 'startDate', 'endDate', 'saleStatus', 'createdAt'],
-                    include: {
-                        model: db.Room,
-                        attributes: ['id'],
-                        required: true,
-                        include: {
-                            model: db.TypeRoom,
-                            attributes: ['id'],
-                            required: true,
-                            include: {
-                                model: db.TypeOfProject,
-                                as: 'TypeOfProject',
-                                attributes: ['id'],
-                                required: true,
-                                include: {
-                                    model: db.Project,
-                                    attributes: ['id'],
-                                    required: true,
-                                    where: {
-                                        id: projectID,
-                                    }
-                                }
+                                attributes: ['name', 'location', 'thumbnailPathUrl']
                             }
                         }
                     },
-                    //where: literal(`"TypeOfProject.projectID" = ${projectID}`),
                     ...queries,
-                    //group: ['createdAt', 'price', 'startDate', 'endDate', 'saleStatus']
                 })
-
-
-
-                // //Get Id, TypeRoom and Project
-                // if (response && response.length !== 0) {
-                //     for (let i = 0; i < response.length; i++) {
-                //         const timeShareResponse = await db.TimeShare.findOne({
-                //             where: {
-                //                 createdAt: response[i].createdAt,
-                //             }
-                //         })
-                //         response[i].id = timeShareResponse.id
-                //         response[i].createdAt = undefined;
-                //         const roomResponse = await db.Room.findByPk(timeShareResponse.roomID, {
-                //             nest: true,
-                //             required: true,
-                //             include: {
-                //                 model: db.TypeRoom,
-                //                 attributes: ['name', 'persons'],
-                //                 required: true,
-                //                 include: {
-                //                     model: db.TypeOfProject,
-                //                     attributes: ['id'],
-                //                     required: true,
-                //                     include: {
-                //                         model: db.Project,
-                //                         attributes: ['name', 'location', 'thumbnailPathUrl'],
-                //                     }
-                //                 }
-                //             }
-                //         })
-                //         if (roomResponse) {
-                //             response[i].TypeRoom = {
-                //                 name: roomResponse.TypeRoom.name,
-                //                 persons: roomResponse.TypeRoom.persons
-                //             };
-                //             response[i].Project = {
-                //                 name: roomResponse.TypeRoom.TypeOfProject.Project.name,
-                //                 location: roomResponse.TypeRoom.TypeOfProject.Project.location,
-                //                 thumbnailPathUrl: roomResponse.TypeRoom.TypeOfProject.Project.thumbnailPathUrl
-                //             };
-                //             //response[i].Project = roomResponse.TypeRoom.TypeOfProject.Project;
-                //         }
-                //     }
-                // }
             }
 
             resolve({
@@ -271,7 +146,7 @@ export const getAllTimeShareOfProject = (projectID, {
                 message: !projectResponse ?
                     `Can not find Project (${projectID})` :
                     !(response && response.length !== 0) ? `Can not find any TimeShares of Project (${projectID})`
-                        : `All TimeShares`,
+                        : `All TimeShares Result`,
                 data: response,
                 count: response ? response.length : 0,
                 page: page
@@ -286,70 +161,68 @@ export const getAllTimeShareOfProject = (projectID, {
 export const getDetailsTimeShare = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const response = await db.TimeShare.findByPk(id, {
+            const response = {};
+            const timeShareResponse = await db.TimeShare.findByPk(id, {
+                attributes: ['id', 'price', 'startDate', 'endDate', 'saleStatus'],
                 nest: true,
-                raw: true,
-                attributes: ['id', 'price', 'startDate', 'endDate', 'saleStatus', 'roomID'],
-            });
-            if (response) {
-                const roomResponse = await db.Room.findByPk(response.roomID, {
-                    nest: true,
-                    required: true,
-                    include: {
-                        model: db.TypeRoom,
-                        attributes: ['name', 'bedrooms', 'persons', 'size', 'bedTypes', 'amenities', 'description'],
-                        required: true,
-                        include: [
-                            {
-                                model: db.TypeOfProject,
-                                attributes: ['id'],
-                                required: true,
+                include: {
+                    model: db.TypeRoom,
+                    attributes: ['name', 'bedrooms', 'persons', 'size', 'bedTypes', 'amenities', 'description'],
+                    include: [
+                        {
+                            model: db.TypeOfProject,
+                            attributes: ['id'],
+                            required: true,
+                            include: {
+                                model: db.Project,
+                                attributes: ['name', 'description', 'location', 'features', 'attractions', 'reservationPrice', 'openDate', 'thumbnailPathUrl'],
                                 include: {
-                                    model: db.Project,
-                                    attributes: ['name', 'description', 'location', 'features', 'attractions', 'reservationPrice', 'openDate', 'thumbnailPathUrl'],
-                                    include: {
-                                        model: db.Image,
-                                        attributes: ['pathUrl'],
-                                    }
+                                    model: db.Image,
+                                    attributes: ['pathUrl'],
                                 }
-                            },
-                            {
-                                model: db.Image,
-                                attributes: ['pathUrl'],
                             }
-                        ]
-                    }
-                })
-                console.log(roomResponse.TypeRoom);
-                if (roomResponse) {
-                    response.TypeRoom = {
-                        name: roomResponse.TypeRoom.name,
-                        bedrooms: roomResponse.TypeRoom.bedrooms,
-                        persons: roomResponse.TypeRoom.persons,
-                        size: roomResponse.TypeRoom.size,
-                        bedTypes: roomResponse.TypeRoom.bedTypes?.split(','),
-                        amenities: roomResponse.TypeRoom.amenities?.split(','),
-                        description: roomResponse.TypeRoom.description,
-                        images: roomResponse.TypeRoom.Images,
-                    };
-                    response.Project = {
-                        name: roomResponse.TypeRoom.TypeOfProject.Project.name,
-                        description: roomResponse.TypeRoom.TypeOfProject.Project.description,
-                        location: roomResponse.TypeRoom.TypeOfProject.Project.location,
-                        features: roomResponse.TypeRoom.TypeOfProject.Project.features?.split(','),
-                        attraction: roomResponse.TypeRoom.TypeOfProject.Project.attractions?.split(','),
-                        reservationPrice: roomResponse.TypeRoom.TypeOfProject.Project.reservationPrice,
-                        openDate: roomResponse.TypeRoom.TypeOfProject.Project.openDate,
-                        thumbnailPathUrl: roomResponse.TypeRoom.TypeOfProject.Project.thumbnailPathUrl,
-                        images: roomResponse.TypeRoom.TypeOfProject.Project.Images,
-                    };
-                    //response[i].Project = roomResponse.TypeRoom.TypeOfProject.Project;
+                        },
+                        {
+                            model: db.Image,
+                            attributes: ['pathUrl'],
+                        }
+                    ]
                 }
+            })
+            if (timeShareResponse) {
+                response.TimeShare = {
+                    id: timeShareResponse.id,
+                    price: timeShareResponse.price,
+                    startDate: timeShareResponse.startDate,
+                    endDate: timeShareResponse.endDate,
+                    saleStatus: timeShareResponse.saleStatus,
+                }
+                response.TypeRoom = {
+                    name: timeShareResponse.TypeRoom.name,
+                    bedrooms: timeShareResponse.TypeRoom.bedrooms,
+                    persons: timeShareResponse.TypeRoom.persons,
+                    size: timeShareResponse.TypeRoom.size,
+                    bedTypes: timeShareResponse.TypeRoom.bedTypes?.split(','),
+                    amenities: timeShareResponse.TypeRoom.amenities?.split(','),
+                    description: timeShareResponse.TypeRoom.description,
+                    images: timeShareResponse.TypeRoom.Images,
+                };
+                response.Project = {
+                    name: timeShareResponse.TypeRoom.TypeOfProject.Project.name,
+                    description: timeShareResponse.TypeRoom.TypeOfProject.Project.description,
+                    location: timeShareResponse.TypeRoom.TypeOfProject.Project.location,
+                    features: timeShareResponse.TypeRoom.TypeOfProject.Project.features?.split(','),
+                    attraction: timeShareResponse.TypeRoom.TypeOfProject.Project.attractions?.split(','),
+                    reservationPrice: timeShareResponse.TypeRoom.TypeOfProject.Project.reservationPrice,
+                    openDate: timeShareResponse.TypeRoom.TypeOfProject.Project.openDate,
+                    thumbnailPathUrl: timeShareResponse.TypeRoom.TypeOfProject.Project.thumbnailPathUrl,
+                    images: timeShareResponse.TypeRoom.TypeOfProject.Project.Images,
+                };
             }
             resolve({
-                err: response ? 0 : 1,
-                message: response ? `TimeShare (${id}) found` : `Can not find TimeShare (${id})`,
-                data: response
+                err: response.TimeShare ? 0 : 1,
+                message: response.TimeShare ? `TimeShare (${id}) found` : `Can not find TimeShare (${id})`,
+                data: response,
             })
         } catch (error) {
             console.log(error);

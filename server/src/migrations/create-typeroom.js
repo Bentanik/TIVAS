@@ -30,6 +30,9 @@ module.exports = {
       description: {
         type: Sequelize.TEXT('long')
       },
+      quantity: {
+        type: Sequelize.INTEGER
+      },
       typeOfProjectID: {
         type: Sequelize.INTEGER
       },

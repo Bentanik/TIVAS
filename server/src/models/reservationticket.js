@@ -23,7 +23,8 @@ module.exports = (sequelize, DataTypes) => {
         code: DataTypes.STRING,
         status: DataTypes.INTEGER,
         userID: DataTypes.INTEGER,
-        projectID: DataTypes.INTEGER
+        projectID: DataTypes.INTEGER,
+        timeShareID: DataTypes.INTEGER,
     }, {
         sequelize,
         modelName: 'ReservationTicket',
