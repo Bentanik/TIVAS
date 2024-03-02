@@ -39,11 +39,13 @@ export const createNewProject = ({
     reservationDate,
     reservationPrice,
     openDate,
+    closeDate,
 }, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
             const openDateDB = convertDate(openDate);
             const reservationDateDB = convertDate(reservationDate);
+            const closeDateDB = convertDate(closeDate);
             let typeInDBError = 0;
             const imageProjectArray = [];
             const typeErrorMessage = [];
@@ -75,6 +77,7 @@ export const createNewProject = ({
                         reservationDate: reservationDateDB,
                         reservationPrice,
                         openDate: openDateDB,
+                        closeDate: closeDateDB,
                         thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : null,
                         thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : null,
                     },
@@ -127,7 +130,7 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
             const queries = pagination({ page, limit, orderType, orderBy });
             //queries.raw = true;
             const response = await db.Project.findAll({
-                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'status', 'buildingStatus', 'reservationDate', 'reservationPrice', 'openDate', 'features', 'attractions'],
+                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'status', 'buildingStatus', 'reservationDate', 'reservationPrice', 'openDate', 'closeDate', 'features', 'attractions'],
                 ...queries,
             })
             if (response) {
@@ -195,22 +198,26 @@ export const updateProject = ({
     imagesDeleted,
     reservationPrice,
     openDate,
+    closeDate
 }, id, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
             let nameDuplicated;
             const openDateDB = convertDate(openDate);
             const reservationDateDB = convertDate(reservationDate);
+            const closeDateDB = convertDate(closeDate);
             let imageErrorMessage = [];
             const imageProjectArray = [];
             //Check TypeRoom is existed in DB
             let projectResult = await db.Project.findByPk(id);
             if (projectResult) {
-                nameDuplicated = await db.Project.findOne({
-                    where: {
-                        name
-                    }
-                })
+                if(projectResult.name !== name){
+                    nameDuplicated = await db.Project.findOne({
+                        where: {
+                            name
+                        }
+                    })
+                }
                 if (!nameDuplicated) {
                     //Delete images
                     if (imagesDeleted) {
@@ -248,6 +255,7 @@ export const updateProject = ({
                         reservationDate: reservationDateDB,
                         reservationPrice,
                         openDate: openDateDB,
+                        closeDate: closeDateDB,
                         thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathUrl,
                         thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathName,
                     }, {
@@ -313,7 +321,7 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
             // queries.raw = true;
             const response = await db.Project.findAll({
                 where: whereClause,
-                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'status', 'buildingStatus', 'reservationDate', 'reservationPrice', 'openDate', 'features', 'attractions'],
+                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'status', 'buildingStatus', 'reservationDate', 'reservationPrice', 'openDate', 'closeDate', 'closeDate', 'features', 'attractions'],
                 include: [
                     {
                         model: db.TypeOfProject,
@@ -373,7 +381,7 @@ export const searchNameAndLocationProject = (info, limit) => {
             }
             let response = {};
             const bestMatch = await db.Project.findAll({
-                attributes: ['id', 'name', 'location', 'status', 'buildingStatus', 'reservationDate', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'features', 'attractions'],
+                attributes: ['id', 'name', 'location', 'status', 'buildingStatus', 'reservationDate', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'closeDate', 'features', 'attractions'],
                 where: {
                     name: { [Op.substring]: info },
                     location: { [Op.substring]: info}
@@ -381,7 +389,7 @@ export const searchNameAndLocationProject = (info, limit) => {
                 limit: limitDB,
             })
             const projectByNameResponse = await db.Project.findAll({
-                attributes: ['id', 'name', 'location', 'status', 'buildingStatus', 'reservationDate', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'features', 'attractions'],
+                attributes: ['id', 'name', 'location', 'status', 'buildingStatus', 'reservationDate', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'closeDate', 'features', 'attractions'],
                 where: {
                     name: { [Op.substring]: info }
                 },
@@ -389,7 +397,7 @@ export const searchNameAndLocationProject = (info, limit) => {
             })
 
             const projectByLocationResponse = await db.Project.findAll({
-                attributes: ['id', 'name', 'location', 'status', 'buildingStatus', 'reservationDate', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'features', 'attractions'],
+                attributes: ['id', 'name', 'location', 'status', 'buildingStatus', 'reservationDate', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'closeDate', 'features', 'attractions'],
                 where: {
                     location: { [Op.substring]: info}
                 },
@@ -414,7 +422,7 @@ export const getTop10 = () => {
     return new Promise(async (resolve, reject) => {
         try {
             const response = await db.Project.findAll({
-                attributes: ['id', 'name', 'location', 'status', 'buildingStatus', 'reservationDate', 'thumbnailPathUrl', 'createdAt', 'reservationPrice', 'openDate', 'features', 'attractions'],
+                attributes: ['id', 'name', 'location', 'status', 'buildingStatus', 'reservationDate', 'thumbnailPathUrl', 'createdAt', 'reservationPrice', 'openDate', 'closeDate', 'features', 'attractions'],
                 limit: 10,
                 order: [['createdAt', 'DESC']],
             })

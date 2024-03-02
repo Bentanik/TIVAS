@@ -27,6 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     reservationPrice: DataTypes.DOUBLE,
     reservationDate: DataTypes.DATE,
     openDate: DataTypes.DATE,
+    closeDate: DataTypes.DATE,
     thumbnailPathUrl: DataTypes.STRING,
     thumbnailPathName: DataTypes.STRING,
   }, {
