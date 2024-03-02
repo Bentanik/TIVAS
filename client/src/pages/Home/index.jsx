@@ -506,8 +506,12 @@ function Home() {
       return (
         <div key={index}>
           <div className={cx("box")}>
-            <Link to="#!">
-              <img src={item.thumbnailPathUrl} alt={item.name} className={cx("image")} />
+            <Link to={`projectdetail/${item.id}`}>
+              <img
+                src={item.thumbnailPathUrl}
+                alt={item.name}
+                className={cx("image")}
+              />
               <div className={cx("heart-bandle")}>
                 <text className={cx("bandle")}>Top 21 Resort</text>
                 <svg

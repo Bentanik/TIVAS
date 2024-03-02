@@ -16,7 +16,7 @@ function Sidebar() {
   return (
     <div className={cx("wrapper")}>
       <div className={cx("avatar")}>
-        <img src={images.unknown} alt="Avatar" className={cx("img")} />
+        <img src={currentUser?.data?.avatar} alt="Avatar" className={cx("img")} />
         <div className={cx("min")}>
           <h4 className={cx("heading")}>{currentUser?.data?.username}</h4>
           <Link to="/user/account/profile" className={cx("text")}>

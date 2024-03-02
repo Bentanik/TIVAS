@@ -176,7 +176,6 @@ export const loginGoogle = ({ email, roleID = 3 }) => {
             : null,
           accessToken: `Bearer ${accessToken}`,
           refreshToken,
-          username: accessToken ? user.username : "",
           register: user ? true : false,
           registerGoogle: {
             mess: !user
@@ -197,6 +196,7 @@ export const loginGoogle = ({ email, roleID = 3 }) => {
                 username: user.username || null,
                 roleID: user.roleID || roleID,
                 type: user?.type,
+                avatar: user.avatarURL,
               }
             : null,
           accessToken: `Bearer ${accessToken}`,

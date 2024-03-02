@@ -5,13 +5,16 @@ import RoomType from "~/components/RoomType";
 import SimpleGallery from "./simplegallery";
 import PhotoSwipeLightbox from "photoswipe/lightbox";
 import "photoswipe/style.css";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import Footer from "~/components/Layouts/Footer";
 import images from "~/assets/images";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { ThemeContext } from "@emotion/react";
+import { getAllTypeRoom, getProjectDetailById } from "~/controllers/project";
+import { useDispatch, useSelector } from "react-redux";
+import createAxios from "~/configs/axios";
 
 const cx = classNames.bind(styles);
 
@@ -22,24 +25,36 @@ const blog_link = {
 };
 
 function ProjectDetail() {
-  // Get API from project detail
   const [projectData, setProjectData] = useState({});
+  const [typeRooms, setTypeRooms] = useState([]);
+  const [listImage, setListImage] = useState([]);
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.auth.login.user);
+  const axiosInstance = createAxios(dispatch, currentUser);
+
+  const { id } = useParams();
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_SERVER_URL}/api/v1/project/1`
+    window.scrollTo(0, 0);
+    const projectDetail = async () => {
+      const res = await getProjectDetailById(axiosInstance, id);
+      if (res?.err === 0) {
+        setProjectData(res.data.Project);
+        setTypeRooms(res.data.typeRooms);
+        setListImage(
+          res.data.Project.Images.map((item) => {
+            return {
+              largeURL: item.pathUrl,
+              thumbnailURL: item.pathUrl,
+              width: 974,
+              height: 641,
+            };
+          })
         );
-        // setProjectData(response.data.data);
-      } catch (error) {
-        console.error("Có lỗi xảy ra:", error);
       }
-    }
-    fetchData();
+    };
+    projectDetail();
   }, []);
-
-  // scrollToResortAmenities
 
   const [scrollToResortAmenities, setScrollToResortAmenities] = useState(false);
   useEffect(() => {
@@ -69,65 +84,7 @@ function ProjectDetail() {
       {/* List Image */}
       <div className={cx("content")}>
         <div className={cx("list-img")}>
-          <SimpleGallery
-            galleryID="my-test-gallery"
-            images={[
-              {
-                largeURL: images.heroImg,
-                thumbnailURL: images.heroImg,
-                width: 974,
-                height: 641,
-              },
-              {
-                largeURL: images.timeshareResort,
-                thumbnailURL: images.timeshareResort,
-                width: 974,
-                height: 641,
-              },
-              {
-                largeURL: images.resort,
-                thumbnailURL: images.resort,
-                width: 974,
-                height: 641,
-              },
-              {
-                largeURL: images.heroImg,
-                thumbnailURL: images.heroImg,
-                width: 974,
-                height: 641,
-              },
-              {
-                largeURL: images.heroImg,
-                thumbnailURL: images.heroImg,
-                width: 974,
-                height: 641,
-              },
-              {
-                largeURL: images.heroImg,
-                thumbnailURL: images.heroImg,
-                width: 974,
-                height: 641,
-              },
-              {
-                largeURL: images.heroImg,
-                thumbnailURL: images.heroImg,
-                width: 974,
-                height: 641,
-              },
-              {
-                largeURL: images.heroImg,
-                thumbnailURL: images.heroImg,
-                width: 974,
-                height: 641,
-              },
-              {
-                largeURL: images.heroImg,
-                thumbnailURL: images.heroImg,
-                width: 974,
-                height: 641,
-              },
-            ]}
-          />
+          <SimpleGallery galleryID="my-test-gallery" images={listImage} />
         </div>
       </div>
 
@@ -160,14 +117,23 @@ function ProjectDetail() {
             {/* List Amenities */}
             <div className={cx("list-amenities")}>
               <div className={cx("left-list")}>
-                <div className={cx("item")}>Accessible Rooms</div>
-                <div className={cx("item")}>Children Activities</div>
-                <div className={cx("item")}>Concierge Service</div>
+                {projectData?.features?.slice(0, 3).map((item, index) => {
+                  return (
+                    <div key={index} className={cx("item")}>
+                      {item}
+                    </div>
+                  );
+                })}
               </div>
+
               <div className={cx("right-list")}>
-                <div className={cx("item")}>Family Rooms</div>
-                <div className={cx("item")}>Fitness Center</div>
-                <div className={cx("item")}>Hot Tub</div>
+                {projectData?.features?.slice(3, 6).map((item, index) => {
+                  return (
+                    <div key={index} className={cx("item")}>
+                      {item}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -190,36 +156,28 @@ function ProjectDetail() {
             Resort Amenities
           </h1>
           <div className={cx("resort-amenities-list")}>
-            {/* Left */}
-            <div className={cx("left-list")}>
-              <div className={cx("item")}>Accessible Rooms</div>
-              <div className={cx("item")}>Children Activities</div>
-              <div className={cx("item")}>Concierge Services</div>
-              <div className={cx("item")}>Family Rooms</div>
-
-              <div className={cx("item")}>Fitness Center</div>
-              <div className={cx("item")}>Hot Tub</div>
-              <div className={cx("item")}>Non-Smoking Rooms</div>
-            </div>
-            {/* Between */}
-            <div className={cx("between-list")}>
-              <div className={cx("item")}>Laundry Facilities</div>
-              <div className={cx("item")}>Non-Smoking Hotel</div>
-              <div className={cx("item")}>Swimming Pool (Outdoor)</div>
-              <div className={cx("item")}>Restaurant</div>
-              <div className={cx("item")}>Spa</div>
-              <div className={cx("item")}>Child Friendly</div>
-              <div className={cx("item")}>Shuttle Bus Service</div>
-            </div>
-            {/* Right */}
-            <div className={cx("right-list")}>
-              <div className={cx("item")}>Business Center</div>
-              <div className={cx("item")}>Meeting rooms</div>
-              <div className={cx("item")}>Parking On-Site</div>
-              <div className={cx("item")}>Pool Table</div>
-              <div className={cx("item")}>Shuttle Bus Service</div>
-              <div className={cx("item")}>Bar</div>
-            </div>
+            {projectData?.features?.map((item, index) => {
+              return (
+                <div key={index} className={cx("item")}>
+                  {item}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        {/* Attractions */}
+        <div className={cx("resort-amenities-wrapper")}>
+          <h1 id={cx("resort-amenities")} className={cx("title")}>
+            Nearby Attractions
+          </h1>
+          <div className={cx("resort-amenities-list")}>
+            {projectData?.attractions?.map((item, index) => {
+              return (
+                <div key={index} className={cx("item")}>
+                  {item}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

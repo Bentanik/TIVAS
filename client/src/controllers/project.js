@@ -9,11 +9,20 @@ export const getTop10 = async (axiosInstance) => {
   }
 };
 
-export const getProjectDetailById = async (axiosInstance) => {
+export const getProjectDetailById = async (axiosInstance, id) => {
   try {
-    const res = await services.getProjectDetailById(axiosInstance);
+    const res = await services.getProjectDetailById(axiosInstance, id);
     return res;
   } catch (err) {
     console.log(err);
   }
 };
+
+export const getAllTypeRoom = async (axiosInstance, id) => {
+  try {
+    const res = await services.getAllTypeRoom(axiosInstance, id);
+    return res;
+  } catch (err) {
+    console.log(err);
+  }
+}

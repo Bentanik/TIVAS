@@ -5,3 +5,7 @@ export const getTop10 = (axiosInstance) => {
 export const getProjectDetailById = (axiosInstance, id) => {
   return axiosInstance.get(`/api/v1/project/${id}`);
 };
+
+export const getAllTypeRoom = (axiosInstance, id) => {
+  return axiosInstance.get(`/api/v1/typeroom/getAll/${id}`);
+};
