@@ -37,6 +37,11 @@ router.get(
 )
 
 router.get(
+  "/searchNameAndLocationProject/:info/:limit",
+  controllers.searchNameAndLocationProject,
+)
+
+router.get(
   "/top10",
   controllers.getTop10
 )

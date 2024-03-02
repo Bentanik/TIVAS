@@ -35,7 +35,7 @@ export const sendCodeForgotPassword = async (req, res) => {
   return res.status(200).json(response);
 };
 
-export const checkResetPassword  = async (req, res) => {
+export const checkResetPassword = async (req, res) => {
   const { email } = req.body;
 
   if (!email) {
@@ -43,9 +43,9 @@ export const checkResetPassword  = async (req, res) => {
   }
 
   const response = await services.checkResetPassword(req.body);
-  
+
   return res.status(200).json(response);
-}
+};
 
 export const checkUserName = async (req, res) => {
   const { username } = req.body;
@@ -151,10 +151,10 @@ export const loginGoogle = async (req, res) => {
 
 // Register google
 export const registerGoogle = async (req, res) => {
-  const { username, fullName, email, paymentMethod } = req.body;
+  const { username, fullName, email, phoneNumber, paymentMethod } = req.body;
 
   try {
-    if (!username || !fullName || !email || !paymentMethod) {
+    if (!username || !fullName || !email || !phoneNumber || !paymentMethod) {
       return missValue("Missing value!", res);
     }
 
@@ -177,6 +177,7 @@ export const registerGoogle = async (req, res) => {
         username,
         email,
         fullName,
+        phoneNumber,
         refundHistoryID: customer.id,
       });
       const { refreshToken, ...rest } = reponses;
@@ -224,7 +225,7 @@ export const refreshToken = async (req, res) => {
 // Reset password
 export const resetPassword = async (req, res) => {
   const { email, newPassword } = req.body;
-  
+
   const response = await services.resetPassword(req.body);
   return res.status(200).json(response);
 };

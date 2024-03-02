@@ -13,15 +13,10 @@ function Sidebar() {
   const currentUser = useSelector((state) => state.auth.login.user);
   const axiosInstance = createAxios(dispatch, currentUser);
 
-
   return (
     <div className={cx("wrapper")}>
       <div className={cx("avatar")}>
-        <img
-          src={images.unknown}
-          alt="Avatar"
-          className={cx("img")}
-        />
+        <img src={images.unknown} alt="Avatar" className={cx("img")} />
         <div className={cx("min")}>
           <h4 className={cx("heading")}>{currentUser?.data?.username}</h4>
           <Link to="/user/account/profile" className={cx("text")}>
@@ -57,20 +52,24 @@ function Sidebar() {
                 <span className={cx("text")}>Profile</span>
               </Link>
             </div>
-            <div
-              className={cx("option", "chilrent", {
-                active: location.pathname.includes("changepassword"),
-              })}
-            >
-              <Link to="/user/account/changepassword">
-                <span className={cx("text")}>Change password</span>
-              </Link>
-            </div>
+            {currentUser?.data?.type === "Local" && (
+              <div
+                className={cx("option", "chilrent", {
+                  active: location.pathname.includes("changepassword"),
+                })}
+              >
+                <Link to="/user/account/changepassword">
+                  <span className={cx("text")}>Change password</span>
+                </Link>
+              </div>
+            )}
           </>
         )}
-        <div className={cx("option", {
-          active: location.pathname.includes("purchase")
-        })}>
+        <div
+          className={cx("option", {
+            active: location.pathname.includes("purchase"),
+          })}
+        >
           <span className={cx("op-icon")}>
             <svg
               className={cx("icon")}

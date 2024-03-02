@@ -36,12 +36,14 @@ export const createNewProject = ({
     type,
     features,
     attractions,
+    reservationDate,
     reservationPrice,
     openDate,
 }, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
             const openDateDB = convertDate(openDate);
+            const reservationDateDB = convertDate(reservationDate);
             let typeInDBError = 0;
             const imageProjectArray = [];
             const typeErrorMessage = [];
@@ -69,7 +71,8 @@ export const createNewProject = ({
                         buildingStatus,
                         features,
                         attractions,
-                        saleStatus: 0,
+                        status: 0,
+                        reservationDate: reservationDateDB,
                         reservationPrice,
                         openDate: openDateDB,
                         thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : null,
@@ -124,13 +127,17 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
             const queries = pagination({ page, limit, orderType, orderBy });
             //queries.raw = true;
             const response = await db.Project.findAll({
-                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'features', 'attractions'],
+                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'status', 'buildingStatus', 'reservationDate', 'reservationPrice', 'openDate', 'features', 'attractions'],
                 ...queries,
             })
             if (response) {
                 for (let i = 0; i < response.length; i++) {
-                    response[i].features = response[i].features.split(',');
-                    response[i].attractions = response[i].attractions.split(',');
+                    if (response[i].features) {
+                        response[i].features = response[i].features.split(',');
+                    }
+                    if (response[i].attractions) {
+                        response[i].attractions = response[i].attractions.split(',');
+                    }
                 }
             }
             resolve({
@@ -183,6 +190,7 @@ export const updateProject = ({
     buildingStatus,
     features,
     attractions,
+    reservationDate,
     thumbnailDeleted,
     imagesDeleted,
     reservationPrice,
@@ -192,12 +200,13 @@ export const updateProject = ({
         try {
             let nameDuplicated;
             const openDateDB = convertDate(openDate);
+            const reservationDateDB = convertDate(reservationDate);
             let imageErrorMessage = [];
             const imageProjectArray = [];
             //Check TypeRoom is existed in DB
             let projectResult = await db.Project.findByPk(id);
             if (projectResult) {
-                nameDuplicated = db.Project.findOne({
+                nameDuplicated = await db.Project.findOne({
                     where: {
                         name
                     }
@@ -227,7 +236,7 @@ export const updateProject = ({
                     if ((parseInt(thumbnailDeleted) === 1) || fileData.thumbnail) {
                         cloudinary.uploader.destroy(projectResult.thumbnailPathName);
                     }
-                    
+
                     //Update
                     await db.Project.update({
                         name,
@@ -236,6 +245,7 @@ export const updateProject = ({
                         buildingStatus,
                         features,
                         attractions,
+                        reservationDate: reservationDateDB,
                         reservationPrice,
                         openDate: openDateDB,
                         thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathUrl,
@@ -303,7 +313,7 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
             // queries.raw = true;
             const response = await db.Project.findAll({
                 where: whereClause,
-                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'features', 'attractions'],
+                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'status', 'buildingStatus', 'reservationDate', 'reservationPrice', 'openDate', 'features', 'attractions'],
                 include: [
                     {
                         model: db.TypeOfProject,
@@ -329,8 +339,12 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
             });
             if (response) {
                 for (let i = 0; i < response.length; i++) {
-                    response[i].features = response[i].features.split(',');
-                    response[i].attractions = response[i].attractions.split(',');
+                    if (response[i].features) {
+                        response[i].features = response[i].features.split(',');
+                    }
+                    if (response[i].attractions) {
+                        response[i].attractions = response[i].attractions.split(',');
+                    }
                 }
             }
             resolve({
@@ -347,18 +361,71 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
     })
 }
 
+export const searchNameAndLocationProject = (info, limit) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            console.log(limit);
+            let limitDB;
+            if((/^\d+$/.test(limit))){
+                limitDB = parseInt(limit)
+            }else{
+                limitDB = 3
+            }
+            let response = {};
+            const bestMatch = await db.Project.findAll({
+                attributes: ['id', 'name', 'location', 'status', 'buildingStatus', 'reservationDate', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'features', 'attractions'],
+                where: {
+                    name: { [Op.substring]: info },
+                    location: { [Op.substring]: info}
+                },
+                limit: limitDB,
+            })
+            const projectByNameResponse = await db.Project.findAll({
+                attributes: ['id', 'name', 'location', 'status', 'buildingStatus', 'reservationDate', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'features', 'attractions'],
+                where: {
+                    name: { [Op.substring]: info }
+                },
+                limit: limitDB,
+            })
+
+            const projectByLocationResponse = await db.Project.findAll({
+                attributes: ['id', 'name', 'location', 'status', 'buildingStatus', 'reservationDate', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'features', 'attractions'],
+                where: {
+                    location: { [Op.substring]: info}
+                },
+                limit: limitDB,
+            })
+            response.bestMatch = bestMatch
+            response.ProjectName = projectByNameResponse;
+            response.ProjectLocation = projectByLocationResponse;
+            resolve({
+                err: response ? 0 : 1,
+                message: response ? 'Search Projects Results' : 'Can not find any Project!',
+                data: response ? response : null,
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
 export const getTop10 = () => {
     return new Promise(async (resolve, reject) => {
         try {
             const response = await db.Project.findAll({
-                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'createdAt', 'reservationPrice', 'openDate', 'features', 'attractions'],
+                attributes: ['id', 'name', 'location', 'status', 'buildingStatus', 'reservationDate', 'thumbnailPathUrl', 'createdAt', 'reservationPrice', 'openDate', 'features', 'attractions'],
                 limit: 10,
                 order: [['createdAt', 'DESC']],
             })
             if (response) {
                 for (let i = 0; i < response.length; i++) {
-                    response[i].features = response[i].features.split(',');
-                    response[i].attractions = response[i].attractions.split(',');
+                    if (response[i].features) {
+                        response[i].features = response[i].features.split(',');
+                    }
+                    if (response[i].attractions) {
+                        response[i].attractions = response[i].attractions.split(',');
+                    }
                 }
             }
             resolve({
@@ -377,24 +444,106 @@ export const getTop10 = () => {
 export const getDetailsProject = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const response = await db.Project.findByPk(id, {
+            const response = {};
+            const projectResponse = await db.Project.findByPk(id, {
                 attributes: { exclude: ['createdAt', 'updatedAt', 'thumbnailPathName'] },
                 nest: true,
                 //raw: true,
-                include: {
-                    model: db.Image,
-                    attributes: ['id', 'pathUrl'],
-                },
-            });
-            if (response) {
-                response.features = response.features.split(',');
-                response.attractions = response.attractions.split(',');
+                include: [
+                    {
+                        model: db.TypeOfProject,
+                        attributes: ['id'],
+                        include: {
+                            model: db.TypeRoom,
+                            attributes: ['id', 'name', 'bedrooms', 'persons', 'size', 'bedTypes', 'amenities'],
+                            include: [
+                                {
+                                    model: db.TypeOfProject,
+                                    attributes: [],
+                                    where: {
+                                        projectID: id,
+                                    },
+                                },
+                                {
+                                    model: db.Image,
+                                    attributes: ['id', 'pathUrl'],
+                                    limit: 1,
+                                },
+                            ],
+                        },
+                        order: [['id', 'ASC']],
+                    },
+                    {
+                        nest: true,
+                        model: db.Image,
+                        attributes: ['id', 'pathUrl'],
+                    },
+                ],
+            },
+            );
+            
+            if (projectResponse) {
+                response.Project = {
+                    id: projectResponse.id,
+                    name: projectResponse.name,
+                    description: projectResponse.description,
+                    buildingStatus: projectResponse.buildingStatus,
+                    location: projectResponse.location,
+                    features: projectResponse.features?.split(','),
+                    attractions: projectResponse.attractions?.split(','),
+                    saleStatus: projectResponse.saleStatus,
+                    reservationPrice: projectResponse.reservationPrice,
+                    openDate: projectResponse.openDate,
+                    thumbnailPathUrl: projectResponse.thumbnailPathUrl,
+                    images: projectResponse.Images
+                }
+
+                response.TypeRoom = [];
+                for(let i = 0; i < projectResponse.TypeOfProjects.length; i++){
+                        for(let j = 0; j < projectResponse.TypeOfProjects[i].TypeRooms.length; j++){
+                            response.TypeRoom.push({
+                                id: projectResponse.TypeOfProjects[i].TypeRooms[j].id,
+                                name: projectResponse.TypeOfProjects[i].TypeRooms[j].name,
+                                bedrooms: projectResponse.TypeOfProjects[i].TypeRooms[j].bedrooms,
+                                persons: projectResponse.TypeOfProjects[i].TypeRooms[j].persons,
+                                bedTypes: projectResponse.TypeOfProjects[i].TypeRooms[j].bedTypes.split(','),
+                                amenities: projectResponse.TypeOfProjects[i].TypeRooms[j].amenities?.split(','),
+                                images: projectResponse.TypeOfProjects[i].TypeRooms[j].Images
+                            })
+                        }
+                        
+                }
+
+
+                // response.Project = {
+
+                // }
+                // response.TypeRoom = {
+
+                // }
+                // if (response.Project.features) {
+                //     response.Project.features = response.Project.features.split(',')
+                // }
+                // if (response.Project.attractions) {
+                //     response.Project.attractions = response.Project.attractions.split(',')
+                // }
+                // if (typeRoomResponse) {
+                //     response.typeRooms = typeRoomResponse;
+                //     for (let i = 0; i < response.typeRooms.length; i++) {
+                //         if (response.typeRooms[i].bedTypes) {
+                //             response.typeRooms[i].bedTypes = response.typeRooms[i].bedTypes.split(',');
+                //         }
+                //         if (response.typeRooms[i].amenities) {
+                //             response.typeRooms[i].amenities = response.typeRooms[i].amenities.split(',');
+                //         }
+
+                //     }
+                // }
             }
-            console.log(response.features);
             resolve({
                 err: response ? 0 : 1,
                 message: response ? `Project ${id} found` : `Can not find Project with id: ${id}`,
-                data: response,
+                data: projectResponse,
             })
         } catch (error) {
             console.log(error);
@@ -405,12 +554,12 @@ export const getDetailsProject = (id) => {
 
 export const changeDate = ({
     openDate
-},id) => {
+}, id) => {
     return new Promise(async (resolve, reject) => {
         try {
             const errorMessage = [];
             const project = await db.Project.findOne({
-                where : {
+                where: {
                     id
                 }
             })

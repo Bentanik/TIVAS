@@ -35,19 +35,19 @@ const deleteProjectImage = (fileData) => {
 //Create New Project
 export const createNewProject = async (req, res) => {
   try {
-    const { name, description, buildingStatus, reservationPrice, openDate } = req.body;
-    if (!name || !description || !buildingStatus || !reservationPrice || !openDate) {
+    const { name, description, buildingStatus, location, reservationDate, reservationPrice, openDate } = req.body;
+    if (!name || !description || !buildingStatus || !location || !reservationDate || !reservationPrice || !openDate) {
       if (req.files) {
         deleteProjectImage(req.files);
       }
       return missValue("Missing value!", res);
     }
     const dateRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
-    if (!dateRegex.test(openDate)) {
-      return badRequest("Open Date must be like (dd/mm/yyyy) format!", res);
+    if (!dateRegex.test(openDate) || !dateRegex.test(reservationDate)) {
+      return badRequest("Open Date, Reservation Date must be like (dd/mm/yyyy) format!", res);
     }
-    if (!isValidDate(openDate)) {
-      return badRequest("Open Date must be a valid date!", res)
+    if (!isValidDate(openDate) || !isValidDate(reservationDate)) {
+      return badRequest("Open Date, Reservation Date must be a valid date!", res)
     }
     if (!/^\d+$/.test(buildingStatus)) {
       if (req.files) {
@@ -86,19 +86,19 @@ export const deleteProjects = async (req, res) => {
 //Update Project
 export const updateProjects = async (req, res) => {
   const { id } = req.params;
-  const { name, description, buildingStatus, reservationPrice, openDate } = req.body;
-  if (!name || !description || !buildingStatus || !reservationPrice || !/^\d+$/.test(id) || !openDate) {
+  const { name, description, buildingStatus, location, reservationDate, reservationPrice, openDate } = req.body;
+  if (!name || !description || !buildingStatus || !location || !reservationDate || !reservationPrice || !/^\d+$/.test(id) || !openDate) {
     if (req.files) {
       deleteProjectImage(req.files);
     }
     return missValue("Missing value!", res);
   }
   const dateRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
-  if (!dateRegex.test(openDate)) {
-    return badRequest("Open Date must be like (dd/mm/yyyy) format!", res);
+  if (!dateRegex.test(openDate) || !dateRegex.test(reservationDate)) {
+    return badRequest("Open Date, Reservation Date must be like (dd/mm/yyyy) format!", res);
   }
-  if (!isValidDate(openDate)) {
-    return badRequest("Open Date must be a valid date!", res)
+  if (!isValidDate(openDate) || !isValidDate(reservationDate)) {
+    return badRequest("Open Date, Reservation Date must be a valid date!", res)
   }
   if (!/^\d+$/.test(buildingStatus)) {
     if (req.files) {
@@ -130,6 +130,12 @@ export const getAllProject = async (req, res) => {
 //Search Project
 export const searchProject = async (req, res) => {
   const response = await services.searchProject(req.query);
+  return res.status(200).json(response);
+}
+
+export const searchNameAndLocationProject = async (req, res) => {
+  const { info, limit } = req.params;
+  const response = await services.searchNameAndLocationProject(info, limit);
   return res.status(200).json(response);
 }
 

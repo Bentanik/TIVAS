@@ -101,6 +101,7 @@ export const createTypeRoom = (projectID, {
                             bedTypes,
                             amenities,
                             description,
+                            quantity,
                             typeOfProjectID: typeOfProjectResponse.id,
                         })
 
@@ -116,17 +117,6 @@ export const createTypeRoom = (projectID, {
                                     imageTypeRoomArray.push(image);
                                 }
                                 await db.Image.bulkCreate(imageTypeRoomArray);
-                            }
-
-                            //Number of rooms
-                            if (quantity && (parseInt(quantity) !== 0)) {
-                                const roomArray = [];
-                                for (let i = 0; i < quantity; i++) {
-                                    roomArray.push({
-                                        typeRoomID: typeRoomResponse.id
-                                    })
-                                }
-                                await db.Room.bulkCreate(roomArray);
                             }
                         }
                     }
@@ -145,7 +135,7 @@ export const createTypeRoom = (projectID, {
                                 : "Create successfully."
             })
 
-            if (!typeRoomDuplicated && fileData) {
+            if (typeRoomDuplicated && fileData) {
                 deleteTypeRoomImage(fileData);
             }
 
@@ -254,7 +244,7 @@ export const updateTypeRoom = (id, {
                         : 'Update Successfully.',
                 messageImage: imageErrorMessage.length !== 0 ? `Can not find Image: ${imageErrorMessage.join(',')}` : null,
             });
-            if (!typeRoomDuplicated && fileData) {
+            if (typeRoomDuplicated && fileData) {
                 deleteTypeRoomImage(fileData);
             }
         } catch (error) {
@@ -321,7 +311,9 @@ export const getAllTypeRoom = (projectID, { page, limit, orderType, orderBy }) =
             if (response) {
                 for (let i = 0; i < response.length; i++) {
                     response[i].bedTypes = response[i].bedTypes.split(',');
-                    response[i].amenities = response[i].amenities.split(',');
+                    if (response[i].amenities) {
+                        response[i].amenities = response[i].amenities.split(',');
+                    }
                 }
             }
             resolve({
@@ -343,16 +335,18 @@ export const getDetailsTypeRoom = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
             const response = await db.TypeRoom.findByPk(id, {
-                attributes: { exclude: ['createdAt', 'updatedAt', 'typeOfProjectID', 'TypeOfProjectId']},
+                attributes: { exclude: ['createdAt', 'updatedAt', 'typeOfProjectID', 'TypeOfProjectId'] },
                 nest: true,
                 include: {
                     model: db.Image,
                     attributes: ['id', 'pathUrl'],
                 },
             });
-            if(response){
+            if (response) {
                 response.bedTypes = response.bedTypes.split(',');
-                response.amenities = response.amenities.split(',');
+                if (response.amenities) {
+                    response.amenities = response.amenities.split(',');
+                }
             }
             resolve({
                 err: response ? 0 : 1,

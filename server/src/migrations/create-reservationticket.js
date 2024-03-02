@@ -21,6 +21,9 @@ module.exports = {
       projectID: {
         type: Sequelize.INTEGER
       },
+      timeShareID: {
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         type: "TIMESTAMP",
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
