@@ -9,6 +9,7 @@ import ProfileLayout from "~/pages/ProfileLayout";
 import Profile from "~/components/Layouts/Profile";
 import RoomTypeDetail from "~/components/RoomTypeDetail";
 import ChangePassword from "~/components/ChangePassword";
+import AdminManageUser from "~/pages/AdminManageUser";
 
 const routes = [
     {
@@ -56,6 +57,11 @@ const routes = [
     {
         path: "/admin/createproject",
         component: AdminCreateProject,
+        layout: LayoutAdmin,
+    },
+    {
+        path: "/admin/manageuser",
+        component: AdminManageUser,
         layout: LayoutAdmin,
     },
 
