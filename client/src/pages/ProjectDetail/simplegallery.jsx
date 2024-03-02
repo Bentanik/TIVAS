@@ -22,7 +22,7 @@ function SimpleGallery(props) {
 
     return (
         <div className="pswp-gallery" id={props.galleryID}>
-            {props.images.map((image, index) => (
+            {props.images?.map((image, index) => (
                 <a
                     href={image.largeURL}
                     data-pswp-width={image.width}

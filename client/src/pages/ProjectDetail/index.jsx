@@ -28,10 +28,15 @@ function ProjectDetail() {
     useEffect(() => {
         async function fetchData() {
             try {
-                const response = await axios.get(
+                const project = await axios.get(
                     `${process.env.REACT_APP_SERVER_URL}/api/v1/project/1`
                 );
-                // setProjectData(response.data.data);
+
+                // const roomtype = await axios.get(
+                //     `${process.env.REACT_APP_SERVER_URL}/api/v1/project/1`
+                // );
+
+                setProjectData(project.data.data);
             } catch (error) {
                 console.error("Có lỗi xảy ra:", error);
             }
@@ -39,20 +44,18 @@ function ProjectDetail() {
         fetchData();
     }, []);
 
-    // scrollToResortAmenities
+    // Image API
+    const images = projectData.Images?.map((image) => ({
+        largeURL: image.pathUrl,
+        thumbnailURL: image.pathUrl,
+        width: 974,
+        height: 641,
+    }));
+
+    console.log(projectData.features);
 
     const [scrollToResortAmenities, setScrollToResortAmenities] =
         useState(false);
-
-    // axios
-    //     .get(`${process.env.REACT_APP_SERVER_URL}/api/v1/project/`, {
-    //         params: {
-    //             id: 1,
-    //         },
-    //     })
-    //     .then((res) => {
-
-    //     });
 
     useEffect(() => {
         if (scrollToResortAmenities) {
@@ -83,72 +86,14 @@ function ProjectDetail() {
                 <div className={cx("list-img")}>
                     <SimpleGallery
                         galleryID="my-test-gallery"
-                        images={[
-                            {
-                                largeURL: images.heroImg,
-                                thumbnailURL: images.heroImg,
-                                width: 974,
-                                height: 641,
-                            },
-                            {
-                                largeURL: images.timeshareResort,
-                                thumbnailURL: images.timeshareResort,
-                                width: 974,
-                                height: 641,
-                            },
-                            {
-                                largeURL: images.resort,
-                                thumbnailURL: images.resort,
-                                width: 974,
-                                height: 641,
-                            },
-                            {
-                                largeURL: images.heroImg,
-                                thumbnailURL: images.heroImg,
-                                width: 974,
-                                height: 641,
-                            },
-                            {
-                                largeURL: images.heroImg,
-                                thumbnailURL: images.heroImg,
-                                width: 974,
-                                height: 641,
-                            },
-                            {
-                                largeURL: images.heroImg,
-                                thumbnailURL: images.heroImg,
-                                width: 974,
-                                height: 641,
-                            },
-                            {
-                                largeURL: images.heroImg,
-                                thumbnailURL: images.heroImg,
-                                width: 974,
-                                height: 641,
-                            },
-                            {
-                                largeURL: images.heroImg,
-                                thumbnailURL: images.heroImg,
-                                width: 974,
-                                height: 641,
-                            },
-                            {
-                                largeURL: images.heroImg,
-                                thumbnailURL: images.heroImg,
-                                width: 974,
-                                height: 641,
-                            },
-                        ]}
+                        images={images}
                     />
                 </div>
             </div>
 
             <div className={cx("content")}>
                 <div className={cx("info-detail")}>
-                    <h1 className={cx("title")}>
-                        {/* The Rivus Project from Thu Duc district, Ho Chi Minh */}
-                        {projectData.name}
-                    </h1>
+                    <h1 className={cx("title")}>{projectData.name}</h1>
 
                     <div className={cx("desc")}>{projectData.description}</div>
 
@@ -174,20 +119,18 @@ function ProjectDetail() {
                         {/* List Amenities */}
                         <div className={cx("list-amenities")}>
                             <div className={cx("left-list")}>
-                                <div className={cx("item")}>
-                                    Accessible Rooms
-                                </div>
-                                <div className={cx("item")}>
-                                    Children Activities
-                                </div>
-                                <div className={cx("item")}>
-                                    Concierge Service
-                                </div>
+                                {projectData?.features.map((item, index) => (
+                                    <div key={index} className={cx("item")}>
+                                        {item}
+                                    </div>
+                                ))}
                             </div>
                             <div className={cx("right-list")}>
-                                <div className={cx("item")}>Family Rooms</div>
-                                <div className={cx("item")}>Fitness Center</div>
-                                <div className={cx("item")}>Hot Tub</div>
+                                {projectData?.features.map((item, index) => (
+                                    <div key={index} className={cx("item")}>
+                                        {item}
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
