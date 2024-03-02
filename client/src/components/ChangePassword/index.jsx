@@ -66,13 +66,6 @@ function ChangePassword() {
                                     // onChange={(e) => setNumberPhone(e.target.value)}
                                 />
                             </div>
-
-                            <Link to="/option" className={cx("link")}>
-                                <span className={cx("option")}>
-                                    Forgot Password
-                                </span>
-                            </Link>
-
                             <button type="submit" className={cx("action-save")}>
                                 Update
                             </button>
