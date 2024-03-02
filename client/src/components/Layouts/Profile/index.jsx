@@ -18,6 +18,7 @@ function Profile() {
     const [username, setUsername] = useState("");
     const [fullName, setFullName] = useState("");
     const [numberPhone, setNumberPhone] = useState("");
+    const [email, setEmail] = useState("");
 
     const avatarRef = useRef();
     const dispatch = useDispatch();
@@ -43,6 +44,7 @@ function Profile() {
                 setUsername(res?.data?.username);
                 setFullName(res?.data?.fullName);
                 setNumberPhone(res?.data?.phoneNumber);
+                setEmail(res?.data?.email);
             } else {
                 setIsLoading(false);
                 setUsername("");
@@ -162,12 +164,8 @@ function Profile() {
                                                 id="number_phone"
                                                 className={cx("input")}
                                                 placeholder="Email"
-                                                value={numberPhone}
-                                                onChange={(e) =>
-                                                    setNumberPhone(
-                                                        e.target.value
-                                                    )
-                                                }
+                                                value={email}
+                                                readOnly
                                             />
                                         </div>
                                         {/* <div className={cx("input_compo")}>
