@@ -21,7 +21,8 @@ export const createTicket = ({
                     code: code,
                     status: 0,
                     userID,
-                    projectID
+                    projectID,
+                    timeshareID : null
                 })
                 Message.push("Create Success")
                 let transporter = nodemailer.createTransport({
