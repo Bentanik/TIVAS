@@ -8,6 +8,7 @@ import AdminCreateProject from "~/pages/AdminCreateProject";
 import ProfileLayout from "~/pages/ProfileLayout";
 import Profile from "~/components/Layouts/Profile";
 import RoomTypeDetail from "~/components/RoomTypeDetail";
+import ChangePassword from "~/components/ChangePassword";
 
 const routes = [
     {
@@ -57,9 +58,15 @@ const routes = [
         component: AdminCreateProject,
         layout: LayoutAdmin,
     },
+
     {
         path: "/user/account/profile",
         component: Profile,
+        layout: ProfileLayout,
+    },
+    {
+        path: "/user/account/changepassword",
+        component: ChangePassword,
         layout: ProfileLayout,
     },
     {
