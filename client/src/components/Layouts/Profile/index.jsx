@@ -13,229 +13,179 @@ import { useNavigate } from "react-router-dom";
 const cx = classNames.bind(styles);
 
 function Profile() {
-    const [avatar, setAvatar] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [username, setUsername] = useState("");
-    const [fullName, setFullName] = useState("");
-    const [numberPhone, setNumberPhone] = useState("");
-    const [email, setEmail] = useState("");
+  const [avatar, setAvatar] = useState(null);
+  const [username, setUsername] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [numberPhone, setNumberPhone] = useState("");
+  const [email, setEmail] = useState("");
 
-    const avatarRef = useRef();
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+  const avatarRef = useRef();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-    const currentUser = useSelector((state) => state.auth.login.user);
-    const axiosInstance = createAxios(dispatch, currentUser);
+  const currentUser = useSelector((state) => state.auth.login.user);
+  const axiosInstance = createAxios(dispatch, currentUser);
+  const userState = useSelector((state) => state.user);
 
-    // useEffect(() => {
-    //   if (currentUser === null) {
-    //     navigate("/");
-    //   }
-    // }, [currentUser, navigate]);
+  useEffect(() => {
+    if (currentUser === null) {
+      navigate("/");
+    }
+  }, []);
 
-    useEffect(() => {
-        const fetchDataUser = async () => {
-            const res = await getMyUser(
-                axiosInstance,
-                currentUser?.data?.username
-            );
-            if (res?.err === 0) {
-                setIsLoading(true);
-                setUsername(res?.data?.username);
-                setFullName(res?.data?.fullName);
-                setNumberPhone(res?.data?.phoneNumber);
-                setEmail(res?.data?.email);
-            } else {
-                setIsLoading(false);
-                setUsername("");
-                setFullName("");
-                setNumberPhone("");
-            }
-        };
-        fetchDataUser();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+  useEffect(() => {
+    if (currentUser !== null) {
+      getMyUser(dispatch, axiosInstance, currentUser?.data?.username);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
 
-    useEffect(() => {
-        return () => avatar && URL.revokeObjectURL(avatar.preview);
-    }, [avatar]);
+  useEffect(() => {
+    setUsername(userState?.data?.data?.username);
+    setFullName(userState?.data?.data?.fullName);
+    setNumberPhone(userState?.data?.data?.phoneNumber);
+    setEmail(userState?.data?.data?.email)
+  }, [userState]);
 
-    const handleFileImage = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            file.preview = URL.createObjectURL(file);
-            setAvatar(file);
-        }
-    };
+  useEffect(() => {
+    return () => avatar && URL.revokeObjectURL(avatar.preview);
+  }, [avatar]);
 
-    const removeAvatar = () => {
-        setAvatar(null);
-        avatarRef.current.value = "";
-    };
+  const handleFileImage = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      file.preview = URL.createObjectURL(file);
+      setAvatar(file);
+    }
+  };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-    };
+  const removeAvatar = () => {
+    setAvatar(null);
+    avatarRef.current.value = "";
+  };
 
-    return (
-        <div className={cx("wrapper")}>
-            {isLoading !== "" && (
-                <div>
-                    <h2 className={cx("heading")}>My profile</h2>
-                    <h3 className={cx("title")}>
-                        {currentUser?.data?.type === "Google" &&
-                            "This is account login by Google"}
-                    </h3>
-                    <div className={cx("profile")}>
-                        <form onSubmit={handleSubmit}>
-                            <div className={cx("form")}>
-                                <section className={cx("information")}>
-                                    {/* Login google */}
-                                    <section className={cx("login-google")}>
-                                        {/* UserName */}
-                                        <div className={cx("input_compo")}>
-                                            <label
-                                                htmlFor="username"
-                                                className={cx("label")}
-                                            >
-                                                Username
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="username"
-                                                className={cx("input")}
-                                                placeholder="Enter Username"
-                                                value={username}
-                                                onChange={(e) =>
-                                                    setUsername(e.target.value)
-                                                }
-                                            />
-                                        </div>
-                                        {/* Full Name */}
-                                        <div className={cx("input_compo")}>
-                                            <label
-                                                htmlFor="full_name"
-                                                className={cx("label")}
-                                            >
-                                                Full Name
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="full_name"
-                                                className={cx("input")}
-                                                placeholder="Enter FullName"
-                                                value={fullName}
-                                                onChange={(e) =>
-                                                    setFullName(e.target.value)
-                                                }
-                                            />
-                                        </div>
-                                        {/* Phone Number */}
-                                        <div className={cx("input_compo")}>
-                                            <label
-                                                htmlFor="number_phone"
-                                                className={cx("label")}
-                                            >
-                                                Number phone
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="number_phone"
-                                                className={cx("input")}
-                                                placeholder="Enter Number phone"
-                                                value={numberPhone}
-                                                onChange={(e) =>
-                                                    setNumberPhone(
-                                                        e.target.value
-                                                    )
-                                                }
-                                            />
-                                        </div>
-                                        {/* Email   */}
-                                        <div className={cx("input_compo")}>
-                                            <label
-                                                htmlFor="number_phone"
-                                                className={cx("label")}
-                                            >
-                                                Email
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="number_phone"
-                                                className={cx("input")}
-                                                placeholder="Email"
-                                                value={email}
-                                                readOnly
-                                            />
-                                        </div>
-                                        {/* <div className={cx("input_compo")}>
-                    <label htmlFor="gender" className={cx("label")}>
-                      Genders
-                    </label>
-                    <select id="gender" className={cx("input")}>
-                      <option value="male" className={cx("option")}>
-                        Male
-                      </option>
-                      <option value="female" className={cx("option")}>
-                        Female
-                      </option>
-                    </select>
-                  </div> */}
-                                        <button
-                                            type="submit"
-                                            className={cx("action-save")}
-                                        >
-                                            Save
-                                        </button>
-                                    </section>
-                                </section>
-                                <section className={cx("choose-avatar")}>
-                                    <figure className={cx("box")}>
-                                        <img
-                                            src={
-                                                avatar?.preview ||
-                                                images.unknown
-                                            }
-                                            alt="avatar"
-                                            className={cx("avatar")}
-                                        />
-                                        {avatar !== null && (
-                                            <img
-                                                src={images.trashIcon}
-                                                alt="remove"
-                                                className={cx("icon")}
-                                                onClick={removeAvatar}
-                                            />
-                                        )}
-                                    </figure>
-                                    <div className={cx("action")}>
-                                        <div className={cx("button")}>
-                                            Choose image
-                                        </div>
-                                        <input
-                                            ref={avatarRef}
-                                            type="file"
-                                            className={cx("input")}
-                                            onChange={handleFileImage}
-                                        />
-                                    </div>
-                                </section>
-                            </div>
-                        </form>
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  };
+
+  return (
+    <div className={cx("wrapper")}>
+      {userState.data !== null && (
+        <div>
+          <h2 className={cx("heading")}>My profile</h2>
+          <h3 className={cx("title")}>
+            {currentUser?.data?.type === "Google" &&
+              "This is account login by Google"}
+          </h3>
+          <div className={cx("profile")}>
+            <form onSubmit={handleSubmit}>
+              <div className={cx("form")}>
+                <section className={cx("information")}>
+                  {/* Login google */}
+                  <section className={cx("login-google")}>
+                    {/* UserName */}
+                    <div className={cx("input_compo")}>
+                      <label htmlFor="username" className={cx("label")}>
+                        Username
+                      </label>
+                      <input
+                        type="text"
+                        id="username"
+                        className={cx("input")}
+                        placeholder="Enter Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                      />
                     </div>
-                </div>
-            )}
-            {/* <Backdrop
-                sx={{
-                    color: "#fff",
-                    zIndex: (theme) => theme.zIndex.drawer + 1,
-                }}
-                open={!isLoading}
-            >
-                <CircularProgress color="inherit" />
-            </Backdrop> */}
+                    {/* Full Name */}
+                    <div className={cx("input_compo")}>
+                      <label htmlFor="full_name" className={cx("label")}>
+                        Full Name
+                      </label>
+                      <input
+                        type="text"
+                        id="full_name"
+                        className={cx("input")}
+                        placeholder="Enter FullName"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                      />
+                    </div>
+                    {/* Phone Number */}
+                    <div className={cx("input_compo")}>
+                      <label htmlFor="number_phone" className={cx("label")}>
+                        Number phone
+                      </label>
+                      <input
+                        type="text"
+                        id="number_phone"
+                        className={cx("input")}
+                        placeholder="Enter Number phone"
+                        value={numberPhone}
+                        onChange={(e) => setNumberPhone(e.target.value)}
+                      />
+                    </div>
+                    {/* Email   */}
+                    <div className={cx("input_compo")}>
+                      <label htmlFor="number_phone" className={cx("label")}>
+                        Email
+                      </label>
+                      <input
+                        type="text"
+                        id="number_phone"
+                        className={cx("input")}
+                        placeholder="Email"
+                        value={email}
+                        readOnly
+                      />
+                    </div>
+                    <button type="submit" className={cx("action-save")}>
+                      Save
+                    </button>
+                  </section>
+                </section>
+                <section className={cx("choose-avatar")}>
+                  <figure className={cx("box")}>
+                    <img
+                      src={avatar?.preview || userState?.data?.data?.avatarURL}
+                      alt="avatar"
+                      className={cx("avatar")}
+                    />
+                    {avatar !== null && (
+                      <img
+                        src={images.trashIcon}
+                        alt="remove"
+                        className={cx("icon")}
+                        onClick={removeAvatar}
+                      />
+                    )}
+                  </figure>
+                  <div className={cx("action")}>
+                    <div className={cx("button")}>Choose image</div>
+                    <input
+                      ref={avatarRef}
+                      type="file"
+                      className={cx("input")}
+                      onChange={handleFileImage}
+                    />
+                  </div>
+                </section>
+              </div>
+            </form>
+          </div>
         </div>
-    );
+      )}
+      <Backdrop
+        sx={{
+          color: "#fff",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+        }}
+        open={userState.isFetching}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    </div>
+  );
 }
 
 export default Profile;

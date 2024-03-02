@@ -4,6 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import images from "~/assets/images";
 import { useDispatch, useSelector } from "react-redux";
 import createAxios from "~/configs/axios";
+import { useState } from "react";
 const cx = classNames.bind(styles);
 
 function Sidebar() {
@@ -12,11 +13,16 @@ function Sidebar() {
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.login.user);
   const axiosInstance = createAxios(dispatch, currentUser);
+  const userState = useSelector((state) => state.user?.data);
 
   return (
     <div className={cx("wrapper")}>
       <div className={cx("avatar")}>
-        <img src={currentUser?.data?.avatar} alt="Avatar" className={cx("img")} />
+        <img
+          src={userState?.data?.avatarURL}
+          alt="Avatar"
+          className={cx("img")}
+        />
         <div className={cx("min")}>
           <h4 className={cx("heading")}>{currentUser?.data?.username}</h4>
           <Link to="/user/account/profile" className={cx("text")}>
@@ -63,6 +69,15 @@ function Sidebar() {
                 </Link>
               </div>
             )}
+             <div
+              className={cx("option", "chilrent", {
+                active: location.pathname.includes("banking"),
+              })}
+            >
+              <Link to="/user/account/banking">
+                <span className={cx("text")}>Banking</span>
+              </Link>
+            </div>
           </>
         )}
         <div

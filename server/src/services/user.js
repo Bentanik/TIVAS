@@ -67,14 +67,14 @@ export const getUser = ({ username }) => {
         raw: true,
       });
 
-      const customer = res
-        ? await stripe.paymentMethods.list({
-            customer: res.refundHistoryID,
-            type: "card", 
-          })
-        : null;
-      console.log("Card: ", customer.data[0].card);
-      console.log("billing_details: ", customer.data[0].billing_details);
+      // const customer = res
+      //   ? await stripe.paymentMethods.list({
+      //       customer: res.refundHistoryID,
+      //       type: "card",
+      //     })
+      //   : null;
+      // console.log("Card: ", customer.data[0].card);
+      // console.log("billing_details: ", customer.data[0].billing_details);
       resolve({
         err: res ? 0 : 1,
         mess: res ? "Successully" : "No user data",
@@ -86,3 +86,59 @@ export const getUser = ({ username }) => {
     }
   });
 };
+
+
+
+export const getAvatarUser = ({ username }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const res = await db.User.findOne({
+        where: { username },
+        attributes: {
+          exclude: [
+            "username",
+            "fullName",
+            "email",
+            "password",
+            "phoneNumber",
+            "banStatus",
+            "roleID",
+            "refreshToken",
+            "refundHistoryID",
+            "avatarPathName",
+            "type",
+          ],
+        },
+        raw: true,
+      });
+
+      resolve({
+        err: res ? 0 : 1,
+        mess: res ? "Successully" : "No user data",
+        data: res ? res : null,
+      });
+    } catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  });
+};
+
+// export const editUser = (
+//   { username, fullName, image, numberPhone },
+//   fileData
+// ) => {
+//   return new Promise(async (resolve, reject) => {
+//     try {
+//       resolve({
+//         username,
+//         fullName,
+//         image,
+//         numberPhone,
+//       });
+//     } catch (err) {
+//       reject(err);
+//       console.log(err);
+//     }
+//   });
+// };

@@ -19,6 +19,7 @@ import ForgotPassword from "~/components/Layouts/ForgotPassword";
 import TippyHeadless from "@tippyjs/react/headless";
 import MenuAvatar from "~/components/MenuAvatar";
 import { logout } from "~/controllers/auth";
+import { getAvatarUser } from "~/controllers/user";
 
 const cx = classNames.bind(styles);
 
@@ -50,8 +51,22 @@ function Navigations() {
 
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.login.user);
+  const [imgAvatar, setImgAvatar] = useState("");
 
   const statusRegister = useSelector((state) => state.auth.register);
+
+  useEffect(() => {
+    const fetchGetAvatarUser = async () => {
+      const res = await getAvatarUser(
+        axiosInstance,
+        currentUser?.data?.username
+      );
+      if (res) setImgAvatar(res.data.avatarURL);
+      else setImgAvatar("");
+    };
+    fetchGetAvatarUser();
+    // eslint-disable-next-line no-use-before-define, react-hooks/exhaustive-deps
+  }, [currentUser]);
 
   const handleCloseLogin = () => {
     setLogin(false);
@@ -168,11 +183,7 @@ function Navigations() {
                   onClickOutside={hideMenuAvatar}
                 >
                   <div className={cx("action", "avatar")}>
-                    <img
-                      src={currentUser?.data?.avatar}
-                      alt="Avatar"
-                      className={cx("img")}
-                    />
+                    <img src={imgAvatar} alt="Avatar" className={cx("img")} />
                     <div className={cx("list-menu")} onClick={toggleMenuAvatar}>
                       <h4 className={cx("show-name")}>
                         {currentUser?.data.username}

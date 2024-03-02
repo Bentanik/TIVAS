@@ -120,7 +120,6 @@ export const login = ({ username, email, password }) => {
               username: user.username,
               type: user?.type,
               roleID: user.roleID,
-              avatar: user.avatarURL,
             }
           : null,
         accessToken: `Bearer ${accessToken}`,
@@ -171,7 +170,6 @@ export const loginGoogle = ({ email, roleID = 3 }) => {
                 id: user.id,
                 username: user.username || null,
                 roleID: user.roleID || roleID,
-                avatar: user.avatarURL,
               }
             : null,
           accessToken: `Bearer ${accessToken}`,
@@ -196,7 +194,6 @@ export const loginGoogle = ({ email, roleID = 3 }) => {
                 username: user.username || null,
                 roleID: user.roleID || roleID,
                 type: user?.type,
-                avatar: user.avatarURL,
               }
             : null,
           accessToken: `Bearer ${accessToken}`,

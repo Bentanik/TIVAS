@@ -8,6 +8,7 @@ import AdminCreateProject from "~/pages/AdminCreateProject";
 import ProfileLayout from "~/pages/ProfileLayout";
 import Profile from "~/components/Layouts/Profile";
 import RoomTypeDetail from "~/components/RoomTypeDetail";
+import Banking from "~/components/Layouts/Banking";
 
 const routes = [
     {
@@ -20,10 +21,7 @@ const routes = [
         component: Search,
         layout: null,
     },
-<<<<<<< HEAD
-=======
 
->>>>>>> master
     {
         path: "/destinations",
         component: Destination,
@@ -66,10 +64,16 @@ const routes = [
         layout: ProfileLayout,
     },
     {
+        path: "/user/account/banking",
+        component: Banking,
+        layout: ProfileLayout,
+    },
+    {
         path: "/room-type-detail",
         component: RoomTypeDetail,
         layout: null,
     },
+    
 ];
 
 export default routes;
