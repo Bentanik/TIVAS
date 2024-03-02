@@ -7,6 +7,7 @@ import AdminDashboard from "~/pages/AdminDashboard";
 import AdminCreateProject from "~/pages/AdminCreateProject";
 import ProfileLayout from "~/pages/ProfileLayout";
 import Profile from "~/components/Layouts/Profile";
+import RoomTypeDetail from "~/components/RoomTypeDetail";
 
 const routes = [
     {
@@ -19,6 +20,10 @@ const routes = [
         component: Search,
         layout: null,
     },
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
     {
         path: "/destinations",
         component: Destination,
@@ -59,6 +64,11 @@ const routes = [
         path: "/user/account/profile",
         component: Profile,
         layout: ProfileLayout,
+    },
+    {
+        path: "/room-type-detail",
+        component: RoomTypeDetail,
+        layout: null,
     },
 ];
 

@@ -145,7 +145,7 @@ export const createTypeRoom = (projectID, {
                                 : "Create successfully."
             })
 
-            if (!typeRoomDuplicated && fileData) {
+            if (typeRoomDuplicated && fileData) {
                 deleteTypeRoomImage(fileData);
             }
 
@@ -254,7 +254,7 @@ export const updateTypeRoom = (id, {
                         : 'Update Successfully.',
                 messageImage: imageErrorMessage.length !== 0 ? `Can not find Image: ${imageErrorMessage.join(',')}` : null,
             });
-            if (!typeRoomDuplicated && fileData) {
+            if (typeRoomDuplicated && fileData) {
                 deleteTypeRoomImage(fileData);
             }
         } catch (error) {
