@@ -3,6 +3,7 @@ const cloudinary = require('cloudinary').v2;
 import "dotenv/config";
 import { Model, Op, fn, col, literal } from "sequelize";
 import { pagination } from "../middlewares/pagination";
+const nodemailer = require("nodemailer");
 
 const convertDate = (dateString) => {
     const parts = dateString.split('/');
@@ -13,19 +14,6 @@ const convertDate = (dateString) => {
     const date = new Date(year, month, day);
     return date;
 }
-
-const compareDates = (d1, d2) => {
-    let date1 = new Date(d1).getTime();
-    let date2 = new Date(d2).getTime();
-  
-    if (date1 < date2) {
-      console.log(`${d1} is less than ${d2}`);
-    } else if (date1 > date2) {
-      console.log(`${d1} is greater than ${d2}`);
-    } else {
-      console.log(`Both dates are equal`);
-    }
-  };
 
 const deleteProjectImage = (fileData) => {
     if (fileData.thumbnail) {
@@ -420,12 +408,61 @@ export const changeDate = ({
 },id) => {
     return new Promise(async (resolve, reject) => {
         try {
+            const errorMessage = [];
             const project = await db.Project.findOne({
                 where : {
                     id
                 }
             })
-            compareDates(convertDate(project.openDate),openDate)
+                let ExDate = new Date(project.openDate).getTime();
+                let NewDate = new Date(convertDate(openDate)).getTime();
+              
+                if (ExDate > NewDate || ExDate == NewDate) {
+                  errorMessage.push("Can not change openDate because new date is less than old openDate")
+                } else {
+                    const update = await db.Project.update({
+                        openDate : convertDate(openDate)
+                    },{
+                        where : {
+                            id
+                        }
+                    })
+                    const user = await db.ReservationTicket.findAll({
+                        where : {
+                            projectID : id,
+                            status : 1
+                        }
+                    })
+                    errorMessage.push("Change openDate Success")
+                    for (let i = 0; i < user.length; i++) {
+                        const user1 = await db.User.findByPk(user[i].userID)
+                        let transporter = nodemailer.createTransport({
+                        service: "gmail",
+                        auth: {
+                          user: process.env.GOOGE_APP_EMAIL,
+                          pass: process.env.GOOGLE_APP_PASSWORD,
+                        },
+                      });
+                    let mailOptions = {
+                        from: "Tivas",
+                        to: `${user1.email}`,
+                        subject: "Confirm received email",
+                        text : `Open date of ${project.name} is move to ${openDate} ` 
+                      };
+                    transporter.sendMail(mailOptions, function (error, info) {
+                        if (error) {
+                          console.log(error);
+                        } else {
+                          console.log("Email sent: " + info.response);
+                        }
+                      });
+                        
+                    }
+                }
+                resolve({
+                    err : project ? 1 : 0,
+                    mess : project ? errorMessage[0] : errorMessage[0]
+                })
         } catch (error) {
             console.log(error);
             reject(error);

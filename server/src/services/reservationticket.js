@@ -17,16 +17,7 @@ export const createTicket = ({
                 }
             })
             let Message =[];
-            const check = await db.ReservationTicket.findOne({
-                where: {
-                    userID,
-                    projectID,
-                }
-            })
-            if(check){
-                Message.push("You already reservation this project")
-            }else{
-                await db.ReservationTicket.create({
+                const check = await db.ReservationTicket.create({
                     code: code,
                     status: 0,
                     userID,
@@ -53,7 +44,7 @@ export const createTicket = ({
                       console.log("Email sent: " + info.response);
                     }
                   });
-            }
+            
             // const [ticket,created] = await db.ReservationTicket.findOrCreate({
             //     where : { code : 1 },
             //     default : {
@@ -111,7 +102,7 @@ export const activeTicket = (id) => {
                 from: "Tivas",
                 to: `${user.email}`,
                 subject: "Confirm received email",
-                text : "Your ticket is active now" 
+                text : `Your ticket ${ticket.code} is active now`  
               };
             transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
