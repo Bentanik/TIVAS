@@ -46,7 +46,7 @@ export const createNewProject = async (req, res) => {
     if (!dateRegex.test(openDate) || !dateRegex.test(reservationDate)) {
       return badRequest("Open Date, Reservation Date must be like (dd/mm/yyyy) format!", res);
     }
-    if (!isValidDate(openDate) || isValidDate(reservationDate)) {
+    if (!isValidDate(openDate) || !isValidDate(reservationDate)) {
       return badRequest("Open Date, Reservation Date must be a valid date!", res)
     }
     if (!/^\d+$/.test(buildingStatus)) {

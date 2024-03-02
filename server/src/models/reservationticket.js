@@ -16,6 +16,9 @@ module.exports = (sequelize, DataTypes) => {
             ReservationTicket.belongsTo(models.Project, {
                 foreignKey: 'projectID',
             });
+            ReservationTicket.belongsTo(models.TimeShare, {
+                foreignKey: 'timeShareID',
+            });
             // define association here
         }
     }
