@@ -16,36 +16,36 @@ export const createTicket = ({
                     id: userID
                 }
             })
-            let Message =[];
-                const check = await db.ReservationTicket.create({
-                    code: code,
-                    status: 0,
-                    userID,
-                    projectID,
-                    timeshareID : null
-                })
-                let transporter = nodemailer.createTransport({
-                    service: "gmail",
-                    auth: {
-                        user: process.env.GOOGE_APP_EMAIL,
-                        pass: process.env.GOOGLE_APP_PASSWORD,
-                    },
-                });
-                let mailOptions = {
-                    from: "Tivas",
-                    to: `${user.email}`,
-                    subject: "Confirm received email",
-                    text: `Your reservation ticket code is ${code}`
-                };
-                await transporter.sendMail(mailOptions, function (error, info) {
-                    if (error) {
-                        console.log(error);
-                    } else {
-                        console.log("Email sent: " + info.response);
-                    }
-                });
-                Message.push("Create Success")
-            
+            let Message = [];
+            const check = await db.ReservationTicket.create({
+                code: code,
+                status: 0,
+                userID,
+                projectID,
+                timeshareID: null
+            })
+            let transporter = nodemailer.createTransport({
+                service: "gmail",
+                auth: {
+                    user: process.env.GOOGE_APP_EMAIL,
+                    pass: process.env.GOOGLE_APP_PASSWORD,
+                },
+            });
+            let mailOptions = {
+                from: "Tivas",
+                to: `${user.email}`,
+                subject: "Confirm received email",
+                text: `Your reservation ticket code is ${code}`
+            };
+            await transporter.sendMail(mailOptions, function (error, info) {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log("Email sent: " + info.response);
+                }
+            });
+            Message.push("Create Success")
+
             // const [ticket,created] = await db.ReservationTicket.findOrCreate({
             //     where : { code : 1 },
             //     default : {
@@ -93,30 +93,30 @@ export const activeTicket = (id) => {
                     }
                 })
                 let transporter = nodemailer.createTransport({
-                service: "gmail",
-                auth: {
-                  user: process.env.GOOGE_APP_EMAIL,
-                  pass: process.env.GOOGLE_APP_PASSWORD,
-                },
-              });
-            let mailOptions = {
-                from: "Tivas",
-                to: `${user.email}`,
-                subject: "Confirm received email",
-                text : `Your ticket ${ticket.code} is active now`  
-              };
-            await transporter.sendMail(mailOptions, function (error, info) {
-                if (error) {
-                  console.log(error);
-                } else {
-                  console.log("Email sent: " + info.response);
-                }
-              });
-            } 
-           resolve({
-            err: t ? 0 : 1,
-            mess: t ?  "Your ticket active success" : "Your ticket active fail"
-           })
+                    service: "gmail",
+                    auth: {
+                        user: process.env.GOOGE_APP_EMAIL,
+                        pass: process.env.GOOGLE_APP_PASSWORD,
+                    },
+                });
+                let mailOptions = {
+                    from: "Tivas",
+                    to: `${user.email}`,
+                    subject: "Confirm received email",
+                    text: `Your ticket ${ticket.code} is active now`
+                };
+                await transporter.sendMail(mailOptions, function (error, info) {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        console.log("Email sent: " + info.response);
+                    }
+                });
+            }
+            resolve({
+                err: t ? 0 : 1,
+                mess: t ? "Your ticket active success" : "Your ticket active fail"
+            })
         } catch (error) {
             console.log(error);
             reject(error);
@@ -183,6 +183,7 @@ export const createReservation = ({
             let ticketDuplicated;
             let userUsedTicket;
             let reservationResponse;
+            let timeShareBelongsToProject;
             const userResponse = await db.User.findByPk(userID);
             const ticketResponse = await db.ReservationTicket.findOne({
                 where: {
@@ -191,35 +192,56 @@ export const createReservation = ({
             })
             const timeShareResponse = await db.TimeShare.findByPk(timeShareID);
             if (userResponse && ticketResponse && timeShareResponse) {
-                if (ticketResponse.status === 1) {
-                    userTicketResponse = await db.ReservationTicket.findOne({
-                        where: {
-                            code,
-                            userID,
+                const projectResponse = await db.Project.findOne({
+                    include: {
+                        model: db.TypeOfProject,
+                        required: true,
+                        include: {
+                            model: db.TypeRoom,
+                            required: true,
+                            include: {
+                                model: db.TimeShare,
+                                required: true,
+                                where: {
+                                    id: timeShareID,
+                                }
+                            }
                         }
-                    })
-                    if (timeShareResponse) {
-                        ticketDuplicated = await db.ReservationTicket.findOne({
+                    }
+                })
+                timeShareBelongsToProject = (projectResponse.id === ticketResponse.projectID);
+                if (timeShareBelongsToProject === true) {
+                    if (ticketResponse.status === 1) {
+                        userTicketResponse = await db.ReservationTicket.findOne({
                             where: {
                                 code,
-                                timeShareID,
+                                userID,
                             }
                         })
-                        if (!ticketDuplicated) {
-                            userUsedTicket = await db.ReservationTicket.findOne({
+                        if (userTicketResponse) {
+
+                            ticketDuplicated = await db.ReservationTicket.findOne({
                                 where: {
-                                    userID: ticketResponse.userID,
+                                    code,
                                     timeShareID,
                                 }
                             })
-                            if (!userUsedTicket) {
-                                reservationResponse = await db.ReservationTicket.update({
-                                    timeShareID,
-                                }, {
+                            if (!ticketDuplicated) {
+                                userUsedTicket = await db.ReservationTicket.findOne({
                                     where: {
-                                        code,
+                                        userID: ticketResponse.userID,
+                                        timeShareID,
                                     }
                                 })
+                                if (!userUsedTicket) {
+                                    reservationResponse = await db.ReservationTicket.update({
+                                        timeShareID,
+                                    }, {
+                                        where: {
+                                            code,
+                                        }
+                                    })
+                                }
                             }
                         }
                     }
@@ -234,15 +256,17 @@ export const createReservation = ({
                         `TimeShare (${timeShareID}) does not exist!` :
                         !ticketResponse ?
                             `Ticket (${code}) does not exist!`
-                            : ticketResponse.status !== 1 ?
-                                `Ticket (${code}) does not activate!`
-                                : !userTicketResponse ?
-                                    `Ticket (${code}) does not belong to User (${userID})!`
-                                    : ticketDuplicated ?
-                                        `TimeShare (${timeShareID}) has already registerd with the ticket (${code})!`
-                                        : userUsedTicket ?
-                                            `Can not use two or more tickets to register one TimeShare! (User (${ticketResponse.userID}) has already use one ticket to register TimeShare(${timeShareID}))`
-                                            : 'Create successfully.',
+                            : !timeShareBelongsToProject ?
+                                `TimeShare (${timeShareID}) does not belong to Project which is registerd in Ticket (${code})`
+                                : ticketResponse.status !== 1 ?
+                                    `Ticket (${code}) does not activate!`
+                                    : !userTicketResponse ?
+                                        `Ticket (${code}) does not belong to User (${userID})!`
+                                        : ticketDuplicated ?
+                                            `TimeShare (${timeShareID}) has already registerd with the ticket (${code})!`
+                                            : userUsedTicket ?
+                                                `Can not use two or more tickets to register one TimeShare! (User (${ticketResponse.userID}) has already use one ticket to register TimeShare(${timeShareID}))`
+                                                : 'Create successfully.',
             })
         }
         catch (error) {
@@ -309,26 +333,51 @@ export const openReservationTicket = (id) => {
             const message = [];
             const dateNow = new Date().toDateString()
             const check = await db.Project.findByPk(id)
-            if (check){
+            if (check) {
                 // if(check.reservationDate !== dateNow){
                 //     message.push("not in the time to buy")
                 // }else{
                 await db.Project.update({
-                    status : 1,
-                },{
-                    where : {
+                    status: 1,
+                }, {
+                    where: {
                         id
                     }
                 })
+                // Fetch records that need to be updated
+                const timeSharesToUpdate = await db.TimeShare.findAll({
+                    include: [
+                        {
+                            model: db.TypeRoom,
+                            required: true,
+                            include: {
+                                model: db.TypeOfProject,
+                                required: true,
+                                as: 'TypeOfProject',
+                                where: {
+                                    projectID: id,
+                                },
+                            },
+                        },
+                    ],
+                });
+
+                // Perform updates in memory
+                timeSharesToUpdate.forEach((timeShare) => {
+                    timeShare.saleStatus = 1;
+                });
+
+                // Save changes back to the database
+                await Promise.all(timeSharesToUpdate.map((timeShare) => timeShare.save()));
                 message.push("You can buy reservation ticket now")
-            // }
-            }else { 
+                // }
+            } else {
                 message.push("Can not buy reservation ticket now")
 
             }
             resolve({
-                err : check ? 0 : 1,
-                mess : check ? message[0] : message[0] 
+                err: check ? 0 : 1,
+                mess: check ? message[0] : message[0]
             })
         } catch (error) {
             console.log(error);
@@ -341,45 +390,45 @@ export const checkPriority = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
             const project = await db.Project.update({
-                status : 3
-            },{
-                where : {
+                status: 3
+            }, {
+                where: {
                     id
                 }
             })
             const ticketResponse = await db.ReservationTicket.findAll({
-                where : {
-                    projectID : id
+                where: {
+                    projectID: id
                 }
             })
-            const result = Object.groupBy(ticketResponse, ({timeShareID}) => timeShareID)
-            let count =0
+            const result = Object.groupBy(ticketResponse, ({ timeShareID }) => timeShareID)
+            let count = 0
             for (let properties in result) {
                 count = count + 1
-              }
+            }
             for (let i = 0; i < count; i++) {
                 const timeshare = result[Object.getOwnPropertyNames(result)[i]][0]
                 const user = await db.User.findByPk(timeshare.userID)
                 let transporter = nodemailer.createTransport({
                     service: "gmail",
                     auth: {
-                      user: process.env.GOOGE_APP_EMAIL,
-                      pass: process.env.GOOGLE_APP_PASSWORD,
+                        user: process.env.GOOGE_APP_EMAIL,
+                        pass: process.env.GOOGLE_APP_PASSWORD,
                     },
-                  });
+                });
                 let mailOptions = {
                     from: "Tivas",
                     to: `${user.email}`,
                     subject: "Confirm received email",
-                    text : `Trung roi thang lon, khong dong y thi mat tien`  
-                  };
+                    text: `Trung roi thang lon, khong dong y thi mat tien`
+                };
                 transporter.sendMail(mailOptions, function (error, info) {
                     if (error) {
-                      console.log(error);
+                        console.log(error);
                     } else {
-                      console.log("Email sent: " + info.response);
+                        console.log("Email sent: " + info.response);
                     }
-                  });
+                });
             }
             resolve({
                 err: ticketResponse ? 0 : 1,

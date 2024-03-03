@@ -4,4 +4,5 @@ export * from "./project";
 export * from "./room";
 export * from "./typeroom";
 export * from "./timeshare";
-export * from "./reservationticket"
+export * from "./reservationticket";
+export * from "./booking";

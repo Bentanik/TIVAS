@@ -646,6 +646,7 @@ export const openBooking = (id) => {
                         id
                     }
                 })
+                
                 message.push("This project is open now")
             }
             }else { 
