@@ -217,37 +217,53 @@ export const checkPriority = (id) => {
             })
             const ticketResponse = await db.ReservationTicket.findAll({
                 where : {
-                    projectID : id
+                    projectID : id,
+                    timeShareID : {
+                        [Op.ne]:null
+                    }
                 }
             })
             const result = Object.groupBy(ticketResponse, ({timeShareID}) => timeShareID)
             let count =0
             for (let properties in result) {
                 count = count + 1
-              }
+            }
             for (let i = 0; i < count; i++) {
-                const timeshare = result[Object.getOwnPropertyNames(result)[i]][0]
-                const user = await db.User.findByPk(timeshare.userID)
-                let transporter = nodemailer.createTransport({
-                    service: "gmail",
-                    auth: {
-                      user: process.env.GOOGE_APP_EMAIL,
-                      pass: process.env.GOOGLE_APP_PASSWORD,
-                    },
-                  });
-                let mailOptions = {
-                    from: "Tivas",
-                    to: `${user.email}`,
-                    subject: "Confirm received email",
-                    text : `Trung roi thang lon, khong dong y thi mat tien`  
-                  };
-                transporter.sendMail(mailOptions, function (error, info) {
-                    if (error) {
-                      console.log(error);
-                    } else {
-                      console.log("Email sent: " + info.response);
+                const quantityTimeshare = await db.TimeShare.findByPk(Object.getOwnPropertyNames(result)[i])
+                for (let x = 0; x < quantityTimeshare.quantity; x++) {
+                    const timeshare = result[Object.getOwnPropertyNames(result)[i]][x]
+                    if(timeshare){
+                        await db.ReservationTicket.update({
+                            status : 2
+                        },{
+                            where  : {
+                                id : result[Object.getOwnPropertyNames(result)[i]][x].dataValues.id
+                            }
+                        })
+                        const user = await db.User.findByPk(timeshare.userID)
+                        let transporter = nodemailer.createTransport({
+                            service: "gmail",
+                            auth: {
+                              user: process.env.GOOGE_APP_EMAIL,
+                              pass: process.env.GOOGLE_APP_PASSWORD,
+                            },
+                          });
+                        let mailOptions = {
+                            from: "Tivas",
+                            to: `${user.email}`,
+                            subject: "Confirm received email",
+                            text : `Trung timeshare co timeshare `  
+                          };
+                        transporter.sendMail(mailOptions, function (error, info) {
+                            if (error) {
+                              console.log(error);
+                            } else {
+                              console.log("Email sent: " + info.response);
+                            }
+                          });
                     }
-                  });
+                    
+                }
             }
             resolve({
                 err: ticketResponse ? 0 : 1,
