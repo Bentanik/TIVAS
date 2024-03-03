@@ -125,7 +125,7 @@ export const createTypeRoom = (projectID, {
                 }
             }
             resolve({
-                err: !typeRoomDuplicated ? 0 : 1,
+                err: !typeRoomResponse ? 0 : 1,
                 message: !projectResponse
                     ? `Project (${projectID}) does not exist!`
                     : !typeResponse
