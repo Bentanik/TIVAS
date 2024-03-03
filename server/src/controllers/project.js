@@ -35,19 +35,19 @@ const deleteProjectImage = (fileData) => {
 //Create New Project
 export const createNewProject = async (req, res) => {
   try {
-    const { name, description, buildingStatus, reservationPrice, openDate } = req.body;
-    if (!name || !description || !buildingStatus || !reservationPrice || !openDate) {
+    const { name, description, buildingStatus, location, reservationDate, reservationPrice, openDate, closeDate } = req.body;
+    if (!name || !description || !buildingStatus || !location || !reservationDate || !reservationPrice || !openDate || !closeDate) {
       if (req.files) {
         deleteProjectImage(req.files);
       }
       return missValue("Missing value!", res);
     }
     const dateRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
-    if (!dateRegex.test(openDate)) {
-      return badRequest("Open Date must be like (dd/mm/yyyy) format!", res);
+    if (!dateRegex.test(openDate) || !dateRegex.test(reservationDate) || !dateRegex.test(closeDate)) {
+      return badRequest("Open Date, Reservation Date, Close Date must be like (dd/mm/yyyy) format!", res);
     }
-    if (!isValidDate(openDate)) {
-      return badRequest("Open Date must be a valid date!", res)
+    if (!isValidDate(openDate) || !isValidDate(reservationDate) || !isValidDate(closeDate)) {
+      return badRequest("Open Date, Reservation Date, Close Date must be a valid date!", res)
     }
     if (!/^\d+$/.test(buildingStatus)) {
       if (req.files) {
@@ -86,19 +86,19 @@ export const deleteProjects = async (req, res) => {
 //Update Project
 export const updateProjects = async (req, res) => {
   const { id } = req.params;
-  const { name, description, buildingStatus, reservationPrice, openDate } = req.body;
-  if (!name || !description || !buildingStatus || !reservationPrice || !/^\d+$/.test(id) || !openDate) {
+  const { name, description, buildingStatus, location, reservationDate, reservationPrice, openDate, closeDate } = req.body;
+  if (!name || !description || !buildingStatus || !location || !reservationDate || !reservationPrice || !/^\d+$/.test(id) || !openDate || !closeDate) {
     if (req.files) {
       deleteProjectImage(req.files);
     }
     return missValue("Missing value!", res);
   }
   const dateRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
-  if (!dateRegex.test(openDate)) {
-    return badRequest("Open Date must be like (dd/mm/yyyy) format!", res);
+  if (!dateRegex.test(openDate) || !dateRegex.test(reservationDate) || !dateRegex.test(closeDate)) {
+    return badRequest("Open Date, Reservation Date, Close Date must be like (dd/mm/yyyy) format!", res);
   }
-  if (!isValidDate(openDate)) {
-    return badRequest("Open Date must be a valid date!", res)
+  if (!isValidDate(openDate) || !isValidDate(reservationDate) || !isValidDate(closeDate)) {
+    return badRequest("Open Date, Reservation Date, Close Date must be a valid date!", res)
   }
   if (!/^\d+$/.test(buildingStatus)) {
     if (req.files) {
@@ -133,6 +133,12 @@ export const searchProject = async (req, res) => {
   return res.status(200).json(response);
 }
 
+export const searchNameAndLocationProject = async (req, res) => {
+  const { info, limit } = req.params;
+  const response = await services.searchNameAndLocationProject(info, limit);
+  return res.status(200).json(response);
+}
+
 //Get Top 10 New Projects
 export const getTop10 = async (req, res) => {
   const response = await services.getTop10();
@@ -146,3 +152,8 @@ export const getDetailsProject = async (req, res) => {
   return res.status(200).json(response);
 }
 
+export const changeDate = async (req,res) => {
+  const {id} = req.params
+  const response = await services.changeDate(req.body,id);
+  return res.status(200).json(response);
+}

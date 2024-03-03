@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       User.belongsTo(models.RoleCode, {
         foreignKey: 'roleID',
       });
-      User.hasMany(models.Reservation, {foreignKey: 'userID', ondelete: 'cascade', hooks: true});      
+      User.hasMany(models.ReservationTicket, {foreignKey: 'userID', ondelete: 'cascade', hooks: true});      
       // User.hasOne(models.RefundHistory, {
       //   foreignKey: 'userID',
       // });

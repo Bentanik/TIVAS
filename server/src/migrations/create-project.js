@@ -27,13 +27,19 @@ module.exports = {
       attractions: {
         type: Sequelize.STRING
       },
-      saleStatus: {
+      status: {
         type: Sequelize.INTEGER
       },
       reservationPrice: {
         type: Sequelize.DOUBLE
       },
+      reservationDate: {
+        type: Sequelize.DATE
+      },
       openDate: {
+        type: Sequelize.DATE
+      },
+      closeDate: {
         type: Sequelize.DATE
       },
       thumbnailPathUrl: {

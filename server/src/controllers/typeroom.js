@@ -40,13 +40,13 @@ export const createNewTypeRoom = async (req, res) => {
       }
       return badRequest("bedrooms, persons, quantity are required an INTEGER!", res);
     }
-    if(!/\b\d+(\.\d+)?\b/g.test(size)){
-      if(req.files) {
+    if (!/\b\d+(\.\d+)?\b/g.test(size)) {
+      if (req.files) {
         deleteProjectImage(req.files);
       }
       return badRequest("Size is required a NUMBER!", res);
     }
-    if(bedrooms < 0 || persons < 0 || quantity < 0 || size < 0){
+    if (bedrooms < 0 || persons < 0 || quantity < 0 || size < 0) {
       return badRequest("bedrooms, persons, quantity, size must be higher than 0!", res)
     }
 
@@ -123,7 +123,7 @@ export const updateTypeRoom = async (req, res) => {
   // return res.status(200).json(response);
 };
 
-export const deleteTypeRoom = async(req, res) => {
+export const deleteTypeRoom = async (req, res) => {
   try {
     const { id } = req.params;
     const response = await services.deleteTypeRoom(id);
@@ -134,9 +134,9 @@ export const deleteTypeRoom = async(req, res) => {
   }
 }
 
-export const getAllTypeRoom = async(req, res) => {
+export const getAllTypeRoom = async (req, res) => {
   try {
-    const {projectID} = req.params
+    const { projectID } = req.params
     const response = await services.getAllTypeRoom(projectID, req.query);
     return res.status(200).json(response);
   } catch (error) {
@@ -145,9 +145,12 @@ export const getAllTypeRoom = async(req, res) => {
   }
 }
 
-export const getDetailsTypeRoom = async(req, res) => {
+export const getDetailsTypeRoom = async (req, res) => {
   try {
     const { id } = req.params;
+    if (!/^\d+$/.test(id)) {
+      return badRequest("projectID is required an INTEGER!", res);
+    }
     const response = await services.getDetailsTypeRoom(id);
     return res.status(200).json(response);
   } catch (error) {

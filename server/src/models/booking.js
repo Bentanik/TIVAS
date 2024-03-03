@@ -10,9 +10,6 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Booking.belongsTo(models.Reservation ,{
-        foreignKey: 'reservationID',
-      });
       Booking.hasOne(models.Contract ,{
         foreignKey: 'bookingID',
         ondelete: 'cascade', hooks: true

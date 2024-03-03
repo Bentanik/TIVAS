@@ -58,6 +58,9 @@ export const getAllTimeShare = async (req, res) => {
 export const getAllTimeShareOfProject = async (req, res) => {
     try {
         const { projectID } = req.params;
+        if(!/^\d+$/.test(projectID)){
+            return badRequest("projectID is required an INTEGER!", res);
+        }
         const response = await services.getAllTimeShareOfProject(projectID, req.query);
         res.status(200).json(response);
     } catch (error) {
@@ -69,6 +72,9 @@ export const getAllTimeShareOfProject = async (req, res) => {
 export const getDetailsTimeShare = async (req, res) => {
     try {
         const { id } = req.params;
+        if(!/^\d+$/.test(id)){
+            return badRequest("projectID is required an INTEGER!", res);
+        }
         const response = await services.getDetailsTimeShare(id);
         res.status(200).json(response);
     } catch (error) {
