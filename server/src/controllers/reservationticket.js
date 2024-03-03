@@ -17,18 +17,18 @@ export const activeTicket = async (req,res) => {
     return res.status(200).json(response)
 }
 
-export const checkTicket = async (req, res) => {
-    const { code } = req.body;
-    if(!code){
-        return missValue("Missing Value!", res);
-    }
-    const response = await services.checkTicket(req.body);
-    return res.status(200).json(response);
-}
+// export const checkTicket = async (req, res) => {
+//     const { code } = req.body;
+//     if(!code){
+//         return missValue("Missing Value!", res);
+//     }
+//     const response = await services.checkTicket(req.body);
+//     return res.status(200).json(response);
+// }
 
 export const createReservation = async(req, res) => {
-    const { code, timeShareID } = req.body;
-    if(!code || !/^\d+$/.test(timeShareID)){
+    const { code, timeShareID, userID } = req.body;
+    if(!code || !/^\d+$/.test(timeShareID) || !/^\d+$/.test(userID)){
         return missValue("Missing Value!", res);
     }
     const response = await services.createReservation(req.body);

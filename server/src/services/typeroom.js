@@ -169,6 +169,7 @@ export const updateTypeRoom = (id, {
             let typeOfProjectResponse;
             let typeResponse
             let typeRoomDuplicated;
+            let checkUpdate;
             //Check TypeRoom is existed in DB
             let typeRoomResponse = await db.TypeRoom.findByPk(id);
             if (typeRoomResponse) {
@@ -209,7 +210,7 @@ export const updateTypeRoom = (id, {
                     }
 
                     //Update
-                    await db.TypeRoom.update({
+                    checkUpdate = await db.TypeRoom.update({
                         name,
                         bedrooms,
                         bathrooms,
@@ -240,7 +241,7 @@ export const updateTypeRoom = (id, {
                 }
             }
             resolve({
-                err: typeRoomDuplicated ? 0 : 1,
+                err: checkUpdate ? 0 : 1,
                 message: !typeRoomResponse ?
                     `Can not find TypeRoom with id: (${id})`
                     : typeRoomDuplicated ?

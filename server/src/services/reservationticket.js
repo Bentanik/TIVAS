@@ -124,113 +124,134 @@ export const activeTicket = (id) => {
     })
 }
 
-export const checkTicket = ({
-    code,
-    userID
-}) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            let ticketResponse;
-            let userTicketResponse;
-            const userResponse = await db.User.findByPk(userID);
-            if (userResponse) {
-                ticketResponse = await db.ReservationTicket.findOne({
-                    where: {
-                        code,
-                    }
-                })
-                console.log(ticketResponse);
-                if (ticketResponse) {
-                    if (ticketResponse.status === 1) {
-                        userTicketResponse = await db.ReservationTicket.findOne({
-                            where: {
-                                code,
-                                userID,
-                            }
-                        })
-                    }
-                }
-            }
-            resolve({
-                err: userTicketResponse ? 0 : 1,
-                message: !userResponse ?
-                    `Can not find User (${userID})!` :
-                    !ticketResponse ?
-                        `Ticket (${code}) does not exist!`
-                        : ticketResponse.status !== 1 ?
-                            `Ticket (${code}) does not activate!`
-                            : !userTicketResponse ?
-                                `Ticket (${code}) does not belong to User (${userID})!` :
-                                `Valid ticket.`,
-                data: userTicketResponse ? `Your code: ${code}` : null
-            })
-        } catch (error) {
-            console.log(error);
-            reject(error)
-        }
-    });
-}
+// export const checkTicket = ({
+//     code,
+//     userID
+// }) => {
+//     return new Promise(async (resolve, reject) => {
+//         try {
+//             let ticketResponse;
+//             let userTicketResponse;
+//             const userResponse = await db.User.findByPk(userID);
+//             if (userResponse) {
+//                 ticketResponse = await db.ReservationTicket.findOne({
+//                     where: {
+//                         code,
+//                     }
+//                 })
+//                 console.log(ticketResponse);
+//                 if (ticketResponse) {
+//                     if (ticketResponse.status === 1) {
+//                         userTicketResponse = await db.ReservationTicket.findOne({
+//                             where: {
+//                                 code,
+//                                 userID,
+//                             }
+//                         })
+//                     }
+//                 }
+//             }
+//             resolve({
+//                 err: userTicketResponse ? 0 : 1,
+//                 message: !userResponse ?
+//                     `Can not find User (${userID})!` :
+//                     !ticketResponse ?
+//                         `Ticket (${code}) does not exist!`
+//                         : ticketResponse.status !== 1 ?
+//                             `Ticket (${code}) does not activate!`
+//                             : !userTicketResponse ?
+//                                 `Ticket (${code}) does not belong to User (${userID})!` :
+//                                 `Valid ticket.`,
+//                 data: userTicketResponse ? `Your code: ${code}` : null
+//             })
+//         } catch (error) {
+//             console.log(error);
+//             reject(error)
+//         }
+//     });
+// }
 
 //1 nguoi ap 1 code cho 1 TimeShare
 export const createReservation = ({
     code,
     timeShareID,
+    userID,
 }) => {
     return new Promise(async (resolve, reject) => {
         try {
+            let userTicketResponse;
             let ticketDuplicated;
             let userUsedTicket;
+            let reservationResponse;
+            const userResponse = await db.User.findByPk(userID);
             const ticketResponse = await db.ReservationTicket.findOne({
                 where: {
                     code,
                 }
             })
             const timeShareResponse = await db.TimeShare.findByPk(timeShareID);
-            console.log(code);
-            console.log(timeShareID);
-            if (ticketResponse && timeShareResponse) {
-                ticketDuplicated = await db.ReservationTicket.findOne({
-                    where: {
-                        code,
-                        timeShareID,
-                    }
-                })
-                if (!ticketDuplicated) {
-                    userUsedTicket = await db.ReservationTicket.findOne({
+            if (userResponse && ticketResponse && timeShareResponse) {
+                if (ticketResponse.status === 1) {
+                    userTicketResponse = await db.ReservationTicket.findOne({
                         where: {
-                            userID: ticketResponse.userID,
-                            timeShareID,
+                            code,
+                            userID,
                         }
                     })
-                    if (!userUsedTicket) {
-                        await db.ReservationTicket.update({
-                            timeShareID,
-                        }, {
+                    if (timeShareResponse) {
+                        ticketDuplicated = await db.ReservationTicket.findOne({
                             where: {
                                 code,
+                                timeShareID,
                             }
                         })
+                        if (!ticketDuplicated) {
+                            userUsedTicket = await db.ReservationTicket.findOne({
+                                where: {
+                                    userID: ticketResponse.userID,
+                                    timeShareID,
+                                }
+                            })
+                            if (!userUsedTicket) {
+                                reservationResponse = await db.ReservationTicket.update({
+                                    timeShareID,
+                                }, {
+                                    where: {
+                                        code,
+                                    }
+                                })
+                            }
+                        }
                     }
                 }
             }
+
             resolve({
-                err: !ticketDuplicated ? 0 : 1,
-                message: !ticketResponse ?
-                    `Ticket (${code}) does not exist!`
-                    : !timeShareResponse ?
-                        `TimeShare (${timeShareID}) does not exist!`
-                        : ticketDuplicated ?
-                            `TimeShare (${timeShareID}) has already registerd with the ticket (${code})!`
-                            : userUsedTicket ?
-                                `Can not use two or more tickets to register one TimeShare! (User (${ticketResponse.userID}) has already use one ticket to register TimeShare(${timeShareID}))`
-                                : 'Create successfully.',
+                err: reservationResponse ? 0 : 1,
+                message: !userResponse ?
+                    `Can not find User (${userID})!` :
+                    !timeShareResponse ?
+                        `TimeShare (${timeShareID}) does not exist!` :
+                        !ticketResponse ?
+                            `Ticket (${code}) does not exist!`
+                            : ticketResponse.status !== 1 ?
+                                `Ticket (${code}) does not activate!`
+                                : !userTicketResponse ?
+                                    `Ticket (${code}) does not belong to User (${userID})!`
+                                    : ticketDuplicated ?
+                                        `TimeShare (${timeShareID}) has already registerd with the ticket (${code})!`
+                                        : userUsedTicket ?
+                                            `Can not use two or more tickets to register one TimeShare! (User (${ticketResponse.userID}) has already use one ticket to register TimeShare(${timeShareID}))`
+                                            : 'Create successfully.',
             })
-        } catch (error) {
+        }
+        catch (error) {
             console.log(error);
             reject(error);
         }
     })
 }
+
 
 //1 nguoi ap 2 code cho 1 TimeShare
 // export const createReservation = ({
