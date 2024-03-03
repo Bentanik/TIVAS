@@ -1,7 +1,7 @@
 import db, { Sequelize } from "../models";
 const cloudinary = require('cloudinary').v2;
 import "dotenv/config";
-import { Model, Op, fn, col, literal } from "sequelize";
+import { Model, Op, fn, col, literal, where } from "sequelize";
 const nodemailer = require("nodemailer");
 
 
@@ -24,7 +24,6 @@ export const createTicket = ({
                     projectID,
                     timeshareID : null
                 })
-                Message.push("Create Success")
                 let transporter = nodemailer.createTransport({
                     service: "gmail",
                     auth: {
@@ -38,13 +37,14 @@ export const createTicket = ({
                     subject: "Confirm received email",
                     text: `Your reservation ticket code is ${code}`
                 };
-                transporter.sendMail(mailOptions, function (error, info) {
+                await transporter.sendMail(mailOptions, function (error, info) {
                     if (error) {
                         console.log(error);
                     } else {
                         console.log("Email sent: " + info.response);
                     }
-                  });
+                });
+                Message.push("Create Success")
             
             // const [ticket,created] = await db.ReservationTicket.findOrCreate({
             //     where : { code : 1 },
@@ -57,7 +57,7 @@ export const createTicket = ({
             // })
 
             resolve({
-                err: check ? 1 : 0,
+                err: check ? 0 : 1,
                 mess: check ? Message[0] : Message[0],
             })
             // resolve({
@@ -105,7 +105,7 @@ export const activeTicket = (id) => {
                 subject: "Confirm received email",
                 text : `Your ticket ${ticket.code} is active now`  
               };
-            transporter.sendMail(mailOptions, function (error, info) {
+            await transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
                   console.log(error);
                 } else {
@@ -114,7 +114,7 @@ export const activeTicket = (id) => {
               });
             } 
            resolve({
-            err: t ? 1 : 0,
+            err: t ? 0 : 1,
             mess: t ?  "Your ticket active success" : "Your ticket active fail"
            })
         } catch (error) {
@@ -169,4 +169,93 @@ export const checkTicket = ({
             reject(error)
         }
     });
+}
+
+export const openReservationTicket = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const message = [];
+            const dateNow = new Date().toDateString()
+            const check = await db.Project.findByPk(id)
+            if (check){
+                // if(check.reservationDate !== dateNow){
+                //     message.push("not in the time to buy")
+                // }else{
+                await db.Project.update({
+                    status : 1,
+                },{
+                    where : {
+                        id
+                    }
+                })
+                message.push("You can buy reservation ticket now")
+            // }
+            }else { 
+                message.push("Can not buy reservation ticket now")
+
+            }
+            resolve({
+                err : check ? 0 : 1,
+                mess : check ? message[0] : message[0] 
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
+export const checkPriority = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const project = await db.Project.update({
+                status : 3
+            },{
+                where : {
+                    id
+                }
+            })
+            const ticketResponse = await db.ReservationTicket.findAll({
+                where : {
+                    projectID : id
+                }
+            })
+            const result = Object.groupBy(ticketResponse, ({timeShareID}) => timeShareID)
+            let count =0
+            for (let properties in result) {
+                count = count + 1
+              }
+            for (let i = 0; i < count; i++) {
+                const timeshare = result[Object.getOwnPropertyNames(result)[i]][0]
+                const user = await db.User.findByPk(timeshare.userID)
+                let transporter = nodemailer.createTransport({
+                    service: "gmail",
+                    auth: {
+                      user: process.env.GOOGE_APP_EMAIL,
+                      pass: process.env.GOOGLE_APP_PASSWORD,
+                    },
+                  });
+                let mailOptions = {
+                    from: "Tivas",
+                    to: `${user.email}`,
+                    subject: "Confirm received email",
+                    text : `Trung roi thang lon, khong dong y thi mat tien`  
+                  };
+                transporter.sendMail(mailOptions, function (error, info) {
+                    if (error) {
+                      console.log(error);
+                    } else {
+                      console.log("Email sent: " + info.response);
+                    }
+                  });
+            }
+            resolve({
+                err: ticketResponse ? 0 : 1,
+                mess: ticketResponse ? "Success" : "Fail"
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
 }
