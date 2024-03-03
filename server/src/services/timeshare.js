@@ -167,7 +167,7 @@ export const getDetailsTimeShare = (id) => {
                 nest: true,
                 include: {
                     model: db.TypeRoom,
-                    attributes: ['name', 'bedrooms', 'persons', 'size', 'bedTypes', 'amenities', 'description'],
+                    attributes: ['name', 'bedrooms', 'bathrooms', 'persons', 'size', 'bedTypes', 'amenities', 'description'],
                     include: [
                         {
                             model: db.TypeOfProject,
@@ -200,6 +200,7 @@ export const getDetailsTimeShare = (id) => {
                 response.TypeRoom = {
                     name: timeShareResponse.TypeRoom.name,
                     bedrooms: timeShareResponse.TypeRoom.bedrooms,
+                    bathrooms: timeShareResponse.TypeRoom.bathrooms,
                     persons: timeShareResponse.TypeRoom.persons,
                     size: timeShareResponse.TypeRoom.size,
                     bedTypes: timeShareResponse.TypeRoom.bedTypes?.split(','),

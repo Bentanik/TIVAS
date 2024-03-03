@@ -15,6 +15,9 @@ module.exports = {
       bedrooms: {
         type: Sequelize.INTEGER
       },
+      bathrooms: {
+        type: Sequelize.INTEGER
+      },
       persons: {
         type: Sequelize.INTEGER
       },

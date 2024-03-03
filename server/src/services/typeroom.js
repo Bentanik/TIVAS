@@ -50,6 +50,7 @@ const deleteTypeRoomImage = (fileData) => {
 export const createTypeRoom = (projectID, {
     name,
     bedrooms,
+    bathrooms,
     persons,
     size,
     bedTypes,
@@ -96,6 +97,7 @@ export const createTypeRoom = (projectID, {
                         typeRoomResponse = await db.TypeRoom.create({
                             name,
                             bedrooms,
+                            bathrooms,
                             persons,
                             size,
                             bedTypes,
@@ -152,6 +154,7 @@ export const createTypeRoom = (projectID, {
 export const updateTypeRoom = (id, {
     name,
     bedrooms,
+    bathrooms,
     persons,
     size,
     bedTypes,
@@ -209,6 +212,7 @@ export const updateTypeRoom = (id, {
                     await db.TypeRoom.update({
                         name,
                         bedrooms,
+                        bathrooms,
                         persons,
                         size,
                         bedTypes,
@@ -291,7 +295,7 @@ export const getAllTypeRoom = (projectID, { page, limit, orderType, orderBy }) =
             const queries = pagination({ page, limit, orderType, orderBy });
             queries.nest = true;
             const response = await db.TypeRoom.findAll({
-                attributes: ['id', 'name', 'bedrooms', 'persons', 'size', 'bedTypes', 'amenities'],
+                attributes: ['id', 'name', 'bedrooms', 'bathrooms', 'persons', 'size', 'bedTypes', 'amenities'],
                 include: [
                     {
                         model: db.TypeOfProject,

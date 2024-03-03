@@ -463,7 +463,7 @@ export const getDetailsProject = (id) => {
                         attributes: ['id'],
                         include: {
                             model: db.TypeRoom,
-                            attributes: ['id', 'name', 'bedrooms', 'persons', 'size', 'bedTypes', 'amenities'],
+                            attributes: ['id', 'name', 'bedrooms', 'bathrooms', 'persons', 'size', 'bedTypes', 'amenities'],
                             include: [
                                 {
                                     model: db.TypeOfProject,
@@ -513,9 +513,11 @@ export const getDetailsProject = (id) => {
                                 id: projectResponse.TypeOfProjects[i].TypeRooms[j].id,
                                 name: projectResponse.TypeOfProjects[i].TypeRooms[j].name,
                                 bedrooms: projectResponse.TypeOfProjects[i].TypeRooms[j].bedrooms,
+                                bathrooms: projectResponse.TypeOfProjects[i].TypeRooms[j].bathrooms,
                                 persons: projectResponse.TypeOfProjects[i].TypeRooms[j].persons,
                                 bedTypes: projectResponse.TypeOfProjects[i].TypeRooms[j].bedTypes.split(','),
                                 amenities: projectResponse.TypeOfProjects[i].TypeRooms[j].amenities?.split(','),
+                                size: projectResponse.TypeOfProjects[i].TypeRooms[j].size,
                                 images: projectResponse.TypeOfProjects[i].TypeRooms[j].Images
                             })
                         }

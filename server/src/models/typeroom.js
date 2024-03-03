@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
   TypeRoom.init({
     name: DataTypes.STRING,
     bedrooms: DataTypes.INTEGER,
+    bathrooms: DataTypes.INTEGER,
     persons: DataTypes.INTEGER,
     size: DataTypes.DOUBLE,
     bedTypes: DataTypes.STRING,
