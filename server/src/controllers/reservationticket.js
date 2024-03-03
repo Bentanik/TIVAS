@@ -25,3 +25,21 @@ export const checkTicket = async (req, res) => {
     const response = await services.checkTicket(req.body);
     return res.status(200).json(response);
 }
+
+export const createReservation = async(req, res) => {
+    const { code, timeShareID } = req.body;
+    if(!code || !/^\d+$/.test(timeShareID)){
+        return missValue("Missing Value!", res);
+    }
+    const response = await services.createReservation(req.body);
+    return res.status(200).json(response);
+}
+
+export const checkPriority = async(req, res) => {
+    const {projectID} = req.params;
+    if(!/^\d+$/.test(projectID)){
+        return missValue("Missing Value!", res);
+    }
+    const response = await services.checkPriority(req.body);
+    return res.status(200).json(response);
+}
