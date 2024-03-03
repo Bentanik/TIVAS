@@ -636,9 +636,9 @@ export const openBooking = (id) => {
             const dateNow = new Date().toDateString()
             const check = await db.Project.findByPk(id)
             if (check && check.status == 1){
-                if(check.openDate !== dateNow){
-                    message.push("not in the time to buy")
-                }else{
+                // if(check.openDate !== dateNow){
+                //     message.push("not in the time to buy")
+                // }else{
                 await db.Project.update({
                     status : 2,
                 },{
@@ -646,9 +646,13 @@ export const openBooking = (id) => {
                         id
                     }
                 })
-                
+                await db.ReservationTicket.destroy({
+                    where : {
+                        status : 0
+                    }
+                })
                 message.push("This project is open now")
-            }
+            // }
             }else { 
                 message.push("Project is not available")
 
