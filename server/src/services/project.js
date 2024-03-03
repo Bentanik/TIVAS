@@ -550,7 +550,7 @@ export const getDetailsProject = (id) => {
             }
             resolve({
                 err: response ? 0 : 1,
-                message: response ? `Project ${id} found` : `Can not find Project with id: ${id}`,
+                message: response ? `Project ${id} found` : `Can not find Project with id: ${id}!`,
                 data: response,
             })
         } catch (error) {
