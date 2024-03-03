@@ -13,7 +13,7 @@ function Sidebar() {
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.login.user);
   const axiosInstance = createAxios(dispatch, currentUser);
-  const userState = useSelector((state) => state.user?.data);
+  const userState = useSelector((state) => state.user.user?.data);
 
   return (
     <div className={cx("wrapper")}>
@@ -69,7 +69,7 @@ function Sidebar() {
                 </Link>
               </div>
             )}
-             <div
+            <div
               className={cx("option", "chilrent", {
                 active: location.pathname.includes("banking"),
               })}

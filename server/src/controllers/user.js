@@ -31,15 +31,15 @@ export const getAvatarUser = async (req, res) => {
   return res.status(200).json(response);
 };
 
-// export const editUser = async (req, res) => {
-//   const { username, fullName, numberPhone } = req.body;
-//   if (!username || !fullName || !numberPhone) {
-//     if (req.files) {
-//       deleteAvatarImage(req.files);
-//     }
-//     return missValue("Missing value");
-//   }
-//   const response = await services.editUser(req.body, req.files);
+export const editUser = async (req, res) => {
+  const { username, fullName, numberPhone } = req.body;
+  if (!username || !fullName || !numberPhone) {
+    if (req.files) {
+      deleteAvatarImage(req.files);
+    }
+    return missValue("Missing value", res);
+  }
+  const response = await services.editUser(req.body, req.files);
 
-//   return res.status(200).json(response);
-// };
+  return res.status(200).json(response);
+};

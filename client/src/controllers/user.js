@@ -1,4 +1,11 @@
-import { getUserError, getUserStart, getUserSuccess } from "~/redux/userSlice";
+import {
+  editUserError,
+  editUserStart,
+  editUserSuccess,
+  getUserError,
+  getUserStart,
+  getUserSuccess,
+} from "~/redux/userSlice";
 import * as services from "~/services";
 
 export const getAvatarUser = async (axiosInstance, param) => {
@@ -25,5 +32,20 @@ export const getMyUser = async (dispatch, axiosInstance, param) => {
   } catch (err) {
     console.log(err);
     dispatch(getUserError("Error"));
+  }
+};
+
+export const editMyUser = async (dispatch, axiosInstance, form) => {
+  dispatch(editUserStart());
+  try {
+    const res = await services.editUser(axiosInstance, form);
+    if (res.err === 0) {
+      dispatch(editUserSuccess(res.mess));
+    } else {
+      dispatch(editUserError(res.mess));
+    }
+  } catch (err) {
+    console.log(err);
+    dispatch(editUserError("Error"));
   }
 };

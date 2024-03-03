@@ -11,15 +11,15 @@ const router = express.Router();
 router.get("/getuser/:username", controllers.getUser);
 router.get("/getavtuser/:username", controllers.getAvatarUser);
 
-// router.put(
-//   "/edituser",
-//   uploadCloud.fields([
-//     {
-//       name: "avatar",
-//       maxCount: 1,
-//     },
-//   ]),
-//   controllers.editUser
-// );
+router.put(
+  "/edituser",
+  uploadCloud.fields([
+    {
+      name: "avatar",
+      maxCount: 1,
+    },
+  ]),
+  controllers.editUser
+);
 
 export default router;

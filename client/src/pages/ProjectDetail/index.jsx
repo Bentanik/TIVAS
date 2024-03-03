@@ -41,6 +41,7 @@ function ProjectDetail() {
       if (res?.err === 0) {
         setProjectData(res.data.Project);
         setTypeRooms(res.data.typeRooms);
+        console.log(res.data.typeRooms);
         setListImage(
           res.data.Project.Images.map((item) => {
             return {
@@ -72,6 +73,11 @@ function ProjectDetail() {
   const handleSeeAllClick = () => {
     setScrollToResortAmenities(true);
   };
+
+  const renderTypeRoom = () => {
+    return typeRooms.map((item, index) => <RoomType />);
+  };
+  console.log(typeRooms);
   return (
     <div className={cx("project-detail-wrapper")}>
       {/* Header */}
@@ -142,12 +148,7 @@ function ProjectDetail() {
         {/* Room Type */}
         <div className={cx("all-room-type")}>
           <h1 className={cx("title")}>Room Type</h1>
-          <RoomType />
-          <RoomType />
-          <RoomType />
-          <RoomType />
-          <RoomType />
-          <RoomType />
+          <div>{renderTypeRoom()}</div>
         </div>
 
         {/* Resort Amenities */}

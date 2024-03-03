@@ -4,11 +4,14 @@ import InputItem from "~/components/InputItem";
 import { useEffect, useState } from "react";
 import images from "~/assets/images";
 import { useRef } from "react";
-import { getMyUser } from "~/controllers/user";
+import { editMyUser, getMyUser } from "~/controllers/user";
 import { useDispatch, useSelector } from "react-redux";
 import createAxios from "~/configs/axios";
 import { Backdrop, CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import ToastNotify from "~/components/ToastNotify";
+import { resetEditUser } from "~/redux/userSlice";
 
 const cx = classNames.bind(styles);
 
@@ -25,13 +28,37 @@ function Profile() {
 
   const currentUser = useSelector((state) => state.auth.login.user);
   const axiosInstance = createAxios(dispatch, currentUser);
-  const userState = useSelector((state) => state.user);
+  const userState = useSelector((state) => state.user.user);
+  const editState = useSelector((state) => state.user.editUser);
 
   useEffect(() => {
     if (currentUser === null) {
       navigate("/");
     }
   }, []);
+
+  useEffect(() => {
+    if (editState.error !== "") {
+      toast.custom(
+        () => <ToastNotify type="error" title="Error" desc={editState.error} />,
+        { duration: 2000 }
+      );
+      dispatch(resetEditUser());
+    } else if (editState.success !== "") {
+      console.log(editState.success);
+      toast.custom(
+        () => (
+          <ToastNotify
+            type="success"
+            title="Success"
+            desc={editState.success}
+          />
+        ),
+        { duration: 2000 }
+      );
+      dispatch(resetEditUser());
+    }
+  }, [dispatch, editState]);
 
   useEffect(() => {
     if (currentUser !== null) {
@@ -44,7 +71,7 @@ function Profile() {
     setUsername(userState?.data?.data?.username);
     setFullName(userState?.data?.data?.fullName);
     setNumberPhone(userState?.data?.data?.phoneNumber);
-    setEmail(userState?.data?.data?.email)
+    setEmail(userState?.data?.data?.email);
   }, [userState]);
 
   useEffect(() => {
@@ -64,8 +91,15 @@ function Profile() {
     avatarRef.current.value = "";
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const formData = new FormData();
+    formData.append("username", username);
+    formData.append("fullName", fullName);
+    formData.append("numberPhone", numberPhone);
+    formData.append("avatar", avatar);
+
+    await editMyUser(dispatch, axiosInstance, formData);
   };
 
   return (
@@ -94,7 +128,22 @@ function Profile() {
                         className={cx("input")}
                         placeholder="Enter Username"
                         value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        // onChange={(e) => setUsername(e.target.value)}
+                        readOnly
+                      />
+                    </div>
+                    {/* Email   */}
+                    <div className={cx("input_compo")}>
+                      <label htmlFor="number_phone" className={cx("label")}>
+                        Email
+                      </label>
+                      <input
+                        type="text"
+                        id="number_phone"
+                        className={cx("input")}
+                        placeholder="Email"
+                        value={email}
+                        readOnly
                       />
                     </div>
                     {/* Full Name */}
@@ -125,20 +174,7 @@ function Profile() {
                         onChange={(e) => setNumberPhone(e.target.value)}
                       />
                     </div>
-                    {/* Email   */}
-                    <div className={cx("input_compo")}>
-                      <label htmlFor="number_phone" className={cx("label")}>
-                        Email
-                      </label>
-                      <input
-                        type="text"
-                        id="number_phone"
-                        className={cx("input")}
-                        placeholder="Email"
-                        value={email}
-                        readOnly
-                      />
-                    </div>
+
                     <button type="submit" className={cx("action-save")}>
                       Save
                     </button>

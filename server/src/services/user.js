@@ -5,6 +5,14 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const fs = require("fs");
 
+const deleteAvatarImage = (fileData) => {
+  if (fileData?.avatar) {
+    for (let i = 0; i < fileData.avatar.length; i++) {
+      cloudinary.uploader.destroy(fileData.avatar[i].filename);
+    }
+  }
+};
+
 export const sendMail = () => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -87,8 +95,6 @@ export const getUser = ({ username }) => {
   });
 };
 
-
-
 export const getAvatarUser = ({ username }) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -124,21 +130,57 @@ export const getAvatarUser = ({ username }) => {
   });
 };
 
-// export const editUser = (
-//   { username, fullName, image, numberPhone },
-//   fileData
-// ) => {
-//   return new Promise(async (resolve, reject) => {
-//     try {
-//       resolve({
-//         username,
-//         fullName,
-//         image,
-//         numberPhone,
-//       });
-//     } catch (err) {
-//       reject(err);
-//       console.log(err);
-//     }
-//   });
-// };
+export const editUser = ({ username, fullName, numberPhone }, fileData) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const userResponse = await db.User.findOne({
+        where: {
+          username,
+        },
+      });
+      const isEmpty = Object.keys(fileData).length === 0;
+      if (userResponse) {
+        await db.User.update(
+          {
+            username,
+            fullName,
+            numberPhone,
+            avatarURL: isEmpty
+              ? userResponse.avatarURL 
+              : fileData?.avatar[0]?.path,
+            avatarPathName: isEmpty
+              ? userResponse.avatarPathName 
+              : fileData?.avatar[0]?.filename,
+          },
+          {
+            where: {
+              username,
+            },
+          }
+        );
+      }
+      resolve({
+        err: userResponse ? 0 : 1,
+        mess: userResponse
+          ? "Update successfully."
+          : `Can not find User(${username})`,
+        // username,
+        // fullName,
+        // image,
+        // numberPhone,
+        // avatarURL: fileData.avatar? fileData.avatar[0].path :
+        // avatarPathName
+      });
+
+      if (!userResponse && fileData) {
+        deleteAvatarImage(fileData);
+      }
+    } catch (err) {
+      reject(err);
+      console.log(err);
+      if (fileData) {
+        deleteAvatarImage(fileData);
+      }
+    }
+  });
+};

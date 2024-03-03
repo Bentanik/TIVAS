@@ -24,9 +24,9 @@ function RegisterEmail({ handleAccessLogin }) {
 
   const stateEmail = useSelector((state) => state.auth.sendMail);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    registerByEmail(dispatch, axiosInstance, { email, otp });
+    await registerByEmail(dispatch, axiosInstance, { email, otp });
   };
 
   const handleSendCodeEmail = () => {
