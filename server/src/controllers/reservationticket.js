@@ -35,11 +35,14 @@ export const createReservation = async(req, res) => {
     return res.status(200).json(response);
 }
 
-export const checkPriority = async(req, res) => {
-    const {projectID} = req.params;
-    if(!/^\d+$/.test(projectID)){
-        return missValue("Missing Value!", res);
-    }
-    const response = await services.checkPriority(req.body);
-    return res.status(200).json(response);
+export const openReservationTicket = async (req,res) => {
+    const {id} = req.params
+    const response = await services.openReservationTicket(id)
+    return res.status(200).json(response)
+}
+
+export const checkPriority = async (req,res) => {
+    const {id} = req.params
+    const response = await services.checkPriority(id)
+    return res.status(200).json(response)
 }

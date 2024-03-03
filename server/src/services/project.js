@@ -628,3 +628,37 @@ export const changeDate = ({
         }
     })
 }
+
+export const openBooking = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const message = [];
+            const dateNow = new Date().toDateString()
+            const check = await db.Project.findByPk(id)
+            if (check && check.status == 1){
+                if(check.openDate !== dateNow){
+                    message.push("not in the time to buy")
+                }else{
+                await db.Project.update({
+                    status : 2,
+                },{
+                    where : {
+                        id
+                    }
+                })
+                message.push("This project is open now")
+            }
+            }else { 
+                message.push("Project is not available")
+
+            }
+            resolve({
+                err : check ? 0 : 1,
+                mess : check ? message[0] : message[0] 
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
