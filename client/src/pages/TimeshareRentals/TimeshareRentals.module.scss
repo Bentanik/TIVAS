@@ -1,0 +1,389 @@
+// Header ============
+.header {
+  .navigation {
+    padding: 33px var(--home-padding) 0;
+  }
+}
+
+// Breadcrumbs
+.breadcrumbs {
+  margin-top: 15px;
+  padding: 40px 145px 0;
+  display: grid;
+  justify-content: center;
+  .list-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .ancillary {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+    width: 1340px;
+    gap: 30px;
+
+    .mid-text {
+      display: flex;
+      font-family: 2.8rem;
+      color: #222222;
+      font-family: "Roboto", sans-serif;
+      margin-right: 20px;
+      .left-image {
+        width: 126px;
+        height: 126px;
+        display: flex;
+        justify-content: center;
+      }
+      .left-child {
+        .click {
+          color: #0091b3;
+          font-size: 1.6rem;
+        }
+        .text{
+          display: grid;
+          margin-left: 30px;
+        }
+      }
+      
+    }
+    .right-content {
+      display: grid;
+      align-items: center;
+      justify-content: center;
+      width: 245px;
+      height: 126px;
+      background-color: #f2f0ed;
+      padding: 20px 15px 20px 15px;
+      margin-left: 330px;
+      .crumb-text {
+        display: flex;
+        justify-content: center;
+        font-family: "Inter", sans-serif;
+        font-size: 1.8rem;
+        color: #222222;
+      }
+      .crumb-button {
+        align-items: center;
+        background-color: #0091b3;
+        padding: 10px;
+        border-radius: 5px;
+        color: white;
+        font-weight: 600;
+        font-family: "Inter", sans-serif;
+      }
+    }
+  }
+  .crumb-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 50px 0 50px;
+    margin-top: 30px;
+    width: 1340px;
+    .crumb {
+      display: flex;
+      margin-bottom: 0.625rem;
+      gap: 30px;
+      align-items: center;
+      .unit {
+        font-size: 1.8rem;
+        font-family: "Roboto", sans-serif;
+        font-weight: 600;
+      }
+      .filter {
+        font-size: 1.5rem;
+        font-family: "Roboto", sans-serif;
+        border: 1px solid grey;
+        padding: 3px;
+        font-weight: 600;
+        border-radius: 5px;
+      }
+      .calendar {
+        width: 110px;
+        height: 30px;
+        padding: 5px;
+        border-radius: 5px;
+        border: 0.5px solid grey;
+      }
+    }
+    .sort {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      .crumb-unit {
+        font-size: 1.8rem;
+        font-family: "Roboto", sans-serif;
+      }
+      .sort-box {
+        width: 175px;
+        height: 30px;
+        font-size: 1.6rem;
+        border: 1px solid rgb(206, 206, 206);
+        padding: 5px;
+      }
+    }
+  }
+  .icon-arrow {
+    font-size: 1.3rem;
+    color: #000;
+  }
+
+  .nav {
+    user-select: none;
+    .text-nav {
+      font-size: 1.6rem;
+      font-family: "Inter", sans-serif;
+      color: #000;
+      opacity: 0.8;
+      &:hover {
+        color: #000;
+        opacity: 1;
+      }
+    }
+  }
+}
+// Main
+.main {
+  margin-top: 5px;
+  padding: 37px 0;
+  width: var(--width-search-page);
+  margin: 5px auto 0;
+  // background-color: orange;
+
+  // Search\
+  .top-content {
+    display: flex;
+    justify-content: center;
+    .heading {
+      display: flex;
+      gap: 10px;
+      text-align: center;
+      font-family: "Poppins", sans-serif;
+      font-size: 4rem;
+      z-index: 1;
+      top: 25%;
+      position: absolute;
+      padding: 20px;
+      font-weight: 500;
+      color: #15100d;
+    }
+    .heading-desc {
+      font-size: 2.4rem;
+      font-family: "Poppins", sans-serif;
+      position: absolute;
+      top: 35%;
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+    }
+    .search {
+      width: 100%;
+      position: absolute;
+      top: 40%;
+      right: 0;
+      padding: 10px;
+      line-height: 4.8rem;
+    }
+    .header-img {
+      width: 100%;
+      border-radius: 10px;
+      position: relative;
+      object-fit: cover;
+      max-height: 280px;
+    }
+  }
+}
+// React slick  ================
+.slick-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  .icon {
+    width: 18px;
+    height: 18px;
+    color: #000;
+  }
+
+  &:hover {
+    border-color: #000;
+  }
+}
+
+.slick-prev {
+  position: absolute;
+  top: 25%;
+  left: -35px;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.slick-next {
+  position: absolute;
+  top: 25%;
+  right: -30px;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+//Details Listing
+.icon {
+  width: 16px;
+  height: 16px;
+}
+
+.room-type-wrapper {
+  margin-top: 20px;
+  display: flex;
+  .room-type-block {
+    width: 100%;
+    .content-wrapper {
+      .left-row {
+        display: flex;
+        align-items: center;
+        .text {
+          font-family: "Poppins", sans-serif;
+          font-size: 1.5rem;
+          font-style: normal;
+          font-weight: 500;
+          text-wrap: nowrap;
+        }
+
+        .list-item {
+          padding-top: 15px;
+          border-top: 1px solid rgb(165, 165, 165);
+          padding: 25px 10px 25px 10px;
+          background-color: #ececec;
+        }
+
+        .first-list {
+          display: flex;
+          align-items: center;
+          .left-content {
+            display: flex;
+            font-size: 1.2rem;
+          }
+          .button-listing {
+            width: 115px;
+            height: 30px;
+            padding: 5px;
+            border: none;
+            background: #0091b3;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 500;
+            font-family: "Roboto", sans-serif;
+            cursor: pointer;
+            &:hover{
+              background-color: #017c97;
+            }
+          }
+          .sub-title {
+            font-family: "Poppins", sans-serif;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 1.5rem;
+            align-items: center;
+            display: flex;
+            gap: 18px;
+            .new {
+              background: red;
+              padding: 4px;
+              border-radius: 4px;
+              color: white;
+              font-size: 1.3rem;
+            }
+          }
+        }
+
+        .second-list {
+          display: flex;
+
+          .text.bold {
+            font-weight: 500;
+          }
+        }
+      }
+    }
+  }
+}
+
+//
+.top-resort {
+  display: grid;
+  justify-content: center;
+}
+.top-unit {
+  .listing-content {
+    .listing-item {
+      display: flex;
+      font-size: 1.6rem;
+      font-family: "Roboto", sans-serif;
+      .listing-dates {
+        width: 320px;
+        text-align: start;
+        display: flex;
+        padding-left: 10px;
+      }
+      .listing-nights {
+        width: 85px;
+        text-align: start;
+        margin-left: -20px;
+      }
+      .listing-price {
+        width: 206px;
+        text-align: start;
+      }
+      .listing-be-ba {
+        width: 205px;
+        text-align: start;
+      }
+      .listing-sleep {
+        width: 85px;
+        text-align: start;
+      }
+      .listing-building {
+        width: 122px;
+        text-align: start;
+        margin-left: 28px;
+      }
+      .listing-view {
+        width: 122px;
+        text-align: start;
+      }
+      .listing-action {
+        width: 122px;
+        text-align: start;
+      }
+    }
+  }
+}
+.benefit {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  margin-top: 80px;
+  .crumb-benefit {
+    display: grid;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    width: 210px;
+    .benefit-img {
+    }
+    .benefit-text {
+      text-align: center;
+      font-size: 1.7rem;
+      font-weight: 600;
+      font-family: "Poppins", sans-serif;
+      line-height: 3rem;
+    }
+  }
+}

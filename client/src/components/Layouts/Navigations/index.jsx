@@ -30,12 +30,12 @@ const LIST_NAV = [
   },
 
   {
-    value: "News",
-    link: "/news",
+    value: "Listing",
+    link: "/listingdetails",
   },
   {
     value: "About",
-    link: "/about",
+    link: "/Policy",
   },
 ];
 
