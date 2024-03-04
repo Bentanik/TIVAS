@@ -386,14 +386,12 @@ export const checkPriority = (id) => {
                 }
             })
             const result = Object.groupBy(ticketResponse, ({ timeShareID }) => timeShareID)
-            //console.log(result);
-            let count = 0
+            let count1 = 0
             for (let properties in result) {
-                count = count + 1
+                count1 = count1 + 1
             }
-            for (let i = 0; i < count; i++) {
+            for (let i = 0; i < count1; i++) {
                 const quantityTimeshare = await db.TimeShare.findByPk(Object.getOwnPropertyNames(result)[i])
-                console.log(quantityTimeshare);
                 for (let x = 0; x < quantityTimeshare.quantity; x++) {
                     const timeshare = result[Object.getOwnPropertyNames(result)[i]][x]
                     if (timeshare) {
@@ -402,6 +400,13 @@ export const checkPriority = (id) => {
                         }, {
                             where: {
                                 id: result[Object.getOwnPropertyNames(result)[i]][x].dataValues.id
+                            }
+                        })
+                        await db.TimeShare.decrement({
+                            quantity : 1
+                        },{
+                            where : {
+                                id: result[Object.getOwnPropertyNames(result)[i]][x].dataValues.timeShareID
                             }
                         })
                         const user = await db.User.findByPk(timeshare.userID)
@@ -439,6 +444,12 @@ export const checkPriority = (id) => {
 
                 }
             }
+            // const {count , rows} = await db.ReservationTicket.findAndCountAll({
+            //     where : {
+            //         status : 2
+            //     }
+            // })
+            
             resolve({
                 err: (ticketResponse && ticketResponse.length !== 0) ? 0 : 1,
                 mess: (ticketResponse && ticketResponse.length !== 0) ? "Success" : "Fail (No ReservationTickets to check in DB)"
