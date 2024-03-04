@@ -507,7 +507,7 @@ export const getTimeSharePriority = (userID) => {
                     : (!reservationTicketResponse || reservationTicketResponse.length === 0) ?
                         `User (${userID}) does not have any TimeShare Priority after checking priority in the DB!`
                         : timeSharePriority.length === 0 ?
-                            'Can not find any TimeShares'
+                            'Can not find any TimeShares!'
                             : `TimeShares Priority of User (${userID}) found`,
                 data: timeSharePriority.length !== 0 ? timeSharePriority : null,
             })
