@@ -49,6 +49,7 @@ const images = {
     comerce: require("~/assets/images/comerce.jpg"),
     moreInfoIcon: require("~/assets/images/moreInfoIcon.svg").default,
     vyAvatar: require("~/assets/images/vyAvatar.png"),
+    masterCard: require("~/assets/images/masterCard.png"),
 };
 
 export default images;
