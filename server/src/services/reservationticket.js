@@ -11,40 +11,47 @@ export const createTicket = ({
 }, code) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const user = await db.User.findOne({
-                where: {
-                    id: userID
-                }
-            })
             let Message = [];
-            const check = await db.ReservationTicket.create({
-                code: code,
-                status: 0,
-                userID,
-                projectID,
-                timeshareID: null
-            })
-            let transporter = nodemailer.createTransport({
-                service: "gmail",
-                auth: {
-                    user: process.env.GOOGE_APP_EMAIL,
-                    pass: process.env.GOOGLE_APP_PASSWORD,
-                },
-            });
-            let mailOptions = {
-                from: "Tivas",
-                to: `${user.email}`,
-                subject: "Confirm received email",
-                text: `Your reservation ticket code is ${code}`
-            };
-            await transporter.sendMail(mailOptions, function (error, info) {
-                if (error) {
-                    console.log(error);
-                } else {
-                    console.log("Email sent: " + info.response);
-                }
-            });
-            Message.push("Create Success")
+            let check;
+            const projectResponse = await db.Project.findByPk(projectID);
+            if (projectResponse) {
+                const user = await db.User.findOne({
+                    where: {
+                        id: userID
+                    }
+                })
+                check = await db.ReservationTicket.create({
+                    code: code,
+                    status: 0,
+                    userID,
+                    projectID,
+                    timeshareID: null
+                })
+                let transporter = nodemailer.createTransport({
+                    service: "gmail",
+                    auth: {
+                        user: process.env.GOOGE_APP_EMAIL,
+                        pass: process.env.GOOGLE_APP_PASSWORD,
+                    },
+                });
+                let mailOptions = {
+                    from: "Tivas",
+                    to: `${user.email}`,
+                    subject: "Confirm received email",
+                    text: `Your reservation ticket code is ${code}`
+                };
+                await transporter.sendMail(mailOptions, function (error, info) {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        console.log("Email sent: " + info.response);
+                    }
+                });
+                Message.push("Create Success")
+            }
+            else {
+                Message.push(`Project (${projectID}) is not open for buying Reservation Ticket!`);
+            }
 
             // const [ticket,created] = await db.ReservationTicket.findOrCreate({
             //     where : { code : 1 },
@@ -184,17 +191,16 @@ export const createReservation = ({
             let userUsedTicket;
             let reservationResponse;
             let timeShareBelongsToProject;
+            let projectResponse;
             const userResponse = await db.User.findByPk(userID);
             const ticketResponse = await db.ReservationTicket.findOne({
                 where: {
                     code,
                 }
             })
-            const projectResponse = await db.ReservationTicket.findByPk(ticketResponse.projectID);
             const timeShareResponse = await db.TimeShare.findByPk(timeShareID);
-            if(projectResponse.status)
             if (userResponse && ticketResponse && timeShareResponse) {
-                const projectResponse = await db.Project.findOne({
+                projectResponse = await db.Project.findOne({
                     include: {
                         model: db.TypeOfProject,
                         required: true,
@@ -211,38 +217,40 @@ export const createReservation = ({
                         }
                     }
                 })
-                timeShareBelongsToProject = (projectResponse.id === ticketResponse.projectID);
-                if (timeShareBelongsToProject === true) {
-                    if (ticketResponse.status === 1) {
-                        userTicketResponse = await db.ReservationTicket.findOne({
-                            where: {
-                                code,
-                                userID,
-                            }
-                        })
-                        if (userTicketResponse) {
-
-                            ticketDuplicated = await db.ReservationTicket.findOne({
+                if (projectResponse.status === 2) {
+                    timeShareBelongsToProject = (projectResponse.id === ticketResponse.projectID);
+                    if (timeShareBelongsToProject === true) {
+                        if (ticketResponse.status === 1) {
+                            userTicketResponse = await db.ReservationTicket.findOne({
                                 where: {
                                     code,
-                                    timeShareID,
+                                    userID,
                                 }
                             })
-                            if (!ticketDuplicated) {
-                                userUsedTicket = await db.ReservationTicket.findOne({
+                            if (userTicketResponse) {
+
+                                ticketDuplicated = await db.ReservationTicket.findOne({
                                     where: {
-                                        userID: ticketResponse.userID,
+                                        code,
                                         timeShareID,
                                     }
                                 })
-                                if (!userUsedTicket) {
-                                    reservationResponse = await db.ReservationTicket.update({
-                                        timeShareID,
-                                    }, {
+                                if (!ticketDuplicated) {
+                                    userUsedTicket = await db.ReservationTicket.findOne({
                                         where: {
-                                            code,
+                                            userID: ticketResponse.userID,
+                                            timeShareID,
                                         }
                                     })
+                                    if (!userUsedTicket) {
+                                        reservationResponse = await db.ReservationTicket.update({
+                                            timeShareID,
+                                        }, {
+                                            where: {
+                                                code,
+                                            }
+                                        })
+                                    }
                                 }
                             }
                         }
@@ -253,22 +261,24 @@ export const createReservation = ({
             resolve({
                 err: reservationResponse ? 0 : 1,
                 message: !userResponse ?
-                    `Can not find User (${userID})!` :
-                    !timeShareResponse ?
-                        `TimeShare (${timeShareID}) does not exist!` :
-                        !ticketResponse ?
+                    `Can not find User (${userID})!`
+                    : !timeShareResponse ?
+                        `TimeShare (${timeShareID}) does not exist!`
+                        : !ticketResponse ?
                             `Ticket (${code}) does not exist!`
-                            : !timeShareBelongsToProject ?
-                                `TimeShare (${timeShareID}) does not belong to Project which is registerd in Ticket (${code})`
-                                : ticketResponse.status !== 1 ?
-                                    `Ticket (${code}) does not activate!`
-                                    : !userTicketResponse ?
-                                        `Ticket (${code}) does not belong to User (${userID})!`
-                                        : ticketDuplicated ?
-                                            `TimeShare (${timeShareID}) has already registerd with the ticket (${code})!`
-                                            : userUsedTicket ?
-                                                `Can not use two or more tickets to register one TimeShare! (User (${ticketResponse.userID}) has already use one ticket to register TimeShare(${timeShareID}))`
-                                                : 'Create successfully.',
+                            : projectResponse.status !== 2 ?
+                                `Project (${projectResponse.id}) is not open for reservation!`
+                                : !timeShareBelongsToProject ?
+                                    `TimeShare (${timeShareID}) does not belong to Project which is registerd in Ticket (${code})`
+                                    : ticketResponse.status !== 1 ?
+                                        `Ticket (${code}) does not activate!`
+                                        : !userTicketResponse ?
+                                            `Ticket (${code}) does not belong to User (${userID})!`
+                                            : ticketDuplicated ?
+                                                `TimeShare (${timeShareID}) has already registerd with the ticket (${code})!`
+                                                : userUsedTicket ?
+                                                    `Can not use two or more tickets to register one TimeShare! (User (${ticketResponse.userID}) has already use one ticket to register TimeShare(${timeShareID}))`
+                                                    : 'Create successfully.',
             })
         }
         catch (error) {
