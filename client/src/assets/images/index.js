@@ -35,6 +35,8 @@ const images = {
     kitchenIcon: require("~/assets/images/kitchenIcon.svg").default,
     areaIcon: require("~/assets/images/areaIcon.svg").default,
     personIcon: require("~/assets/images/personIcon.svg").default,
+    moreInfoIcon: require("~/assets/images/moreInfoIcon.svg").default,
+    vyAvatar: require("~/assets/images/vyAvatar.png"),
 };
 
 export default images;

@@ -30,6 +30,11 @@
     font-weight: 700;
 }
 
+.sub-title {
+    font-family: "Poppins", sans-serif;
+    font-weight: 500;
+}
+
 // List Images
 
 .img {
@@ -88,11 +93,6 @@
             margin-right: 10px;
             border-radius: 5px;
         }
-    }
-
-    .sub-title {
-        font-family: "Poppins", sans-serif;
-        font-weight: 500;
     }
 
     .amenities {
@@ -154,6 +154,58 @@
         .item {
             margin-top: 20px;
             font-size: 1.8rem;
+        }
+    }
+}
+
+// Block Action View TimeShare
+
+.wrapper {
+    margin-top: 30px;
+    width: 90%;
+    border: #b1aaaa solid 1px;
+    border-radius: 20px;
+
+    .action-block {
+        display: flex;
+        justify-content: space-between;
+        padding: 33px 21px;
+
+        .left-content {
+            display: flex;
+            gap: 15px;
+
+            .avatar {
+                width: 50px;
+                height: 50px;
+                object-fit: cover;
+                border-radius: 50%;
+            }
+
+            .sub-title {
+                align-self: center;
+                font-size: 1.7rem;
+                font-weight: 500;
+            }
+        }
+
+        .action-btn {
+            // margin-top: 10px;
+            display: inline-block;
+            color: #0091b3;
+            font-family: "Poppins", sans-serif;
+            font-size: 1.4rem;
+            font-style: normal;
+            font-weight: 300;
+            text-align: center;
+            // background: #44bed97e;
+            border: #0091b3 solid 1px;
+            padding: 13px 22px;
+            border-radius: 10px;
+
+            &:hover {
+                background: #44bed97e;
+            }
         }
     }
 }

@@ -23,52 +23,47 @@ const blog_link = {
 
 function ProjectDetail() {
     // Get API from project detail
-    const [name, setName] = useState("");
-    const [images, setImage] = useState(null);
-    const [desc, setDesc] = useState("");
-    const [location, setLocation] = useState("");
-    const [feature, setFeature] = useState([]);
-    const [attraction, setAttraction] = useState([]);
+    // const [name, setName] = useState("");
+    // const [projectImage, setProjectImage] = useState([]);
+    // const [desc, setDesc] = useState("");
+    // const [location, setLocation] = useState("");
+    // const [feature, setFeature] = useState([]);
+    // const [attraction, setAttraction] = useState([]);
 
-    const dispatch = useDispatch();
-    const currentUser = useSelector((state) => state.auth.login.user);
-    const axiosInstance = createAxios(dispatch, currentUser);
+    // const dispatch = useDispatch();
+    // const currentUser = useSelector((state) => state.auth.login.user);
+    // const axiosInstance = createAxios(dispatch, currentUser);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const res = await getProjectDetail(
-                axiosInstance
-                // currentUser?.data?.username
-            );
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         const res = await getProjectDetail(axiosInstance);
 
-            // if (res?.err === 0) {
-            setName(res?.data?.name);
-            setImage(res?.data?.Images);
-            setDesc(res?.data?.description);
-            setLocation(res?.data?.location);
-            setFeature(res?.data?.description);
-            setAttraction(res?.data?.attractions);
-            // } else {
-            //     setName("");
-            //     setImage("");
-            //     setDesc("");
-            //     setLocation("");
-            //     setFeature("");
-            //     setAttraction("");
-            // }
-        };
-        fetchData();
-    }, []);
+    //         if (res?.err === 0) {
+    //             setName(res?.data?.name);
+    //             setProjectImage(res?.data?.Images);
+    //             setDesc(res?.data?.description);
+    //             setLocation(res?.data?.location);
+    //             setFeature(res?.data?.description);
+    //             setAttraction(res?.data?.attractions);
+    //         } else {
+    //             setName("1");
+    //             setProjectImage("1");
+    //             setDesc("1");
+    //             setLocation("1");
+    //             setFeature("");
+    //             setAttraction("1");
+    //         }
+    //     };
+    //     fetchData();
+    // }, []);
 
-    console.log(image);
-
-    // Image API
-    const image = images.map((image) => ({
-        largeURL: image.pathUrl,
-        thumbnailURL: image.pathUrl,
-        width: 974,
-        height: 641,
-    }));
+    // // Image API
+    // const image = projectImage?.map((image) => ({
+    //     largeURL: image.pathUrl,
+    //     thumbnailURL: image.pathUrl,
+    //     width: 974,
+    //     height: 641,
+    // }));
 
     const [scrollToResortAmenities, setScrollToResortAmenities] =
         useState(false);
@@ -100,15 +95,15 @@ function ProjectDetail() {
             {/* List Image */}
             <div className={cx("content")}>
                 <div className={cx("list-img")}>
-                    <SimpleGallery galleryID="my-test-gallery" images={image} />
+                    {/* <SimpleGallery galleryID="my-test-gallery" images={image} /> */}
                 </div>
             </div>
 
             <div className={cx("content")}>
                 <div className={cx("info-detail")}>
-                    <h1 className={cx("title")}>{name}</h1>
+                    <h1 className={cx("title")}>{/* {name} */}The Rivus</h1>
 
-                    <div className={cx("desc")}>{desc}</div>
+                    <div className={cx("desc")}>{/* {desc} */} description</div>
 
                     <div className={cx("rate")}>
                         <div className={cx("rating")}>4.5</div>
@@ -132,19 +127,42 @@ function ProjectDetail() {
                         {/* List Amenities */}
                         <div className={cx("list-amenities")}>
                             <div className={cx("left-list")}>
-                                {feature.map((item, index) => (
+                                {/* {feature?.map((item, index) => (
                                     <div key={index} className={cx("item")}>
                                         {item}
                                     </div>
-                                ))}
+                                ))} */}
                             </div>
                             <div className={cx("right-list")}>
-                                {feature.map((item, index) => (
+                                {/* {feature?.map((item, index) => (
                                     <div key={index} className={cx("item")}>
                                         {item}
                                     </div>
-                                ))}
+                                ))} */}
                             </div>
+                        </div>
+                    </div>
+                </div>
+                {/* Action block wrapper */}
+                <div className={cx("wrapper")}>
+                    <div className={cx("action-block")}>
+                        {/* left content */}
+                        <div className={cx("left-content")}>
+                            <img
+                                src={images.vyAvatar}
+                                alt="vy-avatar"
+                                className={cx("avatar")}
+                            />
+
+                            <h2 className={cx("sub-title")}>
+                                Do you want to view all timeshare?
+                            </h2>
+                        </div>
+                        {/* rigth content */}
+                        <div className={cx("right-content")}>
+                            <Link to="#!" className={cx("action-btn")}>
+                                View All TimeShare
+                            </Link>
                         </div>
                     </div>
                 </div>

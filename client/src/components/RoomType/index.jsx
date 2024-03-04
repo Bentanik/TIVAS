@@ -18,7 +18,7 @@ function RoomType() {
                     <div className={cx("left-content")}>
                         <div className={cx("left-row")}>
                             <img
-                                src={images.thumbImg}
+                                src={images.resort}
                                 alt="Thumb_Image"
                                 className={cx("thumb-img")}
                             />
@@ -84,9 +84,6 @@ function RoomType() {
                     </div>
                     {/* Right Content */}
                     <div className={cx("right-content")}>
-                        <div className={cx("price")}>
-                            From <span className={cx("both")}>$96</span> night
-                        </div>
                         <Link to="#!" className={cx("unit-btn")}>
                             Unit Details
                         </Link>

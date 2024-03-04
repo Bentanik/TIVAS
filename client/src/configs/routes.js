@@ -10,6 +10,9 @@ import Profile from "~/components/Layouts/Profile";
 import RoomTypeDetail from "~/components/RoomTypeDetail";
 import ChangePassword from "~/components/ChangePassword";
 import AdminManageUser from "~/pages/AdminManageUser";
+import AdminUserBanList from "~/pages/AdminUserBanList";
+import AdminManageProject from "~/pages/AdminManageProject";
+import AdminProjectDetail from "~/pages/AdminProjectDetail";
 
 const routes = [
     {
@@ -62,6 +65,23 @@ const routes = [
     {
         path: "/admin/manageuser",
         component: AdminManageUser,
+        layout: LayoutAdmin,
+    },
+    {
+        path: "/admin/manageproject",
+        component: AdminManageProject,
+        layout: LayoutAdmin,
+    },
+
+    {
+        path: "/admin/userbanlist",
+        component: AdminUserBanList,
+        layout: LayoutAdmin,
+    },
+
+    {
+        path: "/admin/projectdetail",
+        component: AdminProjectDetail,
         layout: LayoutAdmin,
     },
 
