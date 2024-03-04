@@ -397,11 +397,12 @@ export const checkPriority = (id) => {
                 }
             })
             const ticketResponse = await db.ReservationTicket.findAll({
-                where : {
-                    projectID : id,
-                    timeShareID : {
-                        [Op.ne]:null
-                    }
+                where: {
+                    projectID: id,
+                    timeShareID: {
+                        [Op.ne]: null
+                    },
+                    status: 1
                 }
             })
             const result = Object.groupBy(ticketResponse, ({ timeShareID }) => timeShareID)
@@ -413,42 +414,107 @@ export const checkPriority = (id) => {
                 const quantityTimeshare = await db.TimeShare.findByPk(Object.getOwnPropertyNames(result)[i])
                 for (let x = 0; x < quantityTimeshare.quantity; x++) {
                     const timeshare = result[Object.getOwnPropertyNames(result)[i]][x]
-                    if(timeshare){
+                    if (timeshare) {
                         await db.ReservationTicket.update({
-                            status : 2
-                        },{
-                            where  : {
-                                id : result[Object.getOwnPropertyNames(result)[i]][x].dataValues.id
+                            status: 2
+                        }, {
+                            where: {
+                                id: result[Object.getOwnPropertyNames(result)[i]][x].dataValues.id
                             }
                         })
                         const user = await db.User.findByPk(timeshare.userID)
+                        const ticket = await db.ReservationTicket.findByPk(result[Object.getOwnPropertyNames(result)[i]][x].dataValues.id);
+                        const endDateDB = ticket.updatedAt;
+                        endDateDB.setDate(endDateDB.getDate() + 1);
+                        await db.Booking.create({
+                            startDate: ticket.updatedAt,
+                            endDate: endDateDB,
+                            status: 0,
+                            priceBooking: 30,
+                            reservationTicketID: ticket.id,
+                        })
                         let transporter = nodemailer.createTransport({
                             service: "gmail",
                             auth: {
-                              user: process.env.GOOGE_APP_EMAIL,
-                              pass: process.env.GOOGLE_APP_PASSWORD,
+                                user: process.env.GOOGE_APP_EMAIL,
+                                pass: process.env.GOOGLE_APP_PASSWORD,
                             },
-                          });
+                        });
                         let mailOptions = {
                             from: "Tivas",
                             to: `${user.email}`,
                             subject: "Confirm received email",
-                            text : `Trung timeshare co timeshare `  
-                          };
+                            text: `Trung timeshare co timeshare Id: ${ticket.timeShareID}`
+                        };
                         transporter.sendMail(mailOptions, function (error, info) {
                             if (error) {
-                              console.log(error);
+                                console.log(error);
                             } else {
-                              console.log("Email sent: " + info.response);
+                                console.log("Email sent: " + info.response);
                             }
-                          });
+                        });
                     }
-                    
+
                 }
             }
             resolve({
-                err: ticketResponse ? 0 : 1,
-                mess: ticketResponse ? "Success" : "Fail"
+                err: (ticketResponse && ticketResponse.length !== 0) ? 0 : 1,
+                mess: (ticketResponse && ticketResponse.length !== 0) ? "Success" : "Fail (No ReservationTickets to check in DB)"
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
+export const getTimeSharePriority = (userID) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const userResponse = await db.User.findByPk(userID);
+            let timeSharePriority = [];
+            let reservationTicketResponse;
+            if (userResponse) {
+                reservationTicketResponse = await db.ReservationTicket.findAll({
+                    where: {
+                        userID,
+                        status: 2,
+                    }
+                })
+                console.log(reservationTicketResponse);
+                if (reservationTicketResponse && reservationTicketResponse.length !== 0) {
+                    for (let i = 0; i < reservationTicketResponse.length; i++) {
+                        console.log(reservationTicketResponse[i]);
+                        const timeShareResponse = await db.TimeShare.findByPk(reservationTicketResponse[i].timeShareID,
+                            {
+                                attributes: ['id', 'price', 'startDate', 'endDate', 'saleStatus', 'createdAt'],
+                                include: {
+                                    model: db.TypeRoom,
+                                    attributes: ['name', 'persons'],
+                                    include: {
+                                        model: db.TypeOfProject,
+                                        attributes: ['id'],
+                                        include: {
+                                            model: db.Project,
+                                            attributes: ['name', 'location', 'thumbnailPathUrl']
+                                        }
+                                    }
+                                },
+                            });
+                        timeSharePriority.push(timeShareResponse);
+                    }
+                }
+            }
+            resolve({
+                err: timeSharePriority.length !== 0 ? 0 : 1,
+                message: !userResponse ?
+                    `User (${userID}) does not exist!`
+                    : (!reservationTicketResponse || reservationTicketResponse.length === 0) ?
+                        `User (${userID}) does not have any TimeShare Priority after checking priority in the DB!`
+                        : timeSharePriority.length === 0 ?
+                            'Can not find any TimeShares'
+                            : `TimeShares Priority of User (${userID}) found`,
+                data: timeSharePriority.length !== 0 ? timeSharePriority : null,
             })
         } catch (error) {
             console.log(error);

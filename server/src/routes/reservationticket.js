@@ -10,4 +10,6 @@ router.get("/checkPriority/:id",controllers.checkPriority)
 
 router.post("/createReservation", controllers.createReservation)
 
+router.get("/getTimeSharePriority/:userID", controllers.getTimeSharePriority)
+
 export default router;
