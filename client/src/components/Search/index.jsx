@@ -2,7 +2,7 @@ import classNames from "classnames/bind";
 import styles from "./Search.module.scss";
 import { useState } from "react";
 import TippyHeadless from "@tippyjs/react/headless";
-import images from "~/assets";
+import images from "~/assets/images";
 
 const cx = classNames.bind(styles);
 

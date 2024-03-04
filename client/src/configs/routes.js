@@ -1,8 +1,10 @@
 import Home from "~/pages/Home";
 import Destination from "~/pages/Destination";
 import Search from "~/pages/Search";
-import EditProfile from "../pages/EditProfile";
-import ProfileUser from "~/pages/ProfileUser";
+import Listing from "~/pages/Listing";
+import ListingDetails from "~/pages/ListingDetails";
+import TimeshareRentals from "~/pages/TimeshareRentals";
+import Policy from "~/pages/Policy";
 const routes = [
   {
     path: "/",
@@ -10,7 +12,7 @@ const routes = [
     layout: null,
   },
   {
-    path: "/destination",
+    path: "/destinations",
     component: Destination,
     layout: null,
   },
@@ -20,15 +22,25 @@ const routes = [
     layout: null,
   },
   {
-    path: "/userprofile",
-    component: EditProfile,
+    path: "/listing",
+    component: Listing,
     layout: null,
   },
   {
-    path: "/Profileuser",
-    component: ProfileUser,
+    path: "/listingdetails",
+    component: ListingDetails,
     layout: null,
   },
+  {
+    path: "/timesharerentals",
+    component: TimeshareRentals ,
+    layout: null,
+  },
+  {
+    path: "/policy",
+    component: Policy,
+    layout: null,
+  }
 ];
 
 export default routes;

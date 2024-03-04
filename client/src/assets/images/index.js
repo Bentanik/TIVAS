@@ -13,6 +13,23 @@ const images = {
   thumbProject: require("~/assets/images/thumbProject.svg").default,
   locateIcon: require("~/assets/images/locateIcon.svg").default,
   listIcon: require("~/assets/images/listIcon.svg").default,
+  iconHome: require("~/assets/images/iconHome.png"),
+  resort: require("~/assets/images/resort.jpg"),
+  // blogResort: require("~/ /images/BlogResort.jpg"),
+  portrait: require("~/assets/images/Portrait.jpg"),
+  timeshareResort: require("~/assets/images/timeshareResort.jpg"),
+  banner: require("~/assets/images/banner.jpg.jpg"),
+  koala: require("~/assets/images/Koala.jpg"),
+  one: require("~/assets/images/one.jpg"),
+  two: require("~/assets/images/two.jpg"),
+  three: require("~/assets/images/three.jpg"),
+  koala_myles: require("~/assets/images/Koala_Myles.jpg"),
+  privacy: require("~/assets/images/privacy.jpg"),
+  gdpr: require("~/assets/images/gdpr.jpg"),
+  ccpa:require("~/assets/images/ccpa.jpg"),
+  caloppa: require("~/assets/images/caloppa.jpg"),
+  generate:   require("~/assets/images/generate.jpg"),
+  comerce:   require("~/assets/images/comerce.jpg"),
 };
 
 export default images;
