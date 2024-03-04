@@ -28,6 +28,9 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
       },
+      reasonBan: {
+        type: Sequelize.STRING,
+      },
       refundHistoryID: {
         type: Sequelize.STRING,
       },
