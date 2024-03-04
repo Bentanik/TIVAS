@@ -14,7 +14,7 @@ export const createTicket = ({
             let Message = [];
             let check;
             const projectResponse = await db.Project.findByPk(projectID);
-            if (projectResponse) {
+            if (projectResponse.status === 1) {
                 const user = await db.User.findOne({
                     where: {
                         id: userID
@@ -22,7 +22,7 @@ export const createTicket = ({
                 })
                 check = await db.ReservationTicket.create({
                     code: code,
-                    status: 0,
+                    status: 1,
                     userID,
                     projectID,
                     timeshareID: null
@@ -78,58 +78,58 @@ export const createTicket = ({
     })
 }
 
-export const activeTicket = (id) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const ticket = await db.ReservationTicket.findOne({
-                where: {
-                    id: id
-                }
-            })
-            const [check, t] = await db.ReservationTicket.update({
-                status: 1
-            }, {
-                where: {
-                    id: id
-                }, returning: true
-            })
-            if (t === 1) {
-                const user = await db.User.findOne({
-                    where: {
-                        id: ticket.userID
-                    }
-                })
-                let transporter = nodemailer.createTransport({
-                    service: "gmail",
-                    auth: {
-                        user: process.env.GOOGE_APP_EMAIL,
-                        pass: process.env.GOOGLE_APP_PASSWORD,
-                    },
-                });
-                let mailOptions = {
-                    from: "Tivas",
-                    to: `${user.email}`,
-                    subject: "Confirm received email",
-                    text: `Your ticket ${ticket.code} is active now`
-                };
-                await transporter.sendMail(mailOptions, function (error, info) {
-                    if (error) {
-                        console.log(error);
-                    } else {
-                        console.log("Email sent: " + info.response);
-                    }
-                });
-            }
-            resolve({
-                err: t ? 0 : 1,
-                mess: t ? "Your ticket active success" : "Your ticket active fail"
-            })
-        } catch (error) {
-            console.log(error);
-            reject(error);
-        }
-    })
-}
+// export const activeTicket = (id) => {
+//     return new Promise(async (resolve, reject) => {
+//         try {
+//             const ticket = await db.ReservationTicket.findOne({
+//                 where: {
+//                     id: id
+//                 }
+//             })
+//             const [check, t] = await db.ReservationTicket.update({
+//                 status: 1
+//             }, {
+//                 where: {
+//                     id: id
+//                 }, returning: true
+//             })
+//             if (t === 1) {
+//                 const user = await db.User.findOne({
+//                     where: {
+//                         id: ticket.userID
+//                     }
+//                 })
+//                 let transporter = nodemailer.createTransport({
+//                     service: "gmail",
+//                     auth: {
+//                         user: process.env.GOOGE_APP_EMAIL,
+//                         pass: process.env.GOOGLE_APP_PASSWORD,
+//                     },
+//                 });
+//                 let mailOptions = {
+//                     from: "Tivas",
+//                     to: `${user.email}`,
+//                     subject: "Confirm received email",
+//                     text: `Your ticket ${ticket.code} is active now`
+//                 };
+//                 await transporter.sendMail(mailOptions, function (error, info) {
+//                     if (error) {
+//                         console.log(error);
+//                     } else {
+//                         console.log("Email sent: " + info.response);
+//                     }
+//                 });
+//             }
+//             resolve({
+//                 err: t ? 0 : 1,
+//                 mess: t ? "Your ticket active success" : "Your ticket active fail"
+//             })
+//         } catch (error) {
+//             console.log(error);
+//             reject(error);
+//         }
+//     })
+// }
 
 // export const checkTicket = ({
 //     code,
@@ -220,40 +220,40 @@ export const createReservation = ({
                 if (projectResponse.status === 2) {
                     timeShareBelongsToProject = (projectResponse.id === ticketResponse.projectID);
                     if (timeShareBelongsToProject === true) {
-                        if (ticketResponse.status === 1) {
-                            userTicketResponse = await db.ReservationTicket.findOne({
+                        //if (ticketResponse.status === 1) {
+                        userTicketResponse = await db.ReservationTicket.findOne({
+                            where: {
+                                code,
+                                userID,
+                            }
+                        })
+                        if (userTicketResponse) {
+
+                            ticketDuplicated = await db.ReservationTicket.findOne({
                                 where: {
                                     code,
-                                    userID,
+                                    timeShareID,
                                 }
                             })
-                            if (userTicketResponse) {
-
-                                ticketDuplicated = await db.ReservationTicket.findOne({
+                            if (!ticketDuplicated) {
+                                userUsedTicket = await db.ReservationTicket.findOne({
                                     where: {
-                                        code,
+                                        userID: ticketResponse.userID,
                                         timeShareID,
                                     }
                                 })
-                                if (!ticketDuplicated) {
-                                    userUsedTicket = await db.ReservationTicket.findOne({
+                                if (!userUsedTicket) {
+                                    reservationResponse = await db.ReservationTicket.update({
+                                        timeShareID,
+                                    }, {
                                         where: {
-                                            userID: ticketResponse.userID,
-                                            timeShareID,
+                                            code,
                                         }
                                     })
-                                    if (!userUsedTicket) {
-                                        reservationResponse = await db.ReservationTicket.update({
-                                            timeShareID,
-                                        }, {
-                                            where: {
-                                                code,
-                                            }
-                                        })
-                                    }
                                 }
                             }
                         }
+                        //}
                     }
                 }
             }
@@ -271,14 +271,14 @@ export const createReservation = ({
                                 : !timeShareBelongsToProject ?
                                     `TimeShare (${timeShareID}) does not belong to Project which is registerd in Ticket (${code})`
                                     : ticketResponse.status !== 1 ?
-                                        `Ticket (${code}) does not activate!`
-                                        : !userTicketResponse ?
-                                            `Ticket (${code}) does not belong to User (${userID})!`
-                                            : ticketDuplicated ?
-                                                `TimeShare (${timeShareID}) has already registerd with the ticket (${code})!`
-                                                : userUsedTicket ?
-                                                    `Can not use two or more tickets to register one TimeShare! (User (${ticketResponse.userID}) has already use one ticket to register TimeShare(${timeShareID}))`
-                                                    : 'Create successfully.',
+                                        //`Ticket (${code}) does not activate!`
+                                        //: !userTicketResponse ?
+                                        `Ticket (${code}) does not belong to User (${userID})!`
+                                        : ticketDuplicated ?
+                                            `TimeShare (${timeShareID}) has already registerd with the ticket (${code})!`
+                                            : userUsedTicket ?
+                                                `Can not use two or more tickets to register one TimeShare! (User (${ticketResponse.userID}) has already use one ticket to register TimeShare(${timeShareID}))`
+                                                : 'Create successfully.',
             })
         }
         catch (error) {
@@ -403,22 +403,23 @@ export const checkPriority = (id) => {
                             }
                         })
                         await db.TimeShare.decrement({
-                            quantity : 1
-                        },{
-                            where : {
+                            quantity: 1
+                        }, {
+                            where: {
                                 id: result[Object.getOwnPropertyNames(result)[i]][x].dataValues.timeShareID
                             }
                         })
+                        const timeShareResponse = await db.TimeShare.findByPk(result[Object.getOwnPropertyNames(result)[i]][x].dataValues.timeShareID);
                         const user = await db.User.findByPk(timeshare.userID)
                         const ticket = await db.ReservationTicket.findByPk(result[Object.getOwnPropertyNames(result)[i]][x].dataValues.id);
+                        const startDateDB = new Date(ticket.updatedAt);
                         const endDateDB = ticket.updatedAt;
                         endDateDB.setDate(endDateDB.getDate() + 7);
-                        console.log(endDateDB);
                         await db.Booking.create({
-                            startDate: ticket.updatedAt,
+                            startDate: startDateDB,
                             endDate: endDateDB,
                             status: 0,
-                            priceBooking: 35000000,
+                            priceBooking: timeShareResponse.price * 30 / 100,
                             reservationTicketID: ticket.id,
                         })
                         let transporter = nodemailer.createTransport({
@@ -450,7 +451,7 @@ export const checkPriority = (id) => {
             //         status : 2
             //     }
             // })
-            
+
             resolve({
                 err: (ticketResponse && ticketResponse.length !== 0) ? 0 : 1,
                 mess: (ticketResponse && ticketResponse.length !== 0) ? "Success" : "Fail (No ReservationTickets to check in DB)"
@@ -509,6 +510,41 @@ export const getTimeSharePriority = (userID) => {
                             'Can not find any TimeShares'
                             : `TimeShares Priority of User (${userID}) found`,
                 data: timeSharePriority.length !== 0 ? timeSharePriority : null,
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
+export const getUserTickets = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const userResponse = await db.User.findByPk(id);
+            let ticketResponse;
+            if (userResponse) {
+                ticketResponse = await db.ReservationTicket.findAll({
+                    raw: true,
+                    where: {
+                        userID: id,
+                    }
+                })
+                if (ticketResponse) {
+                    for (let i = 0; i < ticketResponse.length; i++) {
+                        const projectResponse = await db.Project.findByPk(ticketResponse[i].projectID);
+                        ticketResponse[i].projectName = projectResponse.name;
+                    }
+                }
+            }
+            resolve({
+                err: (ticketResponse && ticketResponse.length !== 0) ? 0 : 1,
+                message: !userResponse ?
+                    `User (${id}) does not exist!`
+                    : ticketResponse.length === 0 ?
+                        `User (${id}) does not have any reservation ticket!`
+                        : `User (${id})'s tickets`,
+                data: ticketResponse.length !== 0 ? ticketResponse : null,
             })
         } catch (error) {
             console.log(error);

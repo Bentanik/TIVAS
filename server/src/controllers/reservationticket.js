@@ -46,3 +46,9 @@ export const getTimeSharePriority = async (req, res) => {
     const response = await services.getTimeSharePriority(userID);
     return res.status(200).json(response);
 }
+
+export const getUserTickets = async (req, res) => {
+    const { id } = req.params;
+    const response = await services.getUserTickets(id);
+    return res.status(200).json(response);
+}
