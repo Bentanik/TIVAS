@@ -460,7 +460,7 @@ function ListingDetails() {
                 <tr className={cx("listing-item")}>
                   <th className={cx("listing-dates")}>Listing 4368 result</th>
                   <th className={cx("listing-unit")}>Unit</th>
-                  <th className={cx("listing-sleep")}>Sleep</th>
+                  <th className={cx("listing-sleep")}>Sleeps</th>
                   <th className={cx("listing-date")}>
                     <span className={cx("show-for-medium-up")}>Dates</span>
                   </th>
