@@ -629,6 +629,65 @@ export const changeDate = ({
     })
 }
 
+export const openReservationTicket = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const message = [];
+            const dateNow = new Date().toDateString()
+            const check = await db.Project.findByPk(id)
+            if (check) {
+                // if(check.reservationDate !== dateNow){
+                //     message.push("not in the time to buy")
+                // }else{
+                await db.Project.update({
+                    status: 1,
+                }, {
+                    where: {
+                        id
+                    }
+                })
+                // Fetch records that need to be updated
+                const timeSharesToUpdate = await db.TimeShare.findAll({
+                    include: [
+                        {
+                            model: db.TypeRoom,
+                            required: true,
+                            include: {
+                                model: db.TypeOfProject,
+                                required: true,
+                                as: 'TypeOfProject',
+                                where: {
+                                    projectID: id,
+                                },
+                            },
+                        },
+                    ],
+                });
+
+                // Perform updates in memory
+                timeSharesToUpdate.forEach((timeShare) => {
+                    timeShare.saleStatus = 1;
+                });
+
+                // Save changes back to the database
+                await Promise.all(timeSharesToUpdate.map((timeShare) => timeShare.save()));
+                message.push("You can buy reservation ticket now")
+                // }
+            } else {
+                message.push("Can not buy reservation ticket now")
+
+            }
+            resolve({
+                err: check ? 0 : 1,
+                mess: check ? message[0] : message[0]
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
 export const openBooking = (id) => {
     return new Promise(async (resolve, reject) => {
         try {

@@ -35,12 +35,6 @@ export const createReservation = async(req, res) => {
     return res.status(200).json(response);
 }
 
-export const openReservationTicket = async (req,res) => {
-    const {id} = req.params
-    const response = await services.openReservationTicket(id)
-    return res.status(200).json(response)
-}
-
 export const checkPriority = async (req,res) => {
     const {id} = req.params
     const response = await services.checkPriority(id)

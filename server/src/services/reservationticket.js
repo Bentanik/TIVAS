@@ -190,7 +190,9 @@ export const createReservation = ({
                     code,
                 }
             })
+            const projectResponse = await db.ReservationTicket.findByPk(ticketResponse.projectID);
             const timeShareResponse = await db.TimeShare.findByPk(timeShareID);
+            if(projectResponse.status)
             if (userResponse && ticketResponse && timeShareResponse) {
                 const projectResponse = await db.Project.findOne({
                     include: {
@@ -327,65 +329,6 @@ export const createReservation = ({
 //     })
 // }
 
-export const openReservationTicket = (id) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const message = [];
-            const dateNow = new Date().toDateString()
-            const check = await db.Project.findByPk(id)
-            if (check) {
-                // if(check.reservationDate !== dateNow){
-                //     message.push("not in the time to buy")
-                // }else{
-                await db.Project.update({
-                    status: 1,
-                }, {
-                    where: {
-                        id
-                    }
-                })
-                // Fetch records that need to be updated
-                const timeSharesToUpdate = await db.TimeShare.findAll({
-                    include: [
-                        {
-                            model: db.TypeRoom,
-                            required: true,
-                            include: {
-                                model: db.TypeOfProject,
-                                required: true,
-                                as: 'TypeOfProject',
-                                where: {
-                                    projectID: id,
-                                },
-                            },
-                        },
-                    ],
-                });
-
-                // Perform updates in memory
-                timeSharesToUpdate.forEach((timeShare) => {
-                    timeShare.saleStatus = 1;
-                });
-
-                // Save changes back to the database
-                await Promise.all(timeSharesToUpdate.map((timeShare) => timeShare.save()));
-                message.push("You can buy reservation ticket now")
-                // }
-            } else {
-                message.push("Can not buy reservation ticket now")
-
-            }
-            resolve({
-                err: check ? 0 : 1,
-                mess: check ? message[0] : message[0]
-            })
-        } catch (error) {
-            console.log(error);
-            reject(error);
-        }
-    })
-}
-
 export const checkPriority = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -396,22 +339,51 @@ export const checkPriority = (id) => {
                     id
                 }
             })
+
+            // Fetch records that need to be updated
+            const timeSharesToUpdate = await db.TimeShare.findAll({
+                include: [
+                    {
+                        model: db.TypeRoom,
+                        required: true,
+                        include: {
+                            model: db.TypeOfProject,
+                            required: true,
+                            as: 'TypeOfProject',
+                            where: {
+                                projectID: id,
+                            },
+                        },
+                    },
+                ],
+            });
+
+            // Perform updates in memory
+            timeSharesToUpdate.forEach((timeShare) => {
+                timeShare.saleStatus = 0;
+            });
+
+            // Save changes back to the database
+            await Promise.all(timeSharesToUpdate.map((timeShare) => timeShare.save()));
+
             const ticketResponse = await db.ReservationTicket.findAll({
                 where: {
                     projectID: id,
                     timeShareID: {
                         [Op.ne]: null
                     },
-                    status: 1
+                    //status: 1
                 }
             })
             const result = Object.groupBy(ticketResponse, ({ timeShareID }) => timeShareID)
+            //console.log(result);
             let count = 0
             for (let properties in result) {
                 count = count + 1
             }
             for (let i = 0; i < count; i++) {
                 const quantityTimeshare = await db.TimeShare.findByPk(Object.getOwnPropertyNames(result)[i])
+                console.log(quantityTimeshare);
                 for (let x = 0; x < quantityTimeshare.quantity; x++) {
                     const timeshare = result[Object.getOwnPropertyNames(result)[i]][x]
                     if (timeshare) {
@@ -426,13 +398,13 @@ export const checkPriority = (id) => {
                         const ticket = await db.ReservationTicket.findByPk(result[Object.getOwnPropertyNames(result)[i]][x].dataValues.id);
                         const endDateDB = ticket.updatedAt;
                         endDateDB.setDate(endDateDB.getDate() + 1);
-                        await db.Booking.create({
-                            startDate: ticket.updatedAt,
-                            endDate: endDateDB,
-                            status: 0,
-                            priceBooking: 30,
-                            reservationTicketID: ticket.id,
-                        })
+                        // await db.Booking.create({
+                        //     startDate: ticket.updatedAt,
+                        //     endDate: endDateDB,
+                        //     status: 0,
+                        //     priceBooking: 30,
+                        //     reservationTicketID: ticket.id,
+                        // })
                         let transporter = nodemailer.createTransport({
                             service: "gmail",
                             auth: {
@@ -446,13 +418,13 @@ export const checkPriority = (id) => {
                             subject: "Confirm received email",
                             text: `Trung timeshare co timeshare Id: ${ticket.timeShareID}`
                         };
-                        transporter.sendMail(mailOptions, function (error, info) {
-                            if (error) {
-                                console.log(error);
-                            } else {
-                                console.log("Email sent: " + info.response);
-                            }
-                        });
+                        // transporter.sendMail(mailOptions, function (error, info) {
+                        //     if (error) {
+                        //         console.log(error);
+                        //     } else {
+                        //         console.log("Email sent: " + info.response);
+                        //     }
+                        // });
                     }
 
                 }
