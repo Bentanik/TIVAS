@@ -12,18 +12,22 @@ import {
 import storage from "redux-persist/lib/storage";
 import authReducer from "./authSlice";
 import FormRegisterReducer from "./formRegisterSlice";
+import forgotPasswordReducer from "./forgotPasswordSlice";
+import userReducer from "./userSlice";
 
 const persistConfig = {
   key: "root",
   version: 1,
   storage,
   whitelist: ["auth"],
-  blacklist: ["formRegister"],
+  blacklist: ["formRegister", "forgotPassword", "user"],
 };
 
 const rootReducer = combineReducers({
   auth: authReducer,
+  user: userReducer,
   formRegister: FormRegisterReducer,
+  forgotPassword: forgotPasswordReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
