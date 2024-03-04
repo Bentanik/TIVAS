@@ -19,6 +19,10 @@ module.exports = (sequelize, DataTypes) => {
             ReservationTicket.belongsTo(models.TimeShare, {
                 foreignKey: 'timeShareID',
             });
+            ReservationTicket.hasOne(models.Booking, {
+                foreignKey: 'reservationTicketID',
+                ondelete: 'cascade', hooks: true
+            });
             // define association here
         }
     }

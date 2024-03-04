@@ -167,7 +167,7 @@ export const getDetailsTimeShare = (id) => {
                 nest: true,
                 include: {
                     model: db.TypeRoom,
-                    attributes: ['name', 'bedrooms', 'persons', 'size', 'bedTypes', 'amenities', 'description'],
+                    attributes: ['name', 'bedrooms', 'bathrooms', 'persons', 'size', 'bedTypes', 'amenities', 'description'],
                     include: [
                         {
                             model: db.TypeOfProject,
@@ -175,7 +175,7 @@ export const getDetailsTimeShare = (id) => {
                             required: true,
                             include: {
                                 model: db.Project,
-                                attributes: ['name', 'description', 'location', 'features', 'attractions', 'reservationPrice', 'openDate', 'thumbnailPathUrl'],
+                                attributes: ['name', 'description', 'location', 'features', 'attractions', 'reservationPrice', 'openDate', 'status', 'thumbnailPathUrl'],
                                 include: {
                                     model: db.Image,
                                     attributes: ['pathUrl'],
@@ -200,6 +200,7 @@ export const getDetailsTimeShare = (id) => {
                 response.TypeRoom = {
                     name: timeShareResponse.TypeRoom.name,
                     bedrooms: timeShareResponse.TypeRoom.bedrooms,
+                    bathrooms: timeShareResponse.TypeRoom.bathrooms,
                     persons: timeShareResponse.TypeRoom.persons,
                     size: timeShareResponse.TypeRoom.size,
                     bedTypes: timeShareResponse.TypeRoom.bedTypes?.split(','),
@@ -215,6 +216,7 @@ export const getDetailsTimeShare = (id) => {
                     attraction: timeShareResponse.TypeRoom.TypeOfProject.Project.attractions?.split(','),
                     reservationPrice: timeShareResponse.TypeRoom.TypeOfProject.Project.reservationPrice,
                     openDate: timeShareResponse.TypeRoom.TypeOfProject.Project.openDate,
+                    status: timeShareResponse.TypeRoom.TypeOfProject.Project.status,
                     thumbnailPathUrl: timeShareResponse.TypeRoom.TypeOfProject.Project.thumbnailPathUrl,
                     images: timeShareResponse.TypeRoom.TypeOfProject.Project.Images,
                 };

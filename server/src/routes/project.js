@@ -52,5 +52,7 @@ router.get(
 )
 
 router.put("/changeOpenDate/:id",controllers.changeDate)
+router.put("/openReservationTicket/:id",controllers.openReservationTicket)
+router.put("/openBooking/:id",controllers.openBooking)
 
 export default router;

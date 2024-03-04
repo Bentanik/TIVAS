@@ -14,6 +14,9 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'bookingID',
         ondelete: 'cascade', hooks: true
       });
+      Booking.belongsTo(models.ReservationTicket ,{
+        foreignKey: 'reservationTicketID',
+      });
       // define association here
     }
   }
@@ -22,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     endDate: DataTypes.DATE,
     status: DataTypes.INTEGER,
     priceBooking: DataTypes.DOUBLE,
-    reservationID: DataTypes.INTEGER
+    reservationTicketID: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Booking',
