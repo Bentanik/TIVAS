@@ -500,6 +500,7 @@ export const getDetailsProject = (id) => {
                     features: projectResponse.features?.split(','),
                     attractions: projectResponse.attractions?.split(','),
                     saleStatus: projectResponse.saleStatus,
+                    status: projectResponse.status,
                     reservationPrice: projectResponse.reservationPrice,
                     openDate: projectResponse.openDate,
                     thumbnailPathUrl: projectResponse.thumbnailPathUrl,
@@ -705,11 +706,11 @@ export const openBooking = (id) => {
                         id
                     }
                 })
-                await db.ReservationTicket.destroy({
-                    where : {
-                        status : 0
-                    }
-                })
+                // await db.ReservationTicket.destroy({
+                //     where : {
+                //         status : 0
+                //     }
+                // })
                 message.push("This project is open now")
             // }
             }else { 

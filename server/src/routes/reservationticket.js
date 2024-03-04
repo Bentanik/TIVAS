@@ -11,4 +11,6 @@ router.post("/createReservation", controllers.createReservation)
 
 router.get("/getTimeSharePriority/:userID", controllers.getTimeSharePriority)
 
+router.get("/getUserTickets/:id",controllers.getUserTickets)
+
 export default router;
