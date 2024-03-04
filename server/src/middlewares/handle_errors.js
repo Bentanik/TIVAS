@@ -31,3 +31,11 @@ export const badRequest = (error, res) => {
     mess: err.message,
   });
 };
+
+export const internalServerError = (error, res) => {
+  const err = createErrors.InternalServerError(error);
+  return res.status(err.status).json({
+    err: 1,
+    mess: err.message,
+  });
+};

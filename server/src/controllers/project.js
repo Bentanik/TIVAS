@@ -4,23 +4,78 @@ import * as services from "../services";
 import { response } from "express";
 const cloudinary = require("cloudinary").v2;
 
+const isValidDate = (dateString) => {
+  const parts = dateString.split('/');
+  const day = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10) - 1;
+  const year = parseInt(parts[2], 10);
+
+  const date = new Date(year, month, day);
+  console.log(date);
+  return (
+    date.getDate() === day &&
+    date.getMonth() === month &&
+    date.getFullYear() === year
+  )
+}
+
+const deleteProjectImage = (fileData) => {
+  if (fileData.thumbnail) {
+    for (let i = 0; i < fileData.thumbnail.length; i++) {
+      cloudinary.uploader.destroy(fileData.thumbnail[i].filename);
+    }
+  }
+  if (fileData.images) {
+    for (let i = 0; i < fileData.images.length; i++) {
+      cloudinary.uploader.destroy(fileData.images[i].filename);
+    }
+  }
+}
+
 //Create New Project
 export const createNewProject = async (req, res) => {
-  const { name, description, buildingStatus} = req.body;
-  if (!name || !description || !buildingStatus) {
-    if (req.file) {
-      cloudinary.uploader.destroy(req.file.filename);
+  try {
+    const { name, description, buildingStatus, location, reservationDate, reservationPrice, openDate, closeDate } = req.body;
+    if (!name || !description || !buildingStatus || !location || !reservationDate || !reservationPrice || !openDate || !closeDate) {
+      if (req.files) {
+        deleteProjectImage(req.files);
+      }
+      return missValue("Missing value!", res);
     }
-    return missValue("Missing value!", res);
-  }
-  if (!/^\d+$/.test(buildingStatus)) {
-    if (req.file) {
-      cloudinary.uploader.destroy(req.file.filename);
+    const dateRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+    if (!dateRegex.test(openDate) || !dateRegex.test(reservationDate) || !dateRegex.test(closeDate)) {
+      return badRequest("Open Date, Reservation Date, Close Date must be like (dd/mm/yyyy) format!", res);
     }
-    return badRequest("Building Status is require an INTEGER!", res);
+    if (!isValidDate(openDate) || !isValidDate(reservationDate) || !isValidDate(closeDate)) {
+      return badRequest("Open Date, Reservation Date, Close Date must be a valid date!", res)
+    }
+    if (!/^\d+$/.test(buildingStatus)) {
+      if (req.files) {
+        deleteProjectImage(req.files);
+      }
+      return badRequest("Building Status is required an INTEGER!", res);
+    }
+    if (!/\b\d+(\.\d+)?\b/g.test(reservationPrice)) {
+      if (req.files) {
+        deleteProjectImage(req.files);
+      }
+      return badRequest("Reservation Price is required a NUMBER!", res);
+    }
+    if (reservationPrice <= 0) {
+      if (req.files) {
+        deleteProjectImage(req.files);
+      }
+      return badRequest("Reservation Price must be higher than 0!")
+    }
+    const response = await services.createNewProject(req.body, req.files);
+    return res.status(200).json(response);
+  } catch (error) {
+    if (req.files) {
+      deleteProjectImage(req.files)
+    }
+    console.log(error);
   }
-  const response = await services.createNewProject(req.body, req.file);
-  return res.status(200).json(response);
+
 };
 //Delete Project
 export const deleteProjects = async (req, res) => {
@@ -31,7 +86,39 @@ export const deleteProjects = async (req, res) => {
 //Update Project
 export const updateProjects = async (req, res) => {
   const { id } = req.params;
-  const response = await services.updateProject(req.body, id, req.file);
+  const { name, description, buildingStatus, location, reservationDate, reservationPrice, openDate, closeDate } = req.body;
+  if (!name || !description || !buildingStatus || !location || !reservationDate || !reservationPrice || !/^\d+$/.test(id) || !openDate || !closeDate) {
+    if (req.files) {
+      deleteProjectImage(req.files);
+    }
+    return missValue("Missing value!", res);
+  }
+  const dateRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+  if (!dateRegex.test(openDate) || !dateRegex.test(reservationDate) || !dateRegex.test(closeDate)) {
+    return badRequest("Open Date, Reservation Date, Close Date must be like (dd/mm/yyyy) format!", res);
+  }
+  if (!isValidDate(openDate) || !isValidDate(reservationDate) || !isValidDate(closeDate)) {
+    return badRequest("Open Date, Reservation Date, Close Date must be a valid date!", res)
+  }
+  if (!/^\d+$/.test(buildingStatus)) {
+    if (req.files) {
+      deleteProjectImage(req.files);
+    }
+    return badRequest("Building Status is required an INTEGER!", res);
+  }
+  if (!/\b\d+(\.\d+)?\b/g.test(reservationPrice)) {
+    if (req.files) {
+      deleteProjectImage(req.files);
+    }
+    return badRequest("Reservation Price is required a NUMBER!", res);
+  }
+  if (reservationPrice <= 0) {
+    if (req.files) {
+      deleteProjectImage(req.files);
+    }
+    return badRequest("Reservation Price must be higher than 0!")
+  }
+  const response = await services.updateProject(req.body, id, req.files);
   return res.status(200).json(response);
 };
 //Get All Project
@@ -46,6 +133,12 @@ export const searchProject = async (req, res) => {
   return res.status(200).json(response);
 }
 
+export const searchNameAndLocationProject = async (req, res) => {
+  const { info, limit } = req.params;
+  const response = await services.searchNameAndLocationProject(info, limit);
+  return res.status(200).json(response);
+}
+
 //Get Top 10 New Projects
 export const getTop10 = async (req, res) => {
   const response = await services.getTop10();
@@ -54,7 +147,25 @@ export const getTop10 = async (req, res) => {
 
 //Get Project Details
 export const getDetailsProject = async (req, res) => {
-  const response = await services.getDetailsProject(req.params);
+  const { id } = req.params;
+  const response = await services.getDetailsProject(id);
   return res.status(200).json(response);
 }
 
+export const changeDate = async (req,res) => {
+  const {id} = req.params
+  const response = await services.changeDate(req.body,id);
+  return res.status(200).json(response);
+}
+
+export const openReservationTicket = async (req,res) => {
+  const {id} = req.params
+  const response = await services.openReservationTicket(id)
+  return res.status(200).json(response)
+}
+
+export const openBooking = async (req,res) => {
+  const {id} = req.params
+  const response = await services.openBooking(id)
+  return res.status(200).json(response)
+}

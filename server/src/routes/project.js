@@ -5,17 +5,40 @@ const router = express.Router();
 
 router.post(
   "/create",
-  uploadCloud.array('thumbnail'),
+  uploadCloud.fields([
+    {
+      name: 'thumbnail', maxCount: 1
+    },
+    {
+      name: 'images'
+    },
+  ]),
   controllers.createNewProject
-);
+)
 router.get("/getAll",controllers.getAllProject)
 router.delete("/delete/:id",controllers.deleteProjects)
-router.put("/update/:id",uploadCloud.single('thumbnail'),controllers.updateProjects)
+router.put(
+  "/update/:id",
+  uploadCloud.fields([
+    {
+      name: 'thumbnail', maxCount: 1
+    },
+    {
+      name: 'images',
+    },
+  ]),
+  controllers.updateProjects
+)
 
 
 router.get(
   "/search",
   controllers.searchProject
+)
+
+router.get(
+  "/searchNameAndLocationProject/:info/:limit",
+  controllers.searchNameAndLocationProject,
 )
 
 router.get(
@@ -27,5 +50,9 @@ router.get(
   "/:id",
   controllers.getDetailsProject
 )
+
+router.put("/changeOpenDate/:id",controllers.changeDate)
+router.put("/openReservationTicket/:id",controllers.openReservationTicket)
+router.put("/openBooking/:id",controllers.openBooking)
 
 export default router;

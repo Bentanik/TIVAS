@@ -44,3 +44,15 @@ export const loginGoogle = (axiosInstance, form) => {
 export const registerGoogle = (axiosInstance, form) => {
   return axiosInstance.post("/api/v1/auth/registergoogle", form);
 };
+
+export const sendMailForgotPassword = (axiosInstance, form) => {
+  return axiosInstance.post("/api/v1/auth/sendmailforgotpassword", form);
+};
+
+export const forgotPassword = (axiosInstance, form) => {
+  return axiosInstance.post("/api/v1/auth/resetpassword", form);
+};
+
+export const resetPasswordByEmail = (axiosInstance, form) => {
+  return axiosInstance.post("/api/v1/auth/resetpasswordbyemail", form);
+};
