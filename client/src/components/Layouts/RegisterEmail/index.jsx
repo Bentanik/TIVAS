@@ -29,8 +29,8 @@ function RegisterEmail({ handleAccessLogin }) {
     await registerByEmail(dispatch, axiosInstance, { email, otp });
   };
 
-  const handleSendCodeEmail = () => {
-    sendMail(dispatch, axiosInstance, { email });
+  const handleSendCodeEmail = async () => {
+    await sendMail(dispatch, axiosInstance, { email });
   };
 
   useEffect(() => {
@@ -75,7 +75,7 @@ function RegisterEmail({ handleAccessLogin }) {
                 type="text"
                 value={otp}
                 setValue={setOtp}
-                placeholder="Enter 6-digit code *"
+                placeholder="Enter 4-digit code *"
               />
               <div
                 className={cx("action", {

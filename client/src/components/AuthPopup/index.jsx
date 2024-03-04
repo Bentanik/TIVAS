@@ -1,9 +1,17 @@
 import classNames from "classnames/bind";
 import styles from "./Popup.module.scss";
+import { useEffect, useRef } from "react";
 
 const cx = classNames.bind(styles);
 
-function Popup({ trigger, children, onClose, onPrevious, status = 0 }) {
+function Popup({
+  trigger,
+  children,
+  onClose,
+  onPrevious,
+  status = 0,
+}) {
+
   return trigger ? (
     <div className={cx("popup-wrapper")}>
       <div className={cx("popup-inner")}>
