@@ -1,9 +1,26 @@
 import db, { Sequelize } from "../models";
-const cloudinary = require('cloudinary').v2;
+const cloudinary = require("cloudinary").v2;
 import "dotenv/config";
 import { Model, Op, fn, col, literal, where } from "sequelize";
 const nodemailer = require("nodemailer");
 
+export const paymentReservation = (username) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const res = await db.User.findOne({
+        where: { username },
+        raw: true,
+      });
+      resolve({
+        err: res ? 0 : 1,
+        mess: res ? "Successfully" : "Faile",
+        data: res ? res : null,
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
 
 export const createTicket = ({
     userID,
@@ -52,7 +69,7 @@ export const createTicket = ({
             else {
                 Message.push(`Project (${projectID}) is not open for buying Reservation Ticket!`);
             }
-
+ 
             // const [ticket,created] = await db.ReservationTicket.findOrCreate({
             //     where : { code : 1 },
             //     default : {
@@ -62,7 +79,7 @@ export const createTicket = ({
             //         projectID
             //     }
             // })
-
+ 
             resolve({
                 err: check ? 0 : 1,
                 mess: check ? Message[0] : Message[0],
@@ -77,7 +94,7 @@ export const createTicket = ({
         }
     })
 }
-
+ 
 // export const activeTicket = (id) => {
 //     return new Promise(async (resolve, reject) => {
 //         try {
@@ -130,7 +147,7 @@ export const createTicket = ({
 //         }
 //     })
 // }
-
+ 
 // export const checkTicket = ({
 //     code,
 //     userID
@@ -177,7 +194,7 @@ export const createTicket = ({
 //         }
 //     });
 // }
-
+ 
 //1 nguoi ap 1 code cho 1 TimeShare
 export const createReservation = ({
     code,
@@ -228,7 +245,7 @@ export const createReservation = ({
                             }
                         })
                         if (userTicketResponse) {
-
+ 
                             ticketDuplicated = await db.ReservationTicket.findOne({
                                 where: {
                                     code,
@@ -257,7 +274,7 @@ export const createReservation = ({
                     }
                 }
             }
-
+ 
             resolve({
                 err: reservationResponse ? 0 : 1,
                 message: !userResponse ?
@@ -287,8 +304,8 @@ export const createReservation = ({
         }
     })
 }
-
-
+ 
+ 
 //1 nguoi ap 2 code cho 1 TimeShare
 // export const createReservation = ({
 //     code,
@@ -338,7 +355,7 @@ export const createReservation = ({
 //         }
 //     })
 // }
-
+ 
 export const checkPriority = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -349,7 +366,7 @@ export const checkPriority = (id) => {
                     id
                 }
             })
-
+ 
             // Fetch records that need to be updated
             const timeSharesToUpdate = await db.TimeShare.findAll({
                 include: [
@@ -367,15 +384,15 @@ export const checkPriority = (id) => {
                     },
                 ],
             });
-
+ 
             // Perform updates in memory
             timeSharesToUpdate.forEach((timeShare) => {
                 timeShare.saleStatus = 0;
             });
-
+ 
             // Save changes back to the database
             await Promise.all(timeSharesToUpdate.map((timeShare) => timeShare.save()));
-
+ 
             const ticketResponse = await db.ReservationTicket.findAll({
                 where: {
                     projectID: id,
@@ -443,7 +460,7 @@ export const checkPriority = (id) => {
                             }
                         });
                     }
-
+ 
                 }
             }
             // const {count , rows} = await db.ReservationTicket.findAndCountAll({
@@ -451,7 +468,7 @@ export const checkPriority = (id) => {
             //         status : 2
             //     }
             // })
-
+ 
             resolve({
                 err: (ticketResponse && ticketResponse.length !== 0) ? 0 : 1,
                 mess: (ticketResponse && ticketResponse.length !== 0) ? "Success" : "Fail (No ReservationTickets to check in DB)"
@@ -462,7 +479,7 @@ export const checkPriority = (id) => {
         }
     })
 }
-
+ 
 export const getTimeSharePriority = (userID) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -517,7 +534,7 @@ export const getTimeSharePriority = (userID) => {
         }
     })
 }
-
+ 
 export const getUserTickets = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
