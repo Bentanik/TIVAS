@@ -73,7 +73,7 @@ function RoomType({ data }) {
                       src={images.bathIcon}
                       alt="Locate Icon"
                     />
-                    <div className={cx("text")}>{data.bedrooms} Bathrooms</div>
+                    <div className={cx("text")}>{data.bathrooms} Bathrooms</div>
                   </div>
                   <div className={cx("kitchen", "row")}>
                     <img
