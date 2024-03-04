@@ -8,6 +8,7 @@ import AdminCreateProject from "~/pages/AdminCreateProject";
 import ProfileLayout from "~/pages/ProfileLayout";
 import Profile from "~/components/Layouts/Profile";
 import RoomTypeDetail from "~/components/RoomTypeDetail";
+import Banking from "~/components/Layouts/Banking";
 
 const routes = [
     {
@@ -28,7 +29,7 @@ const routes = [
     },
 
     {
-        path: "/project-detail",
+        path: "/projectdetail/:id",
         component: ProjectDetail,
         layout: null,
     },
@@ -63,10 +64,16 @@ const routes = [
         layout: ProfileLayout,
     },
     {
+        path: "/user/account/banking",
+        component: Banking,
+        layout: ProfileLayout,
+    },
+    {
         path: "/room-type-detail",
         component: RoomTypeDetail,
         layout: null,
     },
+    
 ];
 
 export default routes;
