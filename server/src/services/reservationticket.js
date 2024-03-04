@@ -382,7 +382,7 @@ export const checkPriority = (id) => {
                     timeShareID: {
                         [Op.ne]: null
                     },
-                    //status: 1
+                    status: 1
                 }
             })
             const result = Object.groupBy(ticketResponse, ({ timeShareID }) => timeShareID)
@@ -412,14 +412,15 @@ export const checkPriority = (id) => {
                         const user = await db.User.findByPk(timeshare.userID)
                         const ticket = await db.ReservationTicket.findByPk(result[Object.getOwnPropertyNames(result)[i]][x].dataValues.id);
                         const endDateDB = ticket.updatedAt;
-                        endDateDB.setDate(endDateDB.getDate() + 1);
-                        // await db.Booking.create({
-                        //     startDate: ticket.updatedAt,
-                        //     endDate: endDateDB,
-                        //     status: 0,
-                        //     priceBooking: 30,
-                        //     reservationTicketID: ticket.id,
-                        // })
+                        endDateDB.setDate(endDateDB.getDate() + 7);
+                        console.log(endDateDB);
+                        await db.Booking.create({
+                            startDate: ticket.updatedAt,
+                            endDate: endDateDB,
+                            status: 0,
+                            priceBooking: 30,
+                            reservationTicketID: ticket.id,
+                        })
                         let transporter = nodemailer.createTransport({
                             service: "gmail",
                             auth: {
@@ -433,13 +434,13 @@ export const checkPriority = (id) => {
                             subject: "Confirm received email",
                             text: `Trung timeshare co timeshare Id: ${ticket.timeShareID}`
                         };
-                        // transporter.sendMail(mailOptions, function (error, info) {
-                        //     if (error) {
-                        //         console.log(error);
-                        //     } else {
-                        //         console.log("Email sent: " + info.response);
-                        //     }
-                        // });
+                        transporter.sendMail(mailOptions, function (error, info) {
+                            if (error) {
+                                console.log(error);
+                            } else {
+                                console.log("Email sent: " + info.response);
+                            }
+                        });
                     }
 
                 }
