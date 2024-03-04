@@ -418,7 +418,7 @@ export const checkPriority = (id) => {
                             startDate: ticket.updatedAt,
                             endDate: endDateDB,
                             status: 0,
-                            priceBooking: 30,
+                            priceBooking: 35000000,
                             reservationTicketID: ticket.id,
                         })
                         let transporter = nodemailer.createTransport({
