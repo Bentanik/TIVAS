@@ -7,6 +7,7 @@ import Sidebar from "~/components/Sidebar";
 const cx = classNames.bind(styles);
 
 function ProfileLayout({children}) {
+
   return (
     <div className={cx("profile-wrapper")}>
       {/* Header */}
