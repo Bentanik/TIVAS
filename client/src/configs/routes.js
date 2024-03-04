@@ -1,5 +1,9 @@
 import Home from "~/pages/Home";
 import Search from "~/pages/Search";
+import Listing from "~/pages/Listing";
+import ListingDetails from "~/pages/ListingDetails";
+import TimeshareRentals from "~/pages/TimeshareRentals";
+import Policy from "~/pages/Policy";
 import Destination from "~/pages/Destination";
 import ProjectDetail from "~/pages/ProjectDetail";
 import LayoutAdmin from "~/pages/LayoutAdmin";
@@ -13,6 +17,7 @@ import AdminManageUser from "~/pages/AdminManageUser";
 import AdminUserBanList from "~/pages/AdminUserBanList";
 import AdminManageProject from "~/pages/AdminManageProject";
 import AdminProjectDetail from "~/pages/AdminProjectDetail";
+import Banking from "~/components/Layouts/Banking";
 
 const routes = [
     {
@@ -33,7 +38,7 @@ const routes = [
     },
 
     {
-        path: "/project-detail",
+        path: "/projectdetail/:id",
         component: ProjectDetail,
         layout: null,
     },
@@ -96,8 +101,33 @@ const routes = [
         layout: ProfileLayout,
     },
     {
+        path: "/user/account/banking",
+        component: Banking,
+        layout: ProfileLayout,
+    },
+    {
         path: "/room-type-detail",
         component: RoomTypeDetail,
+        layout: null,
+    },
+    {
+        path: "/listing",
+        component: Listing,
+        layout: null,
+    },
+    {
+        path: "/listingdetails",
+        component: ListingDetails,
+        layout: null,
+    },
+    {
+        path: "/timesharerentals",
+        component: TimeshareRentals,
+        layout: null,
+    },
+    {
+        path: "/policy",
+        component: Policy,
         layout: null,
     },
 ];

@@ -16,6 +16,13 @@ module.exports = (sequelize, DataTypes) => {
             ReservationTicket.belongsTo(models.Project, {
                 foreignKey: 'projectID',
             });
+            ReservationTicket.belongsTo(models.TimeShare, {
+                foreignKey: 'timeShareID',
+            });
+            ReservationTicket.hasOne(models.Booking, {
+                foreignKey: 'reservationTicketID',
+                ondelete: 'cascade', hooks: true
+            });
             // define association here
         }
     }
@@ -23,7 +30,8 @@ module.exports = (sequelize, DataTypes) => {
         code: DataTypes.STRING,
         status: DataTypes.INTEGER,
         userID: DataTypes.INTEGER,
-        projectID: DataTypes.INTEGER
+        projectID: DataTypes.INTEGER,
+        timeShareID: DataTypes.INTEGER,
     }, {
         sequelize,
         modelName: 'ReservationTicket',

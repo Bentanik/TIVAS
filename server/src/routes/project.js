@@ -37,6 +37,11 @@ router.get(
 )
 
 router.get(
+  "/searchNameAndLocationProject/:info/:limit",
+  controllers.searchNameAndLocationProject,
+)
+
+router.get(
   "/top10",
   controllers.getTop10
 )
@@ -45,5 +50,9 @@ router.get(
   "/:id",
   controllers.getDetailsProject
 )
+
+router.put("/changeOpenDate/:id",controllers.changeDate)
+router.put("/openReservationTicket/:id",controllers.openReservationTicket)
+router.put("/openBooking/:id",controllers.openBooking)
 
 export default router;

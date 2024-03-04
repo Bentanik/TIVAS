@@ -27,26 +27,26 @@ const deleteTypeRoomImage = (fileData) => {
 export const createNewTypeRoom = async (req, res) => {
   try {
     const { projectID } = req.params;
-    const { name, bedrooms, persons, description, type, quantity, size, bedTypes } = req.body;
-    if (!name || !bedrooms || !persons || !description || (!/^\d+$/.test(projectID)) || !type || !size || !bedTypes || !quantity) {
+    const { name, bedrooms, bathrooms, persons, description, type, quantity, size, bedTypes } = req.body;
+    if (!name || !bedrooms || !bathrooms || !persons || !description || (!/^\d+$/.test(projectID)) || !type || !size || !bedTypes || !quantity) {
       if (req.files) {
         deleteTypeRoomImage(req.files);
       }
       return missValue("Missing value!", res);
     }
-    if ((!/^\d+$/.test(bedrooms)) || (!/^\d+$/.test(persons)) || (!/^\d+$/.test(quantity))) {
+    if ((!/^\d+$/.test(bedrooms)) || (!/^\d+$/.test(bathrooms)) || (!/^\d+$/.test(persons)) || (!/^\d+$/.test(quantity))) {
       if (req.files) {
         deleteTypeRoomImage(req.files);
       }
-      return badRequest("bedrooms, persons, quantity are required an INTEGER!", res);
+      return badRequest("bedrooms, bathrooms, persons, quantity are required an INTEGER!", res);
     }
-    if(!/\b\d+(\.\d+)?\b/g.test(size)){
-      if(req.files) {
+    if (!/\b\d+(\.\d+)?\b/g.test(size)) {
+      if (req.files) {
         deleteProjectImage(req.files);
       }
       return badRequest("Size is required a NUMBER!", res);
     }
-    if(bedrooms < 0 || persons < 0 || quantity < 0 || size < 0){
+    if (bedrooms < 0 || bathrooms < 0 || persons < 0 || quantity < 0 || size < 0) {
       return badRequest("bedrooms, persons, quantity, size must be higher than 0!", res)
     }
 
@@ -73,18 +73,18 @@ export const createNewTypeRoom = async (req, res) => {
 export const updateTypeRoom = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, bedrooms, persons, description, imagesDeleted, size, bedTypes, } = req.body;
-    if (!name || !bedrooms || !persons || !description || (!/^\d+$/.test(id)) || !size || !bedTypes) {
+    const { name, bedrooms, bathrooms, persons, description, imagesDeleted, size, bedTypes, } = req.body;
+    if (!name || !bedrooms || !bathrooms || !persons || !description || (!/^\d+$/.test(id)) || !size || !bedTypes) {
       if (req.files) {
         deleteTypeRoomImage(req.files);
       }
       return missValue("Missing value!", res);
     }
-    if ((!/^\d+$/.test(bedrooms)) || (!/^\d+$/.test(persons))) {
+    if ((!/^\d+$/.test(bedrooms)) || (!/^\d+$/.test(bathrooms)) || (!/^\d+$/.test(persons))) {
       if (req.files) {
         deleteTypeRoomImage(req.files);
       }
-      return badRequest("bedrooms, persons, quantity are required an INTEGER!", res);
+      return badRequest("bedrooms, bathrooms, persons, quantity are required an INTEGER!", res);
     }
     if(!/\b\d+(\.\d+)?\b/g.test(size)){
       if(req.files) {
@@ -92,8 +92,8 @@ export const updateTypeRoom = async (req, res) => {
       }
       return badRequest("Size is required a NUMBER!", res);
     }
-    if(bedrooms < 0 || persons < 0 || size < 0){
-      return badRequest("bedrooms, persons, size must be higher than 0!", res)
+    if(bedrooms < 0 || bathrooms < 0 || persons < 0 || size < 0){
+      return badRequest("bedrooms, bathrooms, persons, size must be higher than 0!", res)
     }
     if (imagesDeleted) {
       let imagesDeletedArray = imagesDeleted.split(',');
@@ -123,7 +123,7 @@ export const updateTypeRoom = async (req, res) => {
   // return res.status(200).json(response);
 };
 
-export const deleteTypeRoom = async(req, res) => {
+export const deleteTypeRoom = async (req, res) => {
   try {
     const { id } = req.params;
     const response = await services.deleteTypeRoom(id);
@@ -134,9 +134,9 @@ export const deleteTypeRoom = async(req, res) => {
   }
 }
 
-export const getAllTypeRoom = async(req, res) => {
+export const getAllTypeRoom = async (req, res) => {
   try {
-    const {projectID} = req.params
+    const { projectID } = req.params
     const response = await services.getAllTypeRoom(projectID, req.query);
     return res.status(200).json(response);
   } catch (error) {
@@ -145,9 +145,12 @@ export const getAllTypeRoom = async(req, res) => {
   }
 }
 
-export const getDetailsTypeRoom = async(req, res) => {
+export const getDetailsTypeRoom = async (req, res) => {
   try {
     const { id } = req.params;
+    if (!/^\d+$/.test(id)) {
+      return badRequest("projectID is required an INTEGER!", res);
+    }
     const response = await services.getDetailsTypeRoom(id);
     return res.status(200).json(response);
   } catch (error) {

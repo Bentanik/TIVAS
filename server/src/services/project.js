@@ -3,6 +3,7 @@ const cloudinary = require('cloudinary').v2;
 import "dotenv/config";
 import { Model, Op, fn, col, literal } from "sequelize";
 import { pagination } from "../middlewares/pagination";
+const nodemailer = require("nodemailer");
 
 const convertDate = (dateString) => {
     const parts = dateString.split('/');
@@ -35,12 +36,16 @@ export const createNewProject = ({
     type,
     features,
     attractions,
+    reservationDate,
     reservationPrice,
     openDate,
+    closeDate,
 }, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
             const openDateDB = convertDate(openDate);
+            const reservationDateDB = convertDate(reservationDate);
+            const closeDateDB = convertDate(closeDate);
             let typeInDBError = 0;
             const imageProjectArray = [];
             const typeErrorMessage = [];
@@ -68,9 +73,11 @@ export const createNewProject = ({
                         buildingStatus,
                         features,
                         attractions,
-                        saleStatus: 0,
+                        status: 0,
+                        reservationDate: reservationDateDB,
                         reservationPrice,
                         openDate: openDateDB,
+                        closeDate: closeDateDB,
                         thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : null,
                         thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : null,
                     },
@@ -123,13 +130,17 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
             const queries = pagination({ page, limit, orderType, orderBy });
             //queries.raw = true;
             const response = await db.Project.findAll({
-                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'features', 'attractions'],
+                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'status', 'buildingStatus', 'reservationDate', 'reservationPrice', 'openDate', 'closeDate', 'features', 'attractions'],
                 ...queries,
             })
             if (response) {
                 for (let i = 0; i < response.length; i++) {
-                    response[i].features = response[i].features.split(',');
-                    response[i].attractions = response[i].attractions.split(',');
+                    if (response[i].features) {
+                        response[i].features = response[i].features.split(',');
+                    }
+                    if (response[i].attractions) {
+                        response[i].attractions = response[i].attractions.split(',');
+                    }
                 }
             }
             resolve({
@@ -182,82 +193,102 @@ export const updateProject = ({
     buildingStatus,
     features,
     attractions,
+    reservationDate,
     thumbnailDeleted,
     imagesDeleted,
     reservationPrice,
     openDate,
+    closeDate
 }, id, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
+            let nameDuplicated;
             const openDateDB = convertDate(openDate);
+            const reservationDateDB = convertDate(reservationDate);
+            const closeDateDB = convertDate(closeDate);
             let imageErrorMessage = [];
             const imageProjectArray = [];
             //Check TypeRoom is existed in DB
             let projectResult = await db.Project.findByPk(id);
             if (projectResult) {
-                //Delete images
-                if (imagesDeleted) {
-                    imagesDeleted = imagesDeleted.split(',');
-                    await Promise.all(imagesDeleted.map(async (image) => {
-                        const imageResult = await db.Image.findByPk(image);
-                        if (imageResult) {
-                            cloudinary.uploader.destroy(imageResult.pathName);
-                            await db.Image.destroy({
-                                where: {
-                                    id: image
-                                }
-                            });
-
+                if(projectResult.name !== name){
+                    nameDuplicated = await db.Project.findOne({
+                        where: {
+                            name
                         }
-                        else {
-                            imageErrorMessage.push(`(${image})`);
-                        }
-                    }));
+                    })
                 }
+                if (!nameDuplicated) {
+                    //Delete images
+                    if (imagesDeleted) {
+                        imagesDeleted = imagesDeleted.split(',');
+                        await Promise.all(imagesDeleted.map(async (image) => {
+                            const imageResult = await db.Image.findByPk(image);
+                            if (imageResult) {
+                                cloudinary.uploader.destroy(imageResult.pathName);
+                                await db.Image.destroy({
+                                    where: {
+                                        id: image
+                                    }
+                                });
 
-                //Delete or Update thumbnail
-                if ((parseInt(thumbnailDeleted) === 1) || fileData.thumbnail) {
-                    cloudinary.uploader.destroy(projectResult.thumbnailPathName);
-                }
-
-                //Update
-                await db.Project.update({
-                    name,
-                    description,
-                    location,
-                    buildingStatus,
-                    features,
-                    attractions,
-                    reservationPrice,
-                    openDate: openDateDB,
-                    thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathUrl,
-                    thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathName,
-                }, {
-                    where: {
-                        id: id,
+                            }
+                            else {
+                                imageErrorMessage.push(`(${image})`);
+                            }
+                        }));
                     }
-                })
 
-                //Import images to imageTable
-                if (fileData.images) {
-                    for (let i = 0; i < fileData.images.length; i++) {
-                        const image = {
-                            pathUrl: fileData.images[i].path,
-                            pathName: fileData.images[i].filename,
-                            projectID: id
-                        }
-                        imageProjectArray.push(image);
+                    //Delete or Update thumbnail
+                    if ((parseInt(thumbnailDeleted) === 1) || fileData.thumbnail) {
+                        cloudinary.uploader.destroy(projectResult.thumbnailPathName);
                     }
-                    await db.Image.bulkCreate(imageProjectArray);
-                }
 
-                if (!projectResult && fileData) {
-                    deleteProjectImage(fileData);
+                    //Update
+                    await db.Project.update({
+                        name,
+                        description,
+                        location,
+                        buildingStatus,
+                        features,
+                        attractions,
+                        reservationDate: reservationDateDB,
+                        reservationPrice,
+                        openDate: openDateDB,
+                        closeDate: closeDateDB,
+                        thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathUrl,
+                        thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathName,
+                    }, {
+                        where: {
+                            id: id,
+                        }
+                    })
+
+                    //Import images to imageTable
+                    if (fileData.images) {
+                        for (let i = 0; i < fileData.images.length; i++) {
+                            const image = {
+                                pathUrl: fileData.images[i].path,
+                                pathName: fileData.images[i].filename,
+                                projectID: id
+                            }
+                            imageProjectArray.push(image);
+                        }
+                        await db.Image.bulkCreate(imageProjectArray);
+                    }
+
+                    if (!projectResult && fileData) {
+                        deleteProjectImage(fileData);
+                    }
                 }
             }
             resolve({
-                err: projectResult ? 0 : 1,
-                message: projectResult ? 'Update Successfully.' : `Can not find Project with id: (${id})`,
+                err: !nameDuplicated ? 0 : 1,
+                message: !projectResult ?
+                    `Can not find Project with id: (${id})`
+                    : nameDuplicated ?
+                        'Project Name has been used!'
+                        : 'Update Successfully.',
                 messageImage: imageErrorMessage.length !== 0 ? `Can not find Image: ${imageErrorMessage.join(',')}` : null,
             });
         } catch (error) {
@@ -290,7 +321,7 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
             // queries.raw = true;
             const response = await db.Project.findAll({
                 where: whereClause,
-                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'features', 'attractions'],
+                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'status', 'buildingStatus', 'reservationDate', 'reservationPrice', 'openDate', 'closeDate', 'closeDate', 'features', 'attractions'],
                 include: [
                     {
                         model: db.TypeOfProject,
@@ -316,8 +347,12 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
             });
             if (response) {
                 for (let i = 0; i < response.length; i++) {
-                    response[i].features = response[i].features.split(',');
-                    response[i].attractions = response[i].attractions.split(',');
+                    if (response[i].features) {
+                        response[i].features = response[i].features.split(',');
+                    }
+                    if (response[i].attractions) {
+                        response[i].attractions = response[i].attractions.split(',');
+                    }
                 }
             }
             resolve({
@@ -334,18 +369,71 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
     })
 }
 
+export const searchNameAndLocationProject = (info, limit) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            console.log(limit);
+            let limitDB;
+            if((/^\d+$/.test(limit))){
+                limitDB = parseInt(limit)
+            }else{
+                limitDB = 3
+            }
+            let response = {};
+            const bestMatch = await db.Project.findAll({
+                attributes: ['id', 'name', 'location', 'status', 'buildingStatus', 'reservationDate', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'closeDate', 'features', 'attractions'],
+                where: {
+                    name: { [Op.substring]: info },
+                    location: { [Op.substring]: info}
+                },
+                limit: limitDB,
+            })
+            const projectByNameResponse = await db.Project.findAll({
+                attributes: ['id', 'name', 'location', 'status', 'buildingStatus', 'reservationDate', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'closeDate', 'features', 'attractions'],
+                where: {
+                    name: { [Op.substring]: info }
+                },
+                limit: limitDB,
+            })
+
+            const projectByLocationResponse = await db.Project.findAll({
+                attributes: ['id', 'name', 'location', 'status', 'buildingStatus', 'reservationDate', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'closeDate', 'features', 'attractions'],
+                where: {
+                    location: { [Op.substring]: info}
+                },
+                limit: limitDB,
+            })
+            response.bestMatch = bestMatch
+            response.ProjectName = projectByNameResponse;
+            response.ProjectLocation = projectByLocationResponse;
+            resolve({
+                err: response ? 0 : 1,
+                message: response ? 'Search Projects Results' : 'Can not find any Project!',
+                data: response ? response : null,
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
 export const getTop10 = () => {
     return new Promise(async (resolve, reject) => {
         try {
             const response = await db.Project.findAll({
-                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'createdAt', 'reservationPrice', 'openDate', 'features', 'attractions'],
+                attributes: ['id', 'name', 'location', 'status', 'buildingStatus', 'reservationDate', 'thumbnailPathUrl', 'createdAt', 'reservationPrice', 'openDate', 'closeDate', 'features', 'attractions'],
                 limit: 10,
                 order: [['createdAt', 'DESC']],
             })
             if (response) {
                 for (let i = 0; i < response.length; i++) {
-                    response[i].features = response[i].features.split(',');
-                    response[i].attractions = response[i].attractions.split(',');
+                    if (response[i].features) {
+                        response[i].features = response[i].features.split(',');
+                    }
+                    if (response[i].attractions) {
+                        response[i].attractions = response[i].attractions.split(',');
+                    }
                 }
             }
             resolve({
@@ -364,24 +452,273 @@ export const getTop10 = () => {
 export const getDetailsProject = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const response = await db.Project.findByPk(id, {
+            const response = {};
+            const projectResponse = await db.Project.findByPk(id, {
                 attributes: { exclude: ['createdAt', 'updatedAt', 'thumbnailPathName'] },
                 nest: true,
                 //raw: true,
-                include: {
-                    model: db.Image,
-                    attributes: ['id', 'pathUrl'],
-                },
-            });
-            if (response) {
-                response.features = response.features.split(',');
-                response.attractions = response.attractions.split(',');
+                include: [
+                    {
+                        model: db.TypeOfProject,
+                        attributes: ['id'],
+                        include: {
+                            model: db.TypeRoom,
+                            attributes: ['id', 'name', 'bedrooms', 'bathrooms', 'persons', 'size', 'bedTypes', 'amenities'],
+                            include: [
+                                {
+                                    model: db.TypeOfProject,
+                                    attributes: [],
+                                    where: {
+                                        projectID: id,
+                                    },
+                                },
+                                {
+                                    model: db.Image,
+                                    attributes: ['id', 'pathUrl'],
+                                    limit: 1,
+                                },
+                            ],
+                        },
+                        order: [['id', 'ASC']],
+                    },
+                    {
+                        nest: true,
+                        model: db.Image,
+                        attributes: ['id', 'pathUrl'],
+                    },
+                ],
+            },
+            );
+            
+            if (projectResponse) {
+                response.Project = {
+                    id: projectResponse.id,
+                    name: projectResponse.name,
+                    description: projectResponse.description,
+                    buildingStatus: projectResponse.buildingStatus,
+                    location: projectResponse.location,
+                    features: projectResponse.features?.split(','),
+                    attractions: projectResponse.attractions?.split(','),
+                    saleStatus: projectResponse.saleStatus,
+                    reservationPrice: projectResponse.reservationPrice,
+                    openDate: projectResponse.openDate,
+                    thumbnailPathUrl: projectResponse.thumbnailPathUrl,
+                    images: projectResponse.Images
+                }
+
+                response.TypeRoom = [];
+                for(let i = 0; i < projectResponse.TypeOfProjects.length; i++){
+                        for(let j = 0; j < projectResponse.TypeOfProjects[i].TypeRooms.length; j++){
+                            response.TypeRoom.push({
+                                id: projectResponse.TypeOfProjects[i].TypeRooms[j].id,
+                                name: projectResponse.TypeOfProjects[i].TypeRooms[j].name,
+                                bedrooms: projectResponse.TypeOfProjects[i].TypeRooms[j].bedrooms,
+                                bathrooms: projectResponse.TypeOfProjects[i].TypeRooms[j].bathrooms,
+                                persons: projectResponse.TypeOfProjects[i].TypeRooms[j].persons,
+                                bedTypes: projectResponse.TypeOfProjects[i].TypeRooms[j].bedTypes.split(','),
+                                amenities: projectResponse.TypeOfProjects[i].TypeRooms[j].amenities?.split(','),
+                                size: projectResponse.TypeOfProjects[i].TypeRooms[j].size,
+                                images: projectResponse.TypeOfProjects[i].TypeRooms[j].Images
+                            })
+                        }
+                        
+                }
+
+
+                // response.Project = {
+
+                // }
+                // response.TypeRoom = {
+
+                // }
+                // if (response.Project.features) {
+                //     response.Project.features = response.Project.features.split(',')
+                // }
+                // if (response.Project.attractions) {
+                //     response.Project.attractions = response.Project.attractions.split(',')
+                // }
+                // if (typeRoomResponse) {
+                //     response.typeRooms = typeRoomResponse;
+                //     for (let i = 0; i < response.typeRooms.length; i++) {
+                //         if (response.typeRooms[i].bedTypes) {
+                //             response.typeRooms[i].bedTypes = response.typeRooms[i].bedTypes.split(',');
+                //         }
+                //         if (response.typeRooms[i].amenities) {
+                //             response.typeRooms[i].amenities = response.typeRooms[i].amenities.split(',');
+                //         }
+
+                //     }
+                // }
             }
-            console.log(response.features);
             resolve({
                 err: response ? 0 : 1,
-                message: response ? `Project ${id} found` : `Can not find Project with id: ${id}`,
+                message: response ? `Project ${id} found` : `Can not find Project with id: ${id}!`,
                 data: response,
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
+export const changeDate = ({
+    openDate
+}, id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const errorMessage = [];
+            const project = await db.Project.findOne({
+                where: {
+                    id
+                }
+            })
+                let ExDate = new Date(project.openDate).getTime();
+                let NewDate = new Date(convertDate(openDate)).getTime();
+              
+                if (ExDate > NewDate || ExDate == NewDate) {
+                  errorMessage.push("Can not change openDate because new date is less than old openDate")
+                } else {
+                    const update = await db.Project.update({
+                        openDate : convertDate(openDate)
+                    },{
+                        where : {
+                            id
+                        }
+                    })
+                    const user = await db.ReservationTicket.findAll({
+                        where : {
+                            projectID : id,
+                            status : 1
+                        }
+                    })
+                    errorMessage.push("Change openDate Success")
+                    for (let i = 0; i < user.length; i++) {
+                        const user1 = await db.User.findByPk(user[i].userID)
+                        let transporter = nodemailer.createTransport({
+                        service: "gmail",
+                        auth: {
+                          user: process.env.GOOGE_APP_EMAIL,
+                          pass: process.env.GOOGLE_APP_PASSWORD,
+                        },
+                      });
+                    let mailOptions = {
+                        from: "Tivas",
+                        to: `${user1.email}`,
+                        subject: "Confirm received email",
+                        text : `Open date of ${project.name} is move to ${openDate} ` 
+                      };
+                    transporter.sendMail(mailOptions, function (error, info) {
+                        if (error) {
+                          console.log(error);
+                        } else {
+                          console.log("Email sent: " + info.response);
+                        }
+                      });
+                        
+                    }
+                }
+                resolve({
+                    err : project ? 1 : 0,
+                    mess : project ? errorMessage[0] : errorMessage[0]
+                })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
+export const openReservationTicket = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const message = [];
+            const dateNow = new Date().toDateString()
+            const check = await db.Project.findByPk(id)
+            if (check) {
+                // if(check.reservationDate !== dateNow){
+                //     message.push("not in the time to buy")
+                // }else{
+                await db.Project.update({
+                    status: 1,
+                }, {
+                    where: {
+                        id
+                    }
+                })
+                // Fetch records that need to be updated
+                const timeSharesToUpdate = await db.TimeShare.findAll({
+                    include: [
+                        {
+                            model: db.TypeRoom,
+                            required: true,
+                            include: {
+                                model: db.TypeOfProject,
+                                required: true,
+                                as: 'TypeOfProject',
+                                where: {
+                                    projectID: id,
+                                },
+                            },
+                        },
+                    ],
+                });
+
+                // Perform updates in memory
+                timeSharesToUpdate.forEach((timeShare) => {
+                    timeShare.saleStatus = 1;
+                });
+
+                // Save changes back to the database
+                await Promise.all(timeSharesToUpdate.map((timeShare) => timeShare.save()));
+                message.push("You can buy reservation ticket now")
+                // }
+            } else {
+                message.push("Can not buy reservation ticket now")
+
+            }
+            resolve({
+                err: check ? 0 : 1,
+                mess: check ? message[0] : message[0]
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
+export const openBooking = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const message = [];
+            const dateNow = new Date().toDateString()
+            const check = await db.Project.findByPk(id)
+            if (check && check.status == 1){
+                // if(check.openDate !== dateNow){
+                //     message.push("not in the time to buy")
+                // }else{
+                await db.Project.update({
+                    status : 2,
+                },{
+                    where : {
+                        id
+                    }
+                })
+                await db.ReservationTicket.destroy({
+                    where : {
+                        status : 0
+                    }
+                })
+                message.push("This project is open now")
+            // }
+            }else { 
+                message.push("Project is not available")
+
+            }
+            resolve({
+                err : check ? 0 : 1,
+                mess : check ? message[0] : message[0] 
             })
         } catch (error) {
             console.log(error);

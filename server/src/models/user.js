@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       User.belongsTo(models.RoleCode, {
         foreignKey: 'roleID',
       });
-      User.hasMany(models.Reservation, {foreignKey: 'userID', ondelete: 'cascade', hooks: true});      
+      User.hasMany(models.ReservationTicket, {foreignKey: 'userID', ondelete: 'cascade', hooks: true});      
       // User.hasOne(models.RefundHistory, {
       //   foreignKey: 'userID',
       // });
@@ -27,6 +27,7 @@ module.exports = (sequelize, DataTypes) => {
       password: DataTypes.STRING,
       phoneNumber: DataTypes.STRING,
       banStatus: DataTypes.BOOLEAN,
+      reasonBan: DataTypes.STRING,
       roleID: DataTypes.INTEGER,
       refreshToken: DataTypes.STRING,
       refundHistoryID: DataTypes.STRING,

@@ -50,6 +50,7 @@ const deleteTypeRoomImage = (fileData) => {
 export const createTypeRoom = (projectID, {
     name,
     bedrooms,
+    bathrooms,
     persons,
     size,
     bedTypes,
@@ -96,11 +97,13 @@ export const createTypeRoom = (projectID, {
                         typeRoomResponse = await db.TypeRoom.create({
                             name,
                             bedrooms,
+                            bathrooms,
                             persons,
                             size,
                             bedTypes,
                             amenities,
                             description,
+                            quantity,
                             typeOfProjectID: typeOfProjectResponse.id,
                         })
 
@@ -117,23 +120,12 @@ export const createTypeRoom = (projectID, {
                                 }
                                 await db.Image.bulkCreate(imageTypeRoomArray);
                             }
-
-                            //Number of rooms
-                            if (quantity && (parseInt(quantity) !== 0)) {
-                                const roomArray = [];
-                                for (let i = 0; i < quantity; i++) {
-                                    roomArray.push({
-                                        typeRoomID: typeRoomResponse.id
-                                    })
-                                }
-                                await db.Room.bulkCreate(roomArray);
-                            }
                         }
                     }
                 }
             }
             resolve({
-                err: !typeRoomDuplicated ? 0 : 1,
+                err: !typeRoomResponse ? 0 : 1,
                 message: !projectResponse
                     ? `Project (${projectID}) does not exist!`
                     : !typeResponse
@@ -145,7 +137,7 @@ export const createTypeRoom = (projectID, {
                                 : "Create successfully."
             })
 
-            if (!typeRoomDuplicated && fileData) {
+            if (typeRoomDuplicated && fileData) {
                 deleteTypeRoomImage(fileData);
             }
 
@@ -162,6 +154,7 @@ export const createTypeRoom = (projectID, {
 export const updateTypeRoom = (id, {
     name,
     bedrooms,
+    bathrooms,
     persons,
     size,
     bedTypes,
@@ -176,6 +169,7 @@ export const updateTypeRoom = (id, {
             let typeOfProjectResponse;
             let typeResponse
             let typeRoomDuplicated;
+            let checkUpdate;
             //Check TypeRoom is existed in DB
             let typeRoomResponse = await db.TypeRoom.findByPk(id);
             if (typeRoomResponse) {
@@ -216,9 +210,10 @@ export const updateTypeRoom = (id, {
                     }
 
                     //Update
-                    await db.TypeRoom.update({
+                    checkUpdate = await db.TypeRoom.update({
                         name,
                         bedrooms,
+                        bathrooms,
                         persons,
                         size,
                         bedTypes,
@@ -246,7 +241,7 @@ export const updateTypeRoom = (id, {
                 }
             }
             resolve({
-                err: typeRoomDuplicated ? 0 : 1,
+                err: checkUpdate ? 0 : 1,
                 message: !typeRoomResponse ?
                     `Can not find TypeRoom with id: (${id})`
                     : typeRoomDuplicated ?
@@ -254,7 +249,7 @@ export const updateTypeRoom = (id, {
                         : 'Update Successfully.',
                 messageImage: imageErrorMessage.length !== 0 ? `Can not find Image: ${imageErrorMessage.join(',')}` : null,
             });
-            if (!typeRoomDuplicated && fileData) {
+            if (typeRoomDuplicated && fileData) {
                 deleteTypeRoomImage(fileData);
             }
         } catch (error) {
@@ -301,7 +296,7 @@ export const getAllTypeRoom = (projectID, { page, limit, orderType, orderBy }) =
             const queries = pagination({ page, limit, orderType, orderBy });
             queries.nest = true;
             const response = await db.TypeRoom.findAll({
-                attributes: ['id', 'name', 'bedrooms', 'persons', 'size', 'bedTypes', 'amenities'],
+                attributes: ['id', 'name', 'bedrooms', 'bathrooms', 'persons', 'size', 'bedTypes', 'amenities'],
                 include: [
                     {
                         model: db.TypeOfProject,
@@ -321,7 +316,9 @@ export const getAllTypeRoom = (projectID, { page, limit, orderType, orderBy }) =
             if (response) {
                 for (let i = 0; i < response.length; i++) {
                     response[i].bedTypes = response[i].bedTypes.split(',');
-                    response[i].amenities = response[i].amenities.split(',');
+                    if (response[i].amenities) {
+                        response[i].amenities = response[i].amenities.split(',');
+                    }
                 }
             }
             resolve({
@@ -343,16 +340,18 @@ export const getDetailsTypeRoom = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
             const response = await db.TypeRoom.findByPk(id, {
-                attributes: { exclude: ['createdAt', 'updatedAt', 'typeOfProjectID', 'TypeOfProjectId']},
+                attributes: { exclude: ['createdAt', 'updatedAt', 'typeOfProjectID', 'TypeOfProjectId'] },
                 nest: true,
                 include: {
                     model: db.Image,
                     attributes: ['id', 'pathUrl'],
                 },
             });
-            if(response){
+            if (response) {
                 response.bedTypes = response.bedTypes.split(',');
-                response.amenities = response.amenities.split(',');
+                if (response.amenities) {
+                    response.amenities = response.amenities.split(',');
+                }
             }
             resolve({
                 err: response ? 0 : 1,
