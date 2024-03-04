@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import { createClient } from "redis";
 
 import ejs from "ejs";
+import { log } from "console";
 const fs = require("fs");
 
 const hashPassword = (password) =>
@@ -37,6 +38,7 @@ export const generateRefreshToken = (user) => {
 
 export const register = ({
   username,
+  fullName,
   email,
   password,
   phoneNumber,
@@ -47,6 +49,7 @@ export const register = ({
     try {
       const user = await db.User.create({
         username,
+        fullName,
         email,
         password: hashPassword(password),
         phoneNumber,
@@ -115,6 +118,7 @@ export const login = ({ username, email, password }) => {
           ? {
               id: user.id,
               username: user.username,
+              type: user?.type,
               roleID: user.roleID,
             }
           : null,
@@ -170,7 +174,6 @@ export const loginGoogle = ({ email, roleID = 3 }) => {
             : null,
           accessToken: `Bearer ${accessToken}`,
           refreshToken,
-          username: accessToken ? user.username : "",
           register: user ? true : false,
           registerGoogle: {
             mess: !user
@@ -190,6 +193,7 @@ export const loginGoogle = ({ email, roleID = 3 }) => {
                 id: user.id,
                 username: user.username || null,
                 roleID: user.roleID || roleID,
+                type: user?.type,
               }
             : null,
           accessToken: `Bearer ${accessToken}`,
@@ -368,6 +372,7 @@ export const registerGoogle = ({
   username,
   email,
   fullName,
+  phoneNumber,
   refundHistoryID,
 }) => {
   return new Promise(async (resolve, reject) => {
@@ -375,6 +380,7 @@ export const registerGoogle = ({
       const user = await db.User.create({
         username,
         fullName,
+        phoneNumber,
         email,
         refundHistoryID,
         type: "Google",
@@ -412,6 +418,124 @@ export const registerGoogle = ({
       });
     } catch (err) {
       console.log("Error: ", err);
+      reject(err);
+    }
+  });
+};
+
+export const sendCodeForgotPassword = ({ email }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const timeEmail = 300000;
+      const client = createClient();
+      await client.connect();
+
+      const user = await db.User.findOne({
+        where: { email, type: "Local" },
+        raw: true,
+      });
+
+      if (user) {
+        const digit1 = Math.floor(Math.random() * 10);
+        const digit2 = Math.floor(Math.random() * 10);
+        const digit3 = Math.floor(Math.random() * 10);
+        const digit4 = Math.floor(Math.random() * 10);
+
+        const combinedNumber =
+          digit1 * 1000 + digit2 * 100 + digit3 * 10 + digit4;
+
+        let transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: process.env.GOOGE_APP_EMAIL,
+            pass: process.env.GOOGLE_APP_PASSWORD,
+          },
+        });
+
+        const emailTemplatePath = "src/template/EmailRegister/index.ejs";
+        const emailTemplate = fs.readFileSync(emailTemplatePath, "utf-8");
+
+        const data = {
+          email,
+          digit1,
+          digit2,
+          digit3,
+          digit4,
+        };
+
+        const renderedHtml = ejs.render(emailTemplate, data);
+
+        let mailOptions = {
+          from: "Tivas",
+          to: `${email}`,
+          subject: "Confirm received email",
+          html: renderedHtml,
+        };
+
+        transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log("Email sent: " + info.response);
+          }
+        });
+
+        await client.setEx(
+          `${email}_forgotPassword`,
+          timeEmail / 1000,
+          JSON.stringify(combinedNumber)
+        );
+      }
+
+      resolve({
+        err: user ? 0 : 1,
+        mess: user
+          ? "Please check the code in the email"
+          : "This email does not exists",
+
+        email: "",
+        time: user ? null : timeEmail,
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const resetPassword = ({ email, newPassword }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const password = hashPassword(newPassword);
+      const res = await db.User.update(
+        { password },
+        {
+          where: { email, type: "Local" },
+        }
+      );
+      resolve({
+        err: res[0] === 1 ? 0 : 1,
+        mess: res[0] === 1 ? "Successfully" : "Please check email again!",
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
+export const checkResetPassword = ({ email, otp }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const client = createClient();
+      await client.connect();
+
+      const otpRedis = await client.get(`${email}_forgotPassword`);
+      const isChecked = otpRedis && otpRedis === otp ? true : false;
+      resolve({
+        err: isChecked ? 0 : 1,
+        mess: isChecked ? "Successfully" : "Please check the code again!",
+        email: isChecked ? email : "",
+      });
+    } catch (err) {
       reject(err);
     }
   });

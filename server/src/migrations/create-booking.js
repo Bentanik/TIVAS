@@ -21,7 +21,7 @@ module.exports = {
       priceBooking: {
         type: Sequelize.DOUBLE
       },
-      reservationID: {
+      reservationTicketID: {
         type: Sequelize.INTEGER,
         unique: true,
       },

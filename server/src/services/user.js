@@ -1,7 +1,17 @@
 import nodemailer from "nodemailer";
 import ejs from "ejs";
+import db from "../models";
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const fs = require("fs");
+
+const deleteAvatarImage = (fileData) => {
+  if (fileData?.avatar) {
+    for (let i = 0; i < fileData.avatar.length; i++) {
+      cloudinary.uploader.destroy(fileData.avatar[i].filename);
+    }
+  }
+};
 
 export const sendMail = () => {
   return new Promise(async (resolve, reject) => {
@@ -50,6 +60,127 @@ export const sendMail = () => {
     } catch (err) {
       console.log(err);
       reject(err);
+    }
+  });
+};
+
+export const getUser = ({ username }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const res = await db.User.findOne({
+        where: { username },
+        attributes: {
+          exclude: ["password", "banStatus", "roleID", "refreshToken"],
+        },
+        raw: true,
+      });
+
+      // const customer = res
+      //   ? await stripe.paymentMethods.list({
+      //       customer: res.refundHistoryID,
+      //       type: "card",
+      //     })
+      //   : null;
+      // console.log("Card: ", customer.data[0].card);
+      // console.log("billing_details: ", customer.data[0].billing_details);
+      resolve({
+        err: res ? 0 : 1,
+        mess: res ? "Successully" : "No user data",
+        data: res ? res : null,
+      });
+    } catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  });
+};
+
+export const getAvatarUser = ({ username }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const res = await db.User.findOne({
+        where: { username },
+        attributes: {
+          exclude: [
+            "username",
+            "fullName",
+            "email",
+            "password",
+            "phoneNumber",
+            "banStatus",
+            "roleID",
+            "refreshToken",
+            "refundHistoryID",
+            "avatarPathName",
+            "type",
+          ],
+        },
+        raw: true,
+      });
+
+      resolve({
+        err: res ? 0 : 1,
+        mess: res ? "Successully" : "No user data",
+        data: res ? res : null,
+      });
+    } catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  });
+};
+
+export const editUser = ({ username, fullName, numberPhone }, fileData) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const userResponse = await db.User.findOne({
+        where: {
+          username,
+        },
+      });
+      const isEmpty = Object.keys(fileData).length === 0;
+      if (userResponse) {
+        await db.User.update(
+          {
+            username,
+            fullName,
+            numberPhone,
+            avatarURL: isEmpty
+              ? userResponse.avatarURL 
+              : fileData?.avatar[0]?.path,
+            avatarPathName: isEmpty
+              ? userResponse.avatarPathName 
+              : fileData?.avatar[0]?.filename,
+          },
+          {
+            where: {
+              username,
+            },
+          }
+        );
+      }
+      resolve({
+        err: userResponse ? 0 : 1,
+        mess: userResponse
+          ? "Update successfully."
+          : `Can not find User(${username})`,
+        // username,
+        // fullName,
+        // image,
+        // numberPhone,
+        // avatarURL: fileData.avatar? fileData.avatar[0].path :
+        // avatarPathName
+      });
+
+      if (!userResponse && fileData) {
+        deleteAvatarImage(fileData);
+      }
+    } catch (err) {
+      reject(err);
+      console.log(err);
+      if (fileData) {
+        deleteAvatarImage(fileData);
+      }
     }
   });
 };

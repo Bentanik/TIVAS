@@ -23,6 +23,30 @@ export const checkRegister = async (req, res) => {
   return res.status(200).json(response);
 };
 
+export const sendCodeForgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return missValue("Missing value!", res);
+  }
+
+  const response = await services.sendCodeForgotPassword(req.body);
+
+  return res.status(200).json(response);
+};
+
+export const checkResetPassword = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return missValue("Missing value!", res);
+  }
+
+  const response = await services.checkResetPassword(req.body);
+
+  return res.status(200).json(response);
+};
+
 export const checkUserName = async (req, res) => {
   const { username } = req.body;
   if (!username) return missValue("Missing value!", res);
@@ -51,7 +75,7 @@ export const register = async (req, res) => {
     });
 
     const paymentMethodId = setupIntent.payment_method;
-
+    console.log(paymentMethod);
     const customer = await stripe.customers.create({
       email: email,
       name: fullName,
@@ -127,10 +151,10 @@ export const loginGoogle = async (req, res) => {
 
 // Register google
 export const registerGoogle = async (req, res) => {
-  const { username, fullName, email, paymentMethod } = req.body;
+  const { username, fullName, email, phoneNumber, paymentMethod } = req.body;
 
   try {
-    if (!username || !fullName || !email || !paymentMethod) {
+    if (!username || !fullName || !email || !phoneNumber || !paymentMethod) {
       return missValue("Missing value!", res);
     }
 
@@ -153,6 +177,7 @@ export const registerGoogle = async (req, res) => {
         username,
         email,
         fullName,
+        phoneNumber,
         refundHistoryID: customer.id,
       });
       const { refreshToken, ...rest } = reponses;
@@ -195,6 +220,14 @@ export const refreshToken = async (req, res) => {
     sameSite: "strict",
   });
   return res.status(200).json(rest);
+};
+
+// Reset password
+export const resetPassword = async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  const response = await services.resetPassword(req.body);
+  return res.status(200).json(response);
 };
 
 //Logout
