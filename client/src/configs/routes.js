@@ -12,6 +12,11 @@ import AdminCreateProject from "~/pages/AdminCreateProject";
 import ProfileLayout from "~/pages/ProfileLayout";
 import Profile from "~/components/Layouts/Profile";
 import RoomTypeDetail from "~/components/RoomTypeDetail";
+import ChangePassword from "~/components/ChangePassword";
+import AdminManageUser from "~/pages/AdminManageUser";
+import AdminUserBanList from "~/pages/AdminUserBanList";
+import AdminManageProject from "~/pages/AdminManageProject";
+import AdminProjectDetail from "~/pages/AdminProjectDetail";
 import Banking from "~/components/Layouts/Banking";
 
 const routes = [
@@ -63,8 +68,36 @@ const routes = [
         layout: LayoutAdmin,
     },
     {
+        path: "/admin/manageuser",
+        component: AdminManageUser,
+        layout: LayoutAdmin,
+    },
+    {
+        path: "/admin/manageproject",
+        component: AdminManageProject,
+        layout: LayoutAdmin,
+    },
+
+    {
+        path: "/admin/userbanlist",
+        component: AdminUserBanList,
+        layout: LayoutAdmin,
+    },
+
+    {
+        path: "/admin/projectdetail",
+        component: AdminProjectDetail,
+        layout: LayoutAdmin,
+    },
+
+    {
         path: "/user/account/profile",
         component: Profile,
+        layout: ProfileLayout,
+    },
+    {
+        path: "/user/account/changepassword",
+        component: ChangePassword,
         layout: ProfileLayout,
     },
     {
@@ -77,27 +110,26 @@ const routes = [
         component: RoomTypeDetail,
         layout: null,
     },
-      {
-    path: "/listing",
-    component: Listing,
-    layout: null,
-  },
-  {
-    path: "/listingdetails",
-    component: ListingDetails,
-    layout: null,
-  },
-  {
-    path: "/timesharerentals",
-    component: TimeshareRentals ,
-    layout: null,
-  },
-  {
-    path: "/policy",
-    component: Policy,
-    layout: null,
-  }
-    
+    {
+        path: "/listing",
+        component: Listing,
+        layout: null,
+    },
+    {
+        path: "/listingdetails",
+        component: ListingDetails,
+        layout: null,
+    },
+    {
+        path: "/timesharerentals",
+        component: TimeshareRentals,
+        layout: null,
+    },
+    {
+        path: "/policy",
+        component: Policy,
+        layout: null,
+    },
 ];
 
 export default routes;
