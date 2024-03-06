@@ -29,6 +29,9 @@ module.exports = (sequelize, DataTypes) => {
     ReservationTicket.init({
         code: DataTypes.STRING,
         status: DataTypes.INTEGER,
+        reservationDate: DataTypes.DATE,
+        openDate: DataTypes.DATE,
+        closeDate: DataTypes.DATE,
         userID: DataTypes.INTEGER,
         projectID: DataTypes.INTEGER,
         timeShareID: DataTypes.INTEGER,
