@@ -15,9 +15,6 @@ module.exports = {
       description: {
         type: Sequelize.TEXT('long')
       },
-      location: {
-        type: Sequelize.STRING
-      },
       buildingStatus: {
         type: Sequelize.INTEGER
       },
@@ -47,6 +44,9 @@ module.exports = {
       },
       thumbnailPathName: {
         type: Sequelize.STRING
+      },
+      locationID: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         type: "TIMESTAMP",

@@ -9,7 +9,7 @@ router.put(
     )
 
 router.put(
-    "/payAdditionalBooking",
-    controllers.payAddtionalBooking,
+    "/completeBooking",
+    controllers.completeBooking,
 )
 export default router;

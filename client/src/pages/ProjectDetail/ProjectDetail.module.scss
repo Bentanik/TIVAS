@@ -5,7 +5,7 @@
 }
 
 .content {
-  padding: 0px 0 0 50px;
+  padding: 50px 0 0 50px;
 }
 
 .item {
@@ -168,7 +168,7 @@
 
 // Reservaiton
 .reservation {
-  padding: 20px 80px 0 0px;
+  padding: 50px 80px 0 50px;
   text-align: right;
 
   .action {
@@ -176,26 +176,13 @@
     font-family: "Inter", sans-serif;
     padding: 20px 30px;
 
-    font-size: 1.7rem;
-    background-color: #605DEC;
-    color: #fff;
+    font-size: 1.6rem;
+    background-color: orange;
     cursor: pointer;
     user-select: none;
-    border-radius: 8px;
 
     &:hover {
       color: #fff;
-      opacity: 0.9;
     }
   }
-}
-
-.title-reservation {
-  font-family: "Inter", sans-serif;
-  font-size: 1.8rem;
-}
-
-.desc-reservation {
-  font-family: "Inter", sans-serif;
-  font-size: 1.6rem;
 }

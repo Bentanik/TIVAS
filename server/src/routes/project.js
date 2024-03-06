@@ -16,6 +16,7 @@ router.post(
   controllers.createNewProject
 )
 router.get("/getAll",controllers.getAllProject)
+router.get("/getAllByLocation/:id", controllers.getAllByLocation)
 router.delete("/delete/:id",controllers.deleteProjects)
 router.put(
   "/update/:id",

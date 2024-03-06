@@ -15,6 +15,15 @@ module.exports = {
       status: {
         type: Sequelize.INTEGER
       },
+      reservationDate: {
+        type: Sequelize.DATE
+      },
+      openDate: {
+        type: Sequelize.DATE
+      },
+      closeDate: {
+        type: Sequelize.DATE
+      },
       userID: {
         type: Sequelize.INTEGER
       },

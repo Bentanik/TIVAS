@@ -10,7 +10,14 @@ import AdminCreateProject from "~/pages/AdminCreateProject";
 import ProfileLayout from "~/pages/ProfileLayout";
 import Profile from "~/components/Layouts/Profile";
 import RoomTypeDetail from "~/components/RoomTypeDetail";
+import ChangePassword from "~/components/ChangePassword";
+import AdminManageUser from "~/pages/AdminManageUser";
+import AdminUserBanList from "~/pages/AdminUserBanList";
+import AdminManageProject from "~/pages/AdminManageProject";
+import AdminProjectDetail from "~/pages/AdminProjectDetail";
 import Banking from "~/components/Layouts/Banking";
+import AdminRoomTypeDetail from "~/pages/AdminRoomTypeDetail";
+import TimeshareDetail from "~/pages/TimeshareDetail";
 
 const routes = [
   {
@@ -68,6 +75,38 @@ const routes = [
     component: Policy,
     layout: null,
   },
+    {
+        path: "/admin/manageuser",
+        component: AdminManageUser,
+        layout: LayoutAdmin,
+    },
+    {
+        path: "/admin/manageproject",
+        component: AdminManageProject,
+        layout: LayoutAdmin,
+    },
+
+    {
+        path: "/admin/userbanlist",
+        component: AdminUserBanList,
+        layout: LayoutAdmin,
+    },
+
+    {
+        path: "/admin/typeroomdetail",
+        component: AdminRoomTypeDetail,
+        layout: LayoutAdmin,
+    },
+
+    {
+        path: "/admin/projectdetail",
+        component: AdminProjectDetail,
+        layout: LayoutAdmin,
+    }, {
+        path: "/timesharedetail",
+        component: TimeshareDetail,
+        layout: null,
+    },
 ];
 
 export default routes;

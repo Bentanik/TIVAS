@@ -43,10 +43,13 @@ const images = {
     koala_myles: require("~/assets/images/Koala_Myles.jpg"),
     privacy: require("~/assets/images/privacy.jpg"),
     gdpr: require("~/assets/images/gdpr.jpg"),
-    ccpa:require("~/assets/images/ccpa.jpg"),
+    ccpa: require("~/assets/images/ccpa.jpg"),
     caloppa: require("~/assets/images/caloppa.jpg"),
-    generate:   require("~/assets/images/generate.jpg"),
-    comerce:   require("~/assets/images/comerce.jpg"),
+    generate: require("~/assets/images/generate.jpg"),
+    comerce: require("~/assets/images/comerce.jpg"),
+    moreInfoIcon: require("~/assets/images/moreInfoIcon.svg").default,
+    vyAvatar: require("~/assets/images/vyAvatar.png"),
+    masterCard: require("~/assets/images/masterCard.png"),
 };
 
 export default images;
