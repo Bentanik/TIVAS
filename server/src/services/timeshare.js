@@ -29,6 +29,20 @@ export const createNewTimeShare = (
 
             //Find TypeRoom in DB
             const typeRoomResponse = await db.TypeRoom.findByPk(typeRoomID);
+            const projectResponse = await db.Project.findOne({
+                attributes: ['reservationDate','openDate','closeDate'],
+                include:{
+                    model: db.TypeOfProject,
+                    attributes: [],
+                    include:{
+                        model: db.TypeRoom,
+                        attributes: [],
+                        where: {
+                            id: typeRoomID,
+                        }
+                    }
+                }
+            })
 
             //Find User in DB
             const userResponse = await db.User.findByPk(userID);
@@ -41,6 +55,9 @@ export const createNewTimeShare = (
                     userID,
                     saleStatus: 0,
                     typeRoomID,
+                    reservationDate: projectResponse.reservationDate,
+                    openDate: projectResponse.openDate,
+                    closeDate: projectResponse.closeDate,
                     quantity: typeRoomResponse.quantity,
                 })
             }
