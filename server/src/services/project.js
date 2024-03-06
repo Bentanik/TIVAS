@@ -36,16 +36,9 @@ export const createNewProject = ({
     type,
     features,
     attractions,
-    reservationDate,
-    reservationPrice,
-    openDate,
-    closeDate,
 }, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const openDateDB = convertDate(openDate);
-            const reservationDateDB = convertDate(reservationDate);
-            const closeDateDB = convertDate(closeDate);
             let typeInDBError = 0;
             const imageProjectArray = [];
             const typeErrorMessage = [];
@@ -74,10 +67,6 @@ export const createNewProject = ({
                         features,
                         attractions,
                         status: 0,
-                        reservationDate: reservationDateDB,
-                        reservationPrice,
-                        openDate: openDateDB,
-                        closeDate: closeDateDB,
                         thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : null,
                         thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : null,
                     },
@@ -193,19 +182,12 @@ export const updateProject = ({
     buildingStatus,
     features,
     attractions,
-    reservationDate,
     thumbnailDeleted,
     imagesDeleted,
-    reservationPrice,
-    openDate,
-    closeDate
 }, id, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
             let nameDuplicated;
-            const openDateDB = convertDate(openDate);
-            const reservationDateDB = convertDate(reservationDate);
-            const closeDateDB = convertDate(closeDate);
             let imageErrorMessage = [];
             const imageProjectArray = [];
             //Check TypeRoom is existed in DB
@@ -252,10 +234,6 @@ export const updateProject = ({
                         buildingStatus,
                         features,
                         attractions,
-                        reservationDate: reservationDateDB,
-                        reservationPrice,
-                        openDate: openDateDB,
-                        closeDate: closeDateDB,
                         thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathUrl,
                         thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathName,
                     }, {
