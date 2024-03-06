@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
         Location.hasMany(models.Project, {foreignKey: 'locationID', ondelete: 'cascade', hooks: true});
+        Location.hasMany(models.Project, {foreignKey: 'locationID', ondelete: 'cascade', hooks: true});
       // define association here
     }
   }

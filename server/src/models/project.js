@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       Project.hasMany(models.TypeOfProject, {foreignKey: 'projectID', ondelete: 'cascade', hooks: true});
       Project.hasMany(models.Image, {foreignKey: 'projectID', ondelete: 'cascade', hooks: true});
       Project.hasMany(models.ReservationTicket, {foreignKey: 'projectID', ondelete: 'cascade', hooks: true});
+      Project.belongsTo(models.Location, {foreignKey: 'locationID'});
       // define association here
     }
   }

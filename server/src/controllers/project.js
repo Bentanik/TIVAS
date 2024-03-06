@@ -97,7 +97,13 @@ export const searchProject = async (req, res) => {
 
 export const searchNameAndLocationProject = async (req, res) => {
   const { info, limit } = req.params;
-  const response = await services.searchNameAndLocationProject(info, limit);
+  let limitDB;
+  if ((/^\d+$/.test(limit))) {
+    limitDB = parseInt(limit)
+  } else {
+    limitDB = 3
+  }
+  const response = await services.searchNameAndLocationProject(info, limitDB);
   return res.status(200).json(response);
 }
 
@@ -114,20 +120,20 @@ export const getDetailsProject = async (req, res) => {
   return res.status(200).json(response);
 }
 
-export const changeDate = async (req,res) => {
-  const {id} = req.params
-  const response = await services.changeDate(req.body,id);
+export const changeDate = async (req, res) => {
+  const { id } = req.params
+  const response = await services.changeDate(req.body, id);
   return res.status(200).json(response);
 }
 
-export const openReservationTicket = async (req,res) => {
-  const {id} = req.params
+export const openReservationTicket = async (req, res) => {
+  const { id } = req.params
   const response = await services.openReservationTicket(id)
   return res.status(200).json(response)
 }
 
-export const openBooking = async (req,res) => {
-  const {id} = req.params
+export const openBooking = async (req, res) => {
+  const { id } = req.params
   const response = await services.openBooking(id)
   return res.status(200).json(response)
 }

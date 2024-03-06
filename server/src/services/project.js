@@ -132,11 +132,14 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
             const queries = pagination({ page, limit, orderType, orderBy });
             //queries.raw = true;
             const response = await db.Project.findAll({
-                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'status', 'buildingStatus', 'reservationDate', 'reservationPrice', 'openDate', 'closeDate', 'features', 'attractions'],
+                raw: true,
+                attributes: ['id', 'name', 'thumbnailPathUrl', 'status', 'buildingStatus', 'reservationDate', 'reservationPrice', 'openDate', 'closeDate', 'features', 'attractions', 'locationID'],
                 ...queries,
             })
-            if (response) {
+            if (response && response.length !== 0) {
                 for (let i = 0; i < response.length; i++) {
+                    const locationDB = await db.Location.findByPk(response[i].locationID);
+                    response[i].location = locationDB.name;
                     if (response[i].features) {
                         response[i].features = response[i].features.split(',');
                     }
@@ -148,7 +151,7 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
             resolve({
                 err: (response && response.length !== 0) ? 0 : 1,
                 message: (response && response.length !== 0) ? `Get all of projects results` : 'Can not find any projects!',
-                data: response,
+                data: (response && response.length !== 0) ? response : null,
                 count: response ? response.length : 0,
                 page: page
             })
@@ -307,20 +310,26 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
             if (type) {
                 type = type.split(",");
             }
+            let locationDB;
             //condition clause
             const whereClause = {};
             for (const [key, value] of Object.entries(query)) {
-                whereClause[key] = { [Op.substring]: value };
+                if (key !== 'location') {
+                    whereClause[key] = { [Op.substring]: value };
+                }else{
+                    locationDB = value;
+                }
             }
 
             //pagination and limit
             const queries = pagination({ page, limit, orderType, orderBy });
             queries.nest = true;
-            //queries.raw = true;
+            queries.raw = true;
             // queries.raw = true;
+            console.log(whereClause.location);
             const response = await db.Project.findAll({
                 where: whereClause,
-                attributes: ['id', 'name', 'location', 'thumbnailPathUrl', 'status', 'buildingStatus', 'reservationDate', 'reservationPrice', 'openDate', 'closeDate', 'closeDate', 'features', 'attractions'],
+                attributes: ['id', 'name', 'thumbnailPathUrl', 'status', 'buildingStatus', 'reservationDate', 'reservationPrice', 'openDate', 'closeDate', 'closeDate', 'features', 'attractions', 'locationID'],
                 include: [
                     {
                         model: db.TypeOfProject,
@@ -338,14 +347,23 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
                             }
                         },
                     },
+                    {
+                        model: db.Location,
+                        attributes: [],
+                        where: locationDB ? {
+                            name: { [Op.substring]: locationDB },
+                        } : {}
+                    }
                 ],
-                group: ['TypeOfProjects.projectID', 'Project.name', 'Project.location', 'Project.thumbnailPathUrl', 'Project.id'],
+                group: ['TypeOfProjects.projectID', 'Project.name', 'Project.locationID', 'Project.thumbnailPathUrl', 'Project.id'],
                 having: type ? (literal(`COUNT(TypeOfProjects.projectID) = ${type.length}`)) : literal((`COUNT(TypeOfProjects.projectID) > 0`)),
                 ...queries,
                 subQuery: false,
             });
             if (response) {
                 for (let i = 0; i < response.length; i++) {
+                    const locationDB = await db.Location.findByPk(response[i].locationID);
+                    response[i].location = locationDB.name;
                     if (response[i].features) {
                         response[i].features = response[i].features.split(',');
                     }
@@ -357,7 +375,7 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
             resolve({
                 err: (response && response.length !== 0) ? 0 : 1,
                 mess: (response && response.length !== 0) ? `Search Projects Results` : "Can not find any Projects!",
-                data: response,
+                data: (response && response.length !== 0) ? response : null,
                 count: response ? response.length : 0,
                 page: page
             })
@@ -371,40 +389,45 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
 export const searchNameAndLocationProject = (info, limit) => {
     return new Promise(async (resolve, reject) => {
         try {
-            console.log(limit);
-            let limitDB;
-            if ((/^\d+$/.test(limit))) {
-                limitDB = parseInt(limit)
-            } else {
-                limitDB = 3
-            }
-            let response = {};
+            let response;
             const bestMatch = await db.Project.findAll({
-                attributes: ['id', 'name', 'location', 'status', 'buildingStatus', 'reservationDate', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'closeDate', 'features', 'attractions'],
+                attributes: ['id', 'name', 'thumbnailPathUrl'],
                 where: {
                     name: { [Op.substring]: info },
-                    location: { [Op.substring]: info }
                 },
-                limit: limitDB,
+                include: {
+                    model: db.Location,
+                    attributes: [],
+                    where: {
+                        name: { [Op.substring]: info }
+                    }
+                },
+                limit,
             })
             const projectByNameResponse = await db.Project.findAll({
-                attributes: ['id', 'name', 'location', 'status', 'buildingStatus', 'reservationDate', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'closeDate', 'features', 'attractions'],
+                attributes: ['id', 'name', 'thumbnailPathUrl'],
                 where: {
                     name: { [Op.substring]: info }
                 },
-                limit: limitDB,
+                limit,
             })
-
             const projectByLocationResponse = await db.Project.findAll({
-                attributes: ['id', 'name', 'location', 'status', 'buildingStatus', 'reservationDate', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'closeDate', 'features', 'attractions'],
-                where: {
-                    location: { [Op.substring]: info }
+                attributes: ['id', 'name', 'thumbnailPathUrl'],
+                include: {
+                    model: db.Location,
+                    attributes: [],
+                    where: {
+                        name: { [Op.substring]: info }
+                    }
                 },
-                limit: limitDB,
+                limit,
             })
-            response.bestMatch = bestMatch
-            response.ProjectName = projectByNameResponse;
-            response.ProjectLocation = projectByLocationResponse;
+            if (bestMatch.length !== 0 && projectByNameResponse.length !== 0 && projectByLocationResponse.length !== 0) {
+                response = {};
+                response.bestMatch = bestMatch
+                response.ProjectName = projectByNameResponse;
+                response.ProjectLocation = projectByLocationResponse;
+            }
             resolve({
                 err: response ? 0 : 1,
                 message: response ? 'Search Projects Results' : 'Can not find any Project!',
@@ -421,12 +444,15 @@ export const getTop10 = () => {
     return new Promise(async (resolve, reject) => {
         try {
             const response = await db.Project.findAll({
-                attributes: ['id', 'name', 'location', 'status', 'buildingStatus', 'reservationDate', 'thumbnailPathUrl', 'createdAt', 'reservationPrice', 'openDate', 'closeDate', 'features', 'attractions'],
+                raw: true,
+                attributes: ['id', 'name', 'status', 'buildingStatus', 'reservationDate', 'thumbnailPathUrl', 'createdAt', 'reservationPrice', 'openDate', 'closeDate', 'features', 'attractions', 'locationID'],
                 limit: 10,
                 order: [['createdAt', 'DESC']],
             })
             if (response) {
                 for (let i = 0; i < response.length; i++) {
+                    const locationDB = await db.Location.findByPk(response[i].locationID);
+                    response[i].location = locationDB.name;
                     if (response[i].features) {
                         response[i].features = response[i].features.split(',');
                     }
@@ -438,7 +464,7 @@ export const getTop10 = () => {
             resolve({
                 err: (response && response.length !== 0) ? 0 : 1,
                 mess: (response && response.length !== 0) ? "Get top 10 new projects results" : "Can not find any Projects!",
-                data: response,
+                data: (response && response.length !== 0) ? response : null,
                 count: response ? response.length : 0,
             })
         } catch (error) {
@@ -490,12 +516,13 @@ export const getDetailsProject = (id) => {
             );
 
             if (projectResponse) {
+                const locationDB = await db.Location.findByPk(projectResponse.locationID);
                 response.Project = {
                     id: projectResponse.id,
                     name: projectResponse.name,
                     description: projectResponse.description,
                     buildingStatus: projectResponse.buildingStatus,
-                    location: projectResponse.location,
+                    location: locationDB.name,
                     features: projectResponse.features?.split(','),
                     attractions: projectResponse.attractions?.split(','),
                     saleStatus: projectResponse.saleStatus,
@@ -553,7 +580,7 @@ export const getDetailsProject = (id) => {
             resolve({
                 err: response ? 0 : 1,
                 message: response ? `Project ${id} found` : `Can not find Project with id: ${id}!`,
-                data: response,
+                data: response ? response : null,
             })
         } catch (error) {
             console.log(error);

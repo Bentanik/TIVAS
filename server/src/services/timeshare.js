@@ -76,23 +76,29 @@ export const getAllTimeShare = ({
                 attributes: ['id', 'price', 'startDate', 'endDate', 'saleStatus', 'createdAt'],
                 include: {
                     model: db.TypeRoom,
-                    attributes: ['name', 'persons'],
+                    attributes: ['id', 'name', 'persons'],
                     include: {
                         model: db.TypeOfProject,
                         attributes: ['id'],
                         include: {
                             model: db.Project,
-                            attributes: ['name', 'location', 'thumbnailPathUrl']
+                            attributes: ['id', 'name', 'thumbnailPathUrl', 'locationID'],
                         }
                     }
                 },
                 ...queries,
             })
+            if (response.length !== 0) {
+                for (let i = 0; i < response.length; i++) {
+                    const locationDB = await db.Location.findByPk(response[i].TypeRoom.TypeOfProject.Project.locationID);
+                    response[i].location = locationDB.name;
+                }
+            }
 
             resolve({
                 err: (response && response.length !== 0) ? 0 : 1,
                 message: (response && response.length !== 0) ? `All TimeShares Result` : `Can not find any TimeShares`,
-                data: response,
+                data: (response && response.length !== 0) ? response: null,
                 count: response ? response.length : 0,
                 page: page
             })
@@ -117,13 +123,13 @@ export const getAllTimeShareOfProject = (projectID, {
             queries.nest = true;
             queries.raw = true;
             const projectResponse = await db.Project.findByPk(projectID);
-            let response;
+            let response = [];
             if (projectResponse) {
                 response = await db.TimeShare.findAll({
                     attributes: ['id', 'price', 'startDate', 'endDate', 'saleStatus', 'createdAt'],
                     include: {
                         model: db.TypeRoom,
-                        attributes: ['name', 'persons'],
+                        attributes: ['id', 'name', 'persons'],
                         required: true,
                         include: {
                             model: db.TypeOfProject,
@@ -133,22 +139,28 @@ export const getAllTimeShareOfProject = (projectID, {
                             },
                             include: {
                                 model: db.Project,
-                                attributes: ['name', 'location', 'thumbnailPathUrl']
+                                attributes: ['id', 'name', 'thumbnailPathUrl', 'locationID']
                             }
                         }
                     },
                     ...queries,
                 })
             }
+            if (response.length !== 0) {
+                for (let i = 0; i < response.length; i++) {
+                    const locationDB = await db.Location.findByPk(response[i].TypeRoom.TypeOfProject.Project.locationID);
+                    response[i].location = locationDB.name;
+                }
+            }
 
             resolve({
-                err: (response && response.length !== 0) ? 0 : 1,
+                err: response.length !== 0 ? 0 : 1,
                 message: !projectResponse ?
                     `Can not find Project (${projectID})` :
-                    !(response && response.length !== 0) ? `Can not find any TimeShares of Project (${projectID})`
+                    !(response.length !== 0) ? `Can not find any TimeShares of Project (${projectID})`
                         : `All TimeShares Result`,
-                data: response,
-                count: response ? response.length : 0,
+                data: response.length !== 0 ? response : null,
+                count: response.length !== 0 ? response.length : 0,
                 page: page
             })
         } catch (error) {
@@ -167,7 +179,7 @@ export const getDetailsTimeShare = (id) => {
                 nest: true,
                 include: {
                     model: db.TypeRoom,
-                    attributes: ['name', 'bedrooms', 'bathrooms', 'persons', 'size', 'bedTypes', 'amenities', 'description'],
+                    attributes: ['id', 'name', 'bedrooms', 'bathrooms', 'persons', 'size', 'bedTypes', 'amenities', 'description'],
                     include: [
                         {
                             model: db.TypeOfProject,
@@ -175,7 +187,7 @@ export const getDetailsTimeShare = (id) => {
                             required: true,
                             include: {
                                 model: db.Project,
-                                attributes: ['name', 'description', 'location', 'features', 'attractions', 'reservationPrice', 'openDate', 'status', 'thumbnailPathUrl'],
+                                attributes: ['id', 'name', 'description', 'features', 'attractions', 'reservationPrice', 'openDate', 'status', 'thumbnailPathUrl', 'locationID'],
                                 include: {
                                     model: db.Image,
                                     attributes: ['pathUrl'],
@@ -189,6 +201,7 @@ export const getDetailsTimeShare = (id) => {
                     ]
                 }
             })
+
             if (timeShareResponse) {
                 response.TimeShare = {
                     id: timeShareResponse.id,
@@ -198,6 +211,7 @@ export const getDetailsTimeShare = (id) => {
                     saleStatus: timeShareResponse.saleStatus,
                 }
                 response.TypeRoom = {
+                    id: timeShareResponse.TypeRoom.id,
                     name: timeShareResponse.TypeRoom.name,
                     bedrooms: timeShareResponse.TypeRoom.bedrooms,
                     bathrooms: timeShareResponse.TypeRoom.bathrooms,
@@ -208,10 +222,12 @@ export const getDetailsTimeShare = (id) => {
                     description: timeShareResponse.TypeRoom.description,
                     images: timeShareResponse.TypeRoom.Images,
                 };
+                const locationDB = await db.Location.findByPk(timeShareResponse.TypeRoom.TypeOfProject.Project.locationID);
                 response.Project = {
+                    id: timeShareResponse.TypeRoom.TypeOfProject.Project.id,
                     name: timeShareResponse.TypeRoom.TypeOfProject.Project.name,
                     description: timeShareResponse.TypeRoom.TypeOfProject.Project.description,
-                    location: timeShareResponse.TypeRoom.TypeOfProject.Project.location,
+                    location: locationDB.name,
                     features: timeShareResponse.TypeRoom.TypeOfProject.Project.features?.split(','),
                     attraction: timeShareResponse.TypeRoom.TypeOfProject.Project.attractions?.split(','),
                     reservationPrice: timeShareResponse.TypeRoom.TypeOfProject.Project.reservationPrice,
@@ -224,7 +240,7 @@ export const getDetailsTimeShare = (id) => {
             resolve({
                 err: response.TimeShare ? 0 : 1,
                 message: response.TimeShare ? `TimeShare (${id}) found` : `Can not find TimeShare (${id})`,
-                data: response,
+                data: response.TimeShare ? response : null,
             })
         } catch (error) {
             console.log(error);
