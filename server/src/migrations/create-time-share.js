@@ -24,15 +24,6 @@ module.exports = {
       quantity: {
         type: Sequelize.INTEGER
       },
-      reservationDate: {
-        type: Sequelize.DATE
-      },
-      openDate: {
-        type: Sequelize.DATE
-      },
-      closeDate: {
-        type: Sequelize.DATE
-      },
       typeRoomID: {
         type: Sequelize.INTEGER
       },

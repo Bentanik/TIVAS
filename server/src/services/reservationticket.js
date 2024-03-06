@@ -42,6 +42,9 @@ export const createTicket = ({
                     status: 1,
                     userID,
                     projectID,
+                    reservationDate: projectResponse.reservationDate,
+                    openDate: projectResponse.openDate,
+                    closeDate: projectResponse.closeDate,
                     timeshareID: null
                 })
                 let transporter = nodemailer.createTransport({

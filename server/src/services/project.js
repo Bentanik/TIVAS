@@ -211,7 +211,7 @@ export const updateProject = ({
             //Check TypeRoom is existed in DB
             let projectResult = await db.Project.findByPk(id);
             if (projectResult) {
-                if(projectResult.name !== name){
+                if (projectResult.name !== name) {
                     nameDuplicated = await db.Project.findOne({
                         where: {
                             name
@@ -374,9 +374,9 @@ export const searchNameAndLocationProject = (info, limit) => {
         try {
             console.log(limit);
             let limitDB;
-            if((/^\d+$/.test(limit))){
+            if ((/^\d+$/.test(limit))) {
                 limitDB = parseInt(limit)
-            }else{
+            } else {
                 limitDB = 3
             }
             let response = {};
@@ -384,7 +384,7 @@ export const searchNameAndLocationProject = (info, limit) => {
                 attributes: ['id', 'name', 'location', 'status', 'buildingStatus', 'reservationDate', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'closeDate', 'features', 'attractions'],
                 where: {
                     name: { [Op.substring]: info },
-                    location: { [Op.substring]: info}
+                    location: { [Op.substring]: info }
                 },
                 limit: limitDB,
             })
@@ -399,7 +399,7 @@ export const searchNameAndLocationProject = (info, limit) => {
             const projectByLocationResponse = await db.Project.findAll({
                 attributes: ['id', 'name', 'location', 'status', 'buildingStatus', 'reservationDate', 'thumbnailPathUrl', 'reservationPrice', 'openDate', 'closeDate', 'features', 'attractions'],
                 where: {
-                    location: { [Op.substring]: info}
+                    location: { [Op.substring]: info }
                 },
                 limit: limitDB,
             })
@@ -489,7 +489,7 @@ export const getDetailsProject = (id) => {
                 ],
             },
             );
-            
+
             if (projectResponse) {
                 response.Project = {
                     id: projectResponse.id,
@@ -508,21 +508,21 @@ export const getDetailsProject = (id) => {
                 }
 
                 response.TypeRoom = [];
-                for(let i = 0; i < projectResponse.TypeOfProjects.length; i++){
-                        for(let j = 0; j < projectResponse.TypeOfProjects[i].TypeRooms.length; j++){
-                            response.TypeRoom.push({
-                                id: projectResponse.TypeOfProjects[i].TypeRooms[j].id,
-                                name: projectResponse.TypeOfProjects[i].TypeRooms[j].name,
-                                bedrooms: projectResponse.TypeOfProjects[i].TypeRooms[j].bedrooms,
-                                bathrooms: projectResponse.TypeOfProjects[i].TypeRooms[j].bathrooms,
-                                persons: projectResponse.TypeOfProjects[i].TypeRooms[j].persons,
-                                bedTypes: projectResponse.TypeOfProjects[i].TypeRooms[j].bedTypes.split(','),
-                                amenities: projectResponse.TypeOfProjects[i].TypeRooms[j].amenities?.split(','),
-                                size: projectResponse.TypeOfProjects[i].TypeRooms[j].size,
-                                images: projectResponse.TypeOfProjects[i].TypeRooms[j].Images
-                            })
-                        }
-                        
+                for (let i = 0; i < projectResponse.TypeOfProjects.length; i++) {
+                    for (let j = 0; j < projectResponse.TypeOfProjects[i].TypeRooms.length; j++) {
+                        response.TypeRoom.push({
+                            id: projectResponse.TypeOfProjects[i].TypeRooms[j].id,
+                            name: projectResponse.TypeOfProjects[i].TypeRooms[j].name,
+                            bedrooms: projectResponse.TypeOfProjects[i].TypeRooms[j].bedrooms,
+                            bathrooms: projectResponse.TypeOfProjects[i].TypeRooms[j].bathrooms,
+                            persons: projectResponse.TypeOfProjects[i].TypeRooms[j].persons,
+                            bedTypes: projectResponse.TypeOfProjects[i].TypeRooms[j].bedTypes.split(','),
+                            amenities: projectResponse.TypeOfProjects[i].TypeRooms[j].amenities?.split(','),
+                            size: projectResponse.TypeOfProjects[i].TypeRooms[j].size,
+                            images: projectResponse.TypeOfProjects[i].TypeRooms[j].Images
+                        })
+                    }
+
                 }
 
 
@@ -574,55 +574,55 @@ export const changeDate = ({
                     id
                 }
             })
-                let ExDate = new Date(project.openDate).getTime();
-                let NewDate = new Date(convertDate(openDate)).getTime();
-              
-                if (ExDate > NewDate || ExDate == NewDate) {
-                  errorMessage.push("Can not change openDate because new date is less than old openDate")
-                } else {
-                    const update = await db.Project.update({
-                        openDate : convertDate(openDate)
-                    },{
-                        where : {
-                            id
-                        }
-                    })
-                    const user = await db.ReservationTicket.findAll({
-                        where : {
-                            projectID : id,
-                            status : 1
-                        }
-                    })
-                    errorMessage.push("Change openDate Success")
-                    for (let i = 0; i < user.length; i++) {
-                        const user1 = await db.User.findByPk(user[i].userID)
-                        let transporter = nodemailer.createTransport({
+            let ExDate = new Date(project.openDate).getTime();
+            let NewDate = new Date(convertDate(openDate)).getTime();
+
+            if (ExDate > NewDate || ExDate == NewDate) {
+                errorMessage.push("Can not change openDate because new date is less than old openDate")
+            } else {
+                const update = await db.Project.update({
+                    openDate: convertDate(openDate)
+                }, {
+                    where: {
+                        id
+                    }
+                })
+                const user = await db.ReservationTicket.findAll({
+                    where: {
+                        projectID: id,
+                        status: 1
+                    }
+                })
+                errorMessage.push("Change openDate Success")
+                for (let i = 0; i < user.length; i++) {
+                    const user1 = await db.User.findByPk(user[i].userID)
+                    let transporter = nodemailer.createTransport({
                         service: "gmail",
                         auth: {
-                          user: process.env.GOOGE_APP_EMAIL,
-                          pass: process.env.GOOGLE_APP_PASSWORD,
+                            user: process.env.GOOGE_APP_EMAIL,
+                            pass: process.env.GOOGLE_APP_PASSWORD,
                         },
-                      });
+                    });
                     let mailOptions = {
                         from: "Tivas",
                         to: `${user1.email}`,
                         subject: "Confirm received email",
-                        text : `Open date of ${project.name} is move to ${openDate} ` 
-                      };
+                        text: `Open date of ${project.name} is move to ${openDate} `
+                    };
                     transporter.sendMail(mailOptions, function (error, info) {
                         if (error) {
-                          console.log(error);
+                            console.log(error);
                         } else {
-                          console.log("Email sent: " + info.response);
+                            console.log("Email sent: " + info.response);
                         }
-                      });
-                        
-                    }
+                    });
+
                 }
-                resolve({
-                    err : project ? 1 : 0,
-                    mess : project ? errorMessage[0] : errorMessage[0]
-                })
+            }
+            resolve({
+                err: project ? 1 : 0,
+                mess: project ? errorMessage[0] : errorMessage[0]
+            })
         } catch (error) {
             console.log(error);
             reject(error);
@@ -695,14 +695,14 @@ export const openBooking = (id) => {
             const message = [];
             const dateNow = new Date().toDateString()
             const check = await db.Project.findByPk(id)
-            if (check && check.status == 1){
+            if (check && check.status == 1) {
                 // if(check.openDate !== dateNow){
                 //     message.push("not in the time to buy")
                 // }else{
                 await db.Project.update({
-                    status : 2,
-                },{
-                    where : {
+                    status: 2,
+                }, {
+                    where: {
                         id
                     }
                 })
@@ -712,14 +712,14 @@ export const openBooking = (id) => {
                 //     }
                 // })
                 message.push("This project is open now")
-            // }
-            }else { 
+                // }
+            } else {
                 message.push("Project is not available")
 
             }
             resolve({
-                err : check ? 0 : 1,
-                mess : check ? message[0] : message[0] 
+                err: check ? 0 : 1,
+                mess: check ? message[0] : message[0]
             })
         } catch (error) {
             console.log(error);
