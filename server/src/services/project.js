@@ -39,6 +39,11 @@ export const createNewProject = ({
 }, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
+            const locationDB = await db.Location.findOne({
+                where: {
+                    name: location,
+                }
+            })
             let typeInDBError = 0;
             const imageProjectArray = [];
             const typeErrorMessage = [];
@@ -56,47 +61,55 @@ export const createNewProject = ({
                     typeErrorMessage.push(stringT[i])
                 }
             }
-            if (typeInDBError === 0) {
-                [project, created] = await db.Project.findOrCreate({
-                    where: { name },
-                    defaults: {
-                        name,
-                        description,
-                        location,
-                        buildingStatus,
-                        features,
-                        attractions,
-                        status: 0,
-                        thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : null,
-                        thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : null,
-                    },
-                })
-                console.log(created)
-                if (created) {
-                    for (let i = 0; i < stringT.length; i++) {
-                        const TypeOfProject = await db.TypeOfProject.create({
-                            projectID: project.id,
-                            typeID: stringT[i] == "Villa" ? 1 : 2,
-                        })
-                    }
-
-                    //Import images to imageTable
-                    if (fileData.images) {
-                        for (let i = 0; i < fileData.images.length; i++) {
-                            const image = {
-                                pathUrl: fileData.images[i].path,
-                                pathName: fileData.images[i].filename,
-                                projectID: project.id
-                            }
-                            imageProjectArray.push(image);
+            if (locationDB) {
+                if (typeInDBError === 0) {
+                    [project, created] = await db.Project.findOrCreate({
+                        where: { name },
+                        defaults: {
+                            name,
+                            description,
+                            buildingStatus,
+                            features,
+                            attractions,
+                            status: 0,
+                            thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : null,
+                            thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : null,
+                            locationID: locationDB.id
+                        },
+                    })
+                    console.log(created)
+                    if (created) {
+                        for (let i = 0; i < stringT.length; i++) {
+                            const TypeOfProject = await db.TypeOfProject.create({
+                                projectID: project.id,
+                                typeID: stringT[i] == "Villa" ? 1 : 2,
+                            })
                         }
-                        await db.Image.bulkCreate(imageProjectArray);
+
+                        //Import images to imageTable
+                        if (fileData.images) {
+                            for (let i = 0; i < fileData.images.length; i++) {
+                                const image = {
+                                    pathUrl: fileData.images[i].path,
+                                    pathName: fileData.images[i].filename,
+                                    projectID: project.id
+                                }
+                                imageProjectArray.push(image);
+                            }
+                            await db.Image.bulkCreate(imageProjectArray);
+                        }
                     }
                 }
             }
             resolve({
                 err: created ? 0 : 1,
-                mess: typeInDBError > 0 ? `TypeOfProject: (${typeErrorMessage.join(',')}) not exist!` : created ? "Create Project Successfully." : "Project Name has been used!",
+                mess: !locationDB ?
+                    `location (${location}) does not exist!` :
+                    typeInDBError > 0 ?
+                        `TypeOfProject: (${typeErrorMessage.join(',')}) not exist!`
+                        : created ?
+                            "Create Project Successfully."
+                            : "Project Name has been used!",
             })
             if (fileData && !created) {
                 console.log('123')
@@ -188,11 +201,17 @@ export const updateProject = ({
     return new Promise(async (resolve, reject) => {
         try {
             let nameDuplicated;
+            let locationDB;
             let imageErrorMessage = [];
             const imageProjectArray = [];
             //Check TypeRoom is existed in DB
             let projectResult = await db.Project.findByPk(id);
             if (projectResult) {
+                locationDB = await db.Location.findOne({
+                    where: {
+                        name: location,
+                    }
+                })
                 if (projectResult.name !== name) {
                     nameDuplicated = await db.Project.findOne({
                         where: {
@@ -200,7 +219,7 @@ export const updateProject = ({
                         }
                     })
                 }
-                if (!nameDuplicated) {
+                if (!nameDuplicated && locationDB) {
                     //Delete images
                     if (imagesDeleted) {
                         imagesDeleted = imagesDeleted.split(',');
@@ -230,12 +249,12 @@ export const updateProject = ({
                     await db.Project.update({
                         name,
                         description,
-                        location,
                         buildingStatus,
                         features,
                         attractions,
                         thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathUrl,
                         thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathName,
+                        locationID: locationDB.id,
                     }, {
                         where: {
                             id: id,
@@ -266,7 +285,9 @@ export const updateProject = ({
                     `Can not find Project with id: (${id})`
                     : nameDuplicated ?
                         'Project Name has been used!'
-                        : 'Update Successfully.',
+                        : !locationDB ?
+                            `location (${location}) does not exist!`
+                            : 'Update Successfully.',
                 messageImage: imageErrorMessage.length !== 0 ? `Can not find Image: ${imageErrorMessage.join(',')}` : null,
             });
         } catch (error) {

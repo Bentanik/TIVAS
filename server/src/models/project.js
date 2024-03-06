@@ -20,7 +20,6 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     description: DataTypes.TEXT('long'),
     buildingStatus: DataTypes.INTEGER,
-    location: DataTypes.STRING,
     features: DataTypes.STRING,
     attractions: DataTypes.STRING,
     status: DataTypes.INTEGER,
@@ -30,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
     closeDate: DataTypes.DATE,
     thumbnailPathUrl: DataTypes.STRING,
     thumbnailPathName: DataTypes.STRING,
+    locationID: DataTypes.INTEGER,
   }, {
     sequelize,
     modelName: 'Project',
