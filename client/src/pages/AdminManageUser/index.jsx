@@ -4,7 +4,7 @@ import ListUser from "~/components/ListUser";
 import { useRef, useState, useEffect } from "react";
 import Stack from "@mui/material/Stack";
 import Pagination from "@mui/material/Pagination";
-import ReactPaginate from "react-paginate";
+// import ReactPaginate from "react-paginate";
 
 import images from "~/assets/images";
 import { Link } from "react-router-dom";
