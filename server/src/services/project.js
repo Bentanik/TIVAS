@@ -162,6 +162,27 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
     })
 }
 
+export const getAllByLocation = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const response = await db.Project.findAll({
+                where: {
+                    locationID: id,
+                }
+            })
+            resolve({
+                err: response.length !== 0 ? 0 : 1,
+                message: response.length !== 0 ? 'All Locations' : 'Can not find any Location',
+                data: response.length !== 0 ? response : null,
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+        
+    })
+}
+
 export const deleteProject = (id) => {
     return new Promise(async (resolve, reject) => {
         try {

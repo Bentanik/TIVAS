@@ -89,6 +89,12 @@ export const getAllProject = async (req, res) => {
   return res.status(200).json(response)
 }
 
+export const getAllByLocation = async (req, res) => {
+  const { id } = req.params;
+  const response = await services.getAllByLocation(id);
+  return res.status(200).json(response);
+}
+
 //Search Project
 export const searchProject = async (req, res) => {
   const response = await services.searchProject(req.query);
