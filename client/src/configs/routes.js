@@ -13,6 +13,7 @@ import ProfileLayout from "~/pages/ProfileLayout";
 import Profile from "~/components/Layouts/Profile";
 import RoomTypeDetail from "~/components/RoomTypeDetail";
 import Banking from "~/components/Layouts/Banking";
+import About from "~/pages/About";
 
 const routes = [
     {
@@ -95,6 +96,11 @@ const routes = [
   {
     path: "/policy",
     component: Policy,
+    layout: null,
+  },
+  {
+    path: "/about",
+    component: About,
     layout: null,
   }
     

@@ -47,6 +47,8 @@ const images = {
     caloppa: require("~/assets/images/caloppa.jpg"),
     generate:   require("~/assets/images/generate.jpg"),
     comerce:   require("~/assets/images/comerce.jpg"),
+    alma: require("~/assets/images/alma.jpg"),
+    almabeach: require("~/assets/images/almabeach.jpg"),
 };
 
 export default images;

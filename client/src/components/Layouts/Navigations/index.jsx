@@ -39,7 +39,7 @@ const LIST_NAV = [
   },
   {
     value: "About",
-    link: "/Policy",
+    link: "/about",
   },
 ];
 
