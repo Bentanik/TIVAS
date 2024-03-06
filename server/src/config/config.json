@@ -1,7 +1,7 @@
 {
     "development": {
         "username": "root",
-        "password": "0913607875az",
+        "password": "12345",
         "database": "tivas",
         "host": "127.0.0.1",
         "dialect": "mysql",
