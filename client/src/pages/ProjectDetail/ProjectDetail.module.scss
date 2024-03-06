@@ -5,7 +5,7 @@
 }
 
 .content {
-  padding: 50px 0 0 50px;
+  padding: 0px 0 0 50px;
 }
 
 .item {
@@ -66,6 +66,27 @@
 
 .info-detail {
   margin-top: 30px;
+
+  .top-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .location {
+      margin-top: 10px;
+      display: inline-flex;
+      align-items: center;
+      column-gap: 8px;
+      font-family: "Inter", sans-serif;
+      font-size: 1.8rem;
+  
+      .icon {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  
+  }
 
   .desc {
     margin-top: 25px;
@@ -168,7 +189,7 @@
 
 // Reservaiton
 .reservation {
-  padding: 50px 80px 0 50px;
+  padding-right: 80px;
   text-align: right;
 
   .action {
@@ -176,13 +197,26 @@
     font-family: "Inter", sans-serif;
     padding: 20px 30px;
 
-    font-size: 1.6rem;
-    background-color: orange;
+    font-size: 1.7rem;
+    background-color: #605DEC;
+    color: #fff;
     cursor: pointer;
     user-select: none;
+    border-radius: 8px;
 
     &:hover {
       color: #fff;
+      opacity: 0.9;
     }
   }
+}
+
+.title-reservation {
+  font-family: "Inter", sans-serif;
+  font-size: 1.8rem;
+}
+
+.desc-reservation {
+  font-family: "Inter", sans-serif;
+  font-size: 1.6rem;
 }

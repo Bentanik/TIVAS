@@ -135,46 +135,83 @@ function ProjectDetail() {
               <SimpleGallery galleryID="my-test-gallery" images={listImage} />
             </div>
           </div>
-          {/* Reservation */}
-          {status === 1 && (
-            <div className={cx("reservation")}>
-              <div className={cx("action")} onClick={handleOpenReservaion}>
-                Reservation
-              </div>
-              <Dialog
-                open={openReservaion}
-                onClose={handleCloseReservaion}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-              >
-                <DialogTitle>
-                  <h3 className={cx("title-reservation")}>
-                    {`Are you sure you want to reserve project ${projectData?.name}?`}
-                  </h3>
-                </DialogTitle>
-                <DialogContent>
-                  <DialogContentText id="alert-dialog-description">
-                    <p className={cx("desc-reservation")}>
-                      {`The average price is ${Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        currency: "USD",
-                      }).format(projectData?.reservationPrice)}`}
-                    </p>
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <Button style={{fontSize: "1.2rem"}} onClick={handleCloseReservaion}>Disagree</Button>
-                  <Button style={{fontSize: "1.2rem"}} onClick={handlePaymentReservaion}>Agree</Button>
-                </DialogActions>
-              </Dialog>
-            </div>
-          )}
+
           <div className={cx("content")}>
             <div className={cx("info-detail")}>
-              <h1 className={cx("title")}>
-                {/* The Rivus Project from Thu Duc district, Ho Chi Minh */}
-                {projectData?.name}
-              </h1>
+              <div className={cx("top-content")}>
+                <div className={cx("left")}>
+                  <h1 className={cx("title")}>
+                    {/* The Rivus Project from Thu Duc district, Ho Chi Minh */}
+                    {projectData?.name}
+                  </h1>
+  
+                  <div className={cx("location")}>
+                    <svg
+                      className={cx("icon")}
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                    >
+                      <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6" />
+                    </svg>
+  
+                    <span className={cx("text")}>{projectData?.location}</span>
+                  </div>
+                </div>
+
+                {/* Reservation */}
+                {status === 1 && (
+                  <div className={cx("reservation")}>
+                    <div
+                      className={cx("action")}
+                      onClick={handleOpenReservaion}
+                    >
+                      Reservation
+                    </div>
+                    <Dialog
+                      open={openReservaion}
+                      onClose={handleCloseReservaion}
+                      aria-labelledby="alert-dialog-title"
+                      aria-describedby="alert-dialog-description"
+                    >
+                      <DialogTitle>
+                        <h3 className={cx("title-reservation")}>
+                          {`Are you sure you want to reserve project ${projectData?.name}?`}
+                        </h3>
+                      </DialogTitle>
+                      <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                          <p className={cx("desc-reservation")}>
+                            {`The average price is ${Intl.NumberFormat(
+                              "en-US",
+                              {
+                                style: "currency",
+                                currency: "USD",
+                              }
+                            ).format(projectData?.reservationPrice)}`}
+                          </p>
+                        </DialogContentText>
+                      </DialogContent>
+                      <DialogActions>
+                        <Button
+                          style={{ fontSize: "1.2rem" }}
+                          onClick={handleCloseReservaion}
+                        >
+                          Disagree
+                        </Button>
+                        <Button
+                          style={{ fontSize: "1.2rem" }}
+                          onClick={handlePaymentReservaion}
+                        >
+                          Agree
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
+                  </div>
+                )}
+              </div>
 
               <div className={cx("desc")}>{projectData?.description}</div>
 

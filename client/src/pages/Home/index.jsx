@@ -517,7 +517,7 @@ function Home() {
               </div>
               <section className={cx("content")}>
                 <h3 className={cx("name")}>{item.name}</h3>
-                <div className={cx("location")}>
+                <span className={cx("location")}>
                   <svg
                     className={cx("icon")}
                     xmlns="http://www.w3.org/2000/svg"
@@ -530,7 +530,7 @@ function Home() {
                   </svg>
 
                   <span className={cx("text")}>{item.location}</span>
-                </div>
+                </span>
               </section>
             </Link>
           </div>
