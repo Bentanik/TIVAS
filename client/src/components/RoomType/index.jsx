@@ -111,6 +111,38 @@ function RoomType({ data }) {
                         </div>
                     </div>
                 </div>
+                {/* Second List */}
+                <div className={cx("second-list")}>
+                    <div className={cx("text", "bold")}>
+                        {data.bedrooms} Room
+                    </div>
+                    <div className={cx("type-bed", "row")}>
+                        <img
+                            className={cx("icon")}
+                            src={images.bedIcon}
+                            alt="Locate Icon"
+                        />
+                        <div className={cx("text")}>{data.bedTypes}</div>
+                    </div>
+                    <div className={cx("bath", "row")}>
+                        <img
+                            className={cx("icon")}
+                            src={images.bathIcon}
+                            alt="Locate Icon"
+                        />
+                        <div className={cx("text")}>
+                            {data.bathrooms} Bathrooms
+                        </div>
+                    </div>
+                    <div className={cx("kitchen", "row")}>
+                        <img
+                            className={cx("icon")}
+                            src={images.kitchenIcon}
+                            alt="Locate Icon"
+                        />
+                        <div className={cx("text")}>Full Kitchen</div>
+                    </div>
+                </div>
             </div>
             <Popup
                 trigger={openDetail}
