@@ -35,37 +35,18 @@ const deleteProjectImage = (fileData) => {
 //Create New Project
 export const createNewProject = async (req, res) => {
   try {
-    const { name, description, buildingStatus, location, reservationDate, reservationPrice, openDate, closeDate } = req.body;
-    if (!name || !description || !buildingStatus || !location || !reservationDate || !reservationPrice || !openDate || !closeDate) {
+    const { name, description, buildingStatus, type, location, features, attractions } = req.body;
+    if (!name || !description || !buildingStatus || !type || !location || !features || !attractions) {
       if (req.files) {
         deleteProjectImage(req.files);
       }
       return missValue("Missing value!", res);
-    }
-    const dateRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
-    if (!dateRegex.test(openDate) || !dateRegex.test(reservationDate) || !dateRegex.test(closeDate)) {
-      return badRequest("Open Date, Reservation Date, Close Date must be like (dd/mm/yyyy) format!", res);
-    }
-    if (!isValidDate(openDate) || !isValidDate(reservationDate) || !isValidDate(closeDate)) {
-      return badRequest("Open Date, Reservation Date, Close Date must be a valid date!", res)
     }
     if (!/^\d+$/.test(buildingStatus)) {
       if (req.files) {
         deleteProjectImage(req.files);
       }
       return badRequest("Building Status is required an INTEGER!", res);
-    }
-    if (!/\b\d+(\.\d+)?\b/g.test(reservationPrice)) {
-      if (req.files) {
-        deleteProjectImage(req.files);
-      }
-      return badRequest("Reservation Price is required a NUMBER!", res);
-    }
-    if (reservationPrice <= 0) {
-      if (req.files) {
-        deleteProjectImage(req.files);
-      }
-      return badRequest("Reservation Price must be higher than 0!")
     }
     const response = await services.createNewProject(req.body, req.files);
     return res.status(200).json(response);
@@ -86,37 +67,18 @@ export const deleteProjects = async (req, res) => {
 //Update Project
 export const updateProjects = async (req, res) => {
   const { id } = req.params;
-  const { name, description, buildingStatus, location, reservationDate, reservationPrice, openDate, closeDate } = req.body;
-  if (!name || !description || !buildingStatus || !location || !reservationDate || !reservationPrice || !/^\d+$/.test(id) || !openDate || !closeDate) {
+  const { name, description, buildingStatus, location, features, attractions } = req.body;
+  if (!name || !description || !buildingStatus || !location || !features || !attractions || !/^\d+$/.test(id)) {
     if (req.files) {
       deleteProjectImage(req.files);
     }
     return missValue("Missing value!", res);
-  }
-  const dateRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
-  if (!dateRegex.test(openDate) || !dateRegex.test(reservationDate) || !dateRegex.test(closeDate)) {
-    return badRequest("Open Date, Reservation Date, Close Date must be like (dd/mm/yyyy) format!", res);
-  }
-  if (!isValidDate(openDate) || !isValidDate(reservationDate) || !isValidDate(closeDate)) {
-    return badRequest("Open Date, Reservation Date, Close Date must be a valid date!", res)
   }
   if (!/^\d+$/.test(buildingStatus)) {
     if (req.files) {
       deleteProjectImage(req.files);
     }
     return badRequest("Building Status is required an INTEGER!", res);
-  }
-  if (!/\b\d+(\.\d+)?\b/g.test(reservationPrice)) {
-    if (req.files) {
-      deleteProjectImage(req.files);
-    }
-    return badRequest("Reservation Price is required a NUMBER!", res);
-  }
-  if (reservationPrice <= 0) {
-    if (req.files) {
-      deleteProjectImage(req.files);
-    }
-    return badRequest("Reservation Price must be higher than 0!")
   }
   const response = await services.updateProject(req.body, id, req.files);
   return res.status(200).json(response);
@@ -135,7 +97,13 @@ export const searchProject = async (req, res) => {
 
 export const searchNameAndLocationProject = async (req, res) => {
   const { info, limit } = req.params;
-  const response = await services.searchNameAndLocationProject(info, limit);
+  let limitDB;
+  if ((/^\d+$/.test(limit))) {
+    limitDB = parseInt(limit)
+  } else {
+    limitDB = 3
+  }
+  const response = await services.searchNameAndLocationProject(info, limitDB);
   return res.status(200).json(response);
 }
 
@@ -152,20 +120,20 @@ export const getDetailsProject = async (req, res) => {
   return res.status(200).json(response);
 }
 
-export const changeDate = async (req,res) => {
-  const {id} = req.params
-  const response = await services.changeDate(req.body,id);
+export const changeDate = async (req, res) => {
+  const { id } = req.params
+  const response = await services.changeDate(req.body, id);
   return res.status(200).json(response);
 }
 
-export const openReservationTicket = async (req,res) => {
-  const {id} = req.params
+export const openReservationTicket = async (req, res) => {
+  const { id } = req.params
   const response = await services.openReservationTicket(id)
   return res.status(200).json(response)
 }
 
-export const openBooking = async (req,res) => {
-  const {id} = req.params
+export const openBooking = async (req, res) => {
+  const { id } = req.params
   const response = await services.openBooking(id)
   return res.status(200).json(response)
 }
