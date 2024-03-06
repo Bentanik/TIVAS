@@ -10,10 +10,10 @@
 }
 
 :root {
-    --home-padding: 13px;
-    --footer-bg: #2e2100;
-    --error-color: #a50016;
-    --admin-sidebar-bg: #fff;
+  --home-padding: 13px;
+  --footer-bg: #2e2100;
+  --error-color: #a50016;
+  --admin-sidebar-bg: #fff;
 }
 
 html {
@@ -22,12 +22,13 @@ html {
 
 body {
   font-family: var(--font-family);
-    font-size: 1.6rem;
-    line-height: 1.5;
-    text-rendering: optimizespeed;
-    color: var(--text-color);
-    overflow-y: overlay;
-    background-color: #f1f1f1;
+  font-size: 1.6rem;
+  line-height: 1.5;
+  text-rendering: optimizespeed;
+  color: var(--text-color);
+  overflow-y: overlay;
+  // background-color: #f1f1f1;
+  background-color: #fff;
 }
 
 a {
@@ -51,43 +52,43 @@ body::-webkit-scrollbar-thumb {
 }
 
 body {
-    .StripeElement {
-        background: #fff;
-        border: 1px solid #ababab;
-        padding: 18px 30px;
-        font-family: "Inter", sans-serif;
-    }
+  .StripeElement {
+    background: #fff;
+    border: 1px solid #ababab;
+    padding: 18px 30px;
+    font-family: "Inter", sans-serif;
+  }
 
-    .StripeElement--focus {
-        border: 1px solid #000;
-    }
+  .StripeElement--focus {
+    border: 1px solid #000;
+  }
 
-    .StripeElement--invalid {
-        border-color: red;
-    }
+  .StripeElement--invalid {
+    border-color: red;
+  }
 
-    .StripeElement--webkit-autofill {
-        background-color: #fefde5 !important;
-    }
+  .StripeElement--webkit-autofill {
+    background-color: #fefde5 !important;
+  }
 
-    .StripeElement ::placeholder {
-        color: #aab7c4;
-    }
+  .StripeElement ::placeholder {
+    color: #aab7c4;
+  }
 
-    .StripeElement .InputElement {
-        display: block;
-        margin-top: 10px;
-        font-size: 16px;
-        color: #495057;
-    }
+  .StripeElement .InputElement {
+    display: block;
+    margin-top: 10px;
+    font-size: 16px;
+    color: #495057;
+  }
 
-    .StripeElement .StripeElement--invalid .ErrorMessage {
-        color: #fa755a;
-    }
+  .StripeElement .StripeElement--invalid .ErrorMessage {
+    color: #fa755a;
+  }
 
-    .CardTypeIcon {
-        width: 30px;
-        height: 20px;
-        margin-top: 10px;
-    }
+  .CardTypeIcon {
+    width: 30px;
+    height: 20px;
+    margin-top: 10px;
+  }
 }

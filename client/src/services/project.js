@@ -9,3 +9,7 @@ export const getProjectDetailById = (axiosInstance, id) => {
 export const getAllTypeRoom = (axiosInstance, id) => {
     return axiosInstance.get(`/api/v1/typeroom/getAll/${id}`);
 };
+
+export const getTypeRoom = (axiosInstance, id) => {
+  return axiosInstance.get(`/api/v1/typeroom/${id}`);
+}

@@ -82,7 +82,6 @@ export const register = ({
 };
 
 // Login
-
 export const login = ({ username, email, password }) => {
   return new Promise(async (resolve, reject) => {
     try {

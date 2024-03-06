@@ -513,49 +513,23 @@ function Home() {
                 className={cx("image")}
               />
               <div className={cx("heart-bandle")}>
-                <text className={cx("bandle")}>Top 21 Resort</text>
-                <svg
-                  className={cx("heart-icon")}
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                >
-                  <path
-                    d="M12 21.35L10.55 20.03C5.4 15.36 2 12.27 2 8.5C2 5.41 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.08C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.41 22 8.5C22 12.27 18.6 15.36 13.45 20.03L12 21.35Z"
-                    fill="#FFD233"
-                  />
-                </svg>
+                <span className={cx("bandle")}>Top 21 Resort</span>
               </div>
               <section className={cx("content")}>
                 <h3 className={cx("name")}>{item.name}</h3>
-                <div className={cx("row")}></div>
-                <span className={cx("available")}>{item.location}</span>
-                <div className={cx("row", "price")}>
-                  <p className={cx("text")}>{item.reservationPrice}</p>
-                  <div className={cx("rating")}>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                    >
-                      <g clip-path="url(#clip0_71_211)">
-                        <path
-                          d="M10.9202 2.86795C11.0303 2.67911 11.1879 2.52242 11.3774 2.41352C11.5669 2.30462 11.7817 2.24731 12.0002 2.24731C12.2188 2.24731 12.4335 2.30462 12.623 2.41352C12.8125 2.52242 12.9702 2.67911 13.0802 2.86795L15.8752 7.66595L21.3032 8.84195C21.5167 8.88835 21.7144 8.9899 21.8764 9.13648C22.0384 9.28307 22.1592 9.46956 22.2267 9.67737C22.2942 9.88519 22.306 10.1071 22.261 10.3209C22.216 10.5347 22.1157 10.733 21.9702 10.8959L18.2702 15.0369L18.8302 20.562C18.8523 20.7795 18.817 20.9991 18.7277 21.1987C18.6384 21.3983 18.4983 21.571 18.3214 21.6995C18.1444 21.828 17.9369 21.9079 17.7195 21.9312C17.502 21.9544 17.2823 21.9202 17.0822 21.832L12.0002 19.5919L6.91823 21.832C6.71815 21.9202 6.49842 21.9544 6.28098 21.9312C6.06355 21.9079 5.85601 21.828 5.6791 21.6995C5.50219 21.571 5.36209 21.3983 5.2728 21.1987C5.1835 20.9991 5.14814 20.7795 5.17023 20.562L5.73023 15.0369L2.03023 10.8969C1.88446 10.734 1.78398 10.5356 1.73884 10.3217C1.6937 10.1077 1.70547 9.88568 1.77297 9.6777C1.84048 9.46973 1.96135 9.2831 2.12354 9.13645C2.28572 8.98979 2.48353 8.88825 2.69723 8.84195L8.12523 7.66595L10.9202 2.86795Z"
-                          fill="#FFCC41"
-                        />
-                      </g>
-                      <defs>
-                        <clipPath id="clip0_71_211">
-                          <rect width="24" height="24" fill="white" />
-                        </clipPath>
-                      </defs>
-                    </svg>
-                    <strong>4.6</strong>
-                  </div>
+                <div className={cx("location")}>
+                  <svg
+                    className={cx("icon")}
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6" />
+                  </svg>
+
+                  <span className={cx("text")}>{item.location}</span>
                 </div>
               </section>
             </Link>
@@ -603,21 +577,60 @@ function Home() {
             <Slider {...settingTopResort}>{renderTopResort()}</Slider>
           </div>
         </section>
-        {/* Timeshare now available for sale. */}
-        <section className={cx("sale-wrapper")}>
-          <h2 className={cx("heading")}>
-            <span className={cx("point")}>Timeshare</span>
-            <br /> now available for sale.
-          </h2>
-          <div className={cx("list-timeshare")}>{renderTimeshareSale()}</div>
-          <div className={cx("browse-more")}>
-            <Link to="#!">
-              <div className={cx("action", "button_slide ")}>
-                <span className={cx("text")}>Browse More Properties</span>
+        <section className={cx("destinations")}>
+          <h2 className={cx("title")}>Trending destinations</h2>
+          <div className={cx("wrapper")}>
+            <div className={cx("list-one")}>
+              <div className={cx("box")}>
+                <img
+                  src={images.heroImg}
+                  alt="image_one"
+                  className={cx("image")}
+                />
+                <span className={cx("text")}>Viet Nam</span>
               </div>
-            </Link>
+              <div className={cx("box")}>
+                <img
+                  src={images.heroImg}
+                  alt="image_one"
+                  className={cx("image")}
+                />
+                <span className={cx("text")}>Viet Nam</span>
+
+              </div>
+            </div>
+            <div className={cx("list-two")}>
+              <div className={cx("box")}>
+                <img
+                  src={images.heroImg}
+                  alt="image_one"
+                  className={cx("image")}
+                />
+                <span className={cx("text")}>Viet Nam</span>
+
+              </div>
+              <div className={cx("box")}>
+                <img
+                  src={images.heroImg}
+                  alt="image_one"
+                  className={cx("image")}
+                />
+                <span className={cx("text")}>Viet Nam</span>
+
+              </div>
+              <div className={cx("box")}>
+                <img
+                  src={images.heroImg}
+                  alt="image_one"
+                  className={cx("image")}
+                />
+                <span className={cx("text")}>Viet Nam</span>
+
+              </div>
+            </div>
           </div>
         </section>
+
         {/* Explore */}
         <section className={cx("explore-wrapper")}>
           <div className={cx("explore-content")}>

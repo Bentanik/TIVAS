@@ -24,23 +24,23 @@ import { getAvatarUser } from "~/controllers/user";
 const cx = classNames.bind(styles);
 
 const LIST_NAV = [
-    {
-        value: "Home",
-        link: "/",
-    },
-    {
-        value: "Destinations",
-        link: "/destinations",
-    },
+  {
+    value: "Home",
+    link: "/",
+  },
+  {
+    value: "Listings",
+    link: "/listings",
+  },
 
-    {
-        value: "News",
-        link: "/news",
-    },
-    {
-        value: "About",
-        link: "/about",
-    },
+  {
+    value: "News",
+    link: "/news",
+  },
+  {
+    value: "About",
+    link: "/about",
+  },
 ];
 
 function Navigations() {

@@ -19,7 +19,7 @@ const FAVORITE_DESTINATIONS = [
     link: "#!",
     image: images.timeshareResort,
     name: "Da Nang City",
-    description: "Club Wyndham Vino Bello Resort",
+    description: "Marriot's Desert Springs Villa",
     price: "from $2300 night",
   },
   {
@@ -290,7 +290,7 @@ function ListingDetails() {
   const featuredListing = () => {
     return featuredResort.map((item, index) => {
       return (
-        <div>
+        <div key={index}>
           <div className={cx("featured-box")}>
             <Link to="#!">
               <img src={item.image} alt={item.name} className={cx("f-image")} />
@@ -315,57 +315,59 @@ function ListingDetails() {
   const detailsListing = () => {
     return listingResort.map((item, index) => {
       return (
-        <div className={cx("room-type-wrapper")}>
+        <div key={index} className={cx("room-type-wrapper")}>
           <div className={cx("room-type-block")}>
             <div className={cx("content-wrapper")}>
               {/* Left content */}
               <div className={cx("left-content")}>
                 <div className={cx("left-row")}>
-                  <img
-                    src={images.koala}
-                    alt="Thumb_Image"
-                    style={{ borderRadius: 12 }}
-                    className={cx("thumb-img")}
-                  />
                   <div className={cx("list-item")}>
                     {/* First List */}
                     <div className={cx("first-list")}>
                       <div className={cx("left-content")}>
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "start",
-                            border: " 1px solid #b7b7b7",
-                            borderRadius: 5,
-                            width: "35%",
-                            alignItems: "center",
-                            color: "red",
-                            padding: 2,
-                            marginBottom: 8,
-                          }}
-                          className={cx("heart-bandle")}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
+                        <img
+                          src={images.koala}
+                          alt="Thumb_Image"
+                          style={{ borderRadius: 12 }}
+                          className={cx("thumb-img")}
+                        />
+                        <div className={cx("name-content")}>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "start",
+                              border: " 1px solid #b7b7b7",
+                              borderRadius: 5,
+                              alignItems: "center",
+                              color: "red",
+                              padding: 2,
+                              marginBottom: 8,
+                              width: 80,
+                            }}
+                            className={cx("deal-bandle")}
                           >
-                            <path
-                              d="M16.5 7.99992C16.5 9.49992 16 11.4999 13.6 12.2999C14.3 10.5999 14.4 8.89992 13.9 7.29992C13.2 5.19992 10.9 3.59992 9.3 2.69992C8.9 2.39992 8.2 2.79992 8.3 3.39992C8.3 4.49992 8 6.09992 6.3 7.79992C4.1 9.99992 3 12.2999 3 14.4999C3 17.3999 5 20.9999 9 20.9999C5 16.9999 8 13.4999 8 13.4999C8.8 19.3999 13 20.9999 15 20.9999C16.7 20.9999 20 19.7999 20 14.5999C20 11.4999 18.7 9.09992 17.6 7.69992C17.3 7.19992 16.6 7.49992 16.5 7.99992Z"
-                              fill="#FF0101"
-                            />
-                          </svg>
-                          <text className={cx("bandle")}>Hot Deal</text>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                            >
+                              <path
+                                d="M16.5 7.99992C16.5 9.49992 16 11.4999 13.6 12.2999C14.3 10.5999 14.4 8.89992 13.9 7.29992C13.2 5.19992 10.9 3.59992 9.3 2.69992C8.9 2.39992 8.2 2.79992 8.3 3.39992C8.3 4.49992 8 6.09992 6.3 7.79992C4.1 9.99992 3 12.2999 3 14.4999C3 17.3999 5 20.9999 9 20.9999C5 16.9999 8 13.4999 8 13.4999C8.8 19.3999 13 20.9999 15 20.9999C16.7 20.9999 20 19.7999 20 14.5999C20 11.4999 18.7 9.09992 17.6 7.69992C17.3 7.19992 16.6 7.49992 16.5 7.99992Z"
+                                fill="#FF0101"
+                              />
+                            </svg>
+                            <text className={cx("bandle")}>Hot Deal</text>
+                          </div>
+                          <h2 className={cx("sub-title")}>{item.name}</h2>
+                          <h2
+                            style={{ fontWeight: 400 }}
+                            className={cx("sub-title")}
+                          >
+                            {item.address}
+                          </h2>
                         </div>
-                        <h2 className={cx("sub-title")}>{item.name}</h2>
-                        <h2
-                          style={{ fontWeight: 400 }}
-                          className={cx("sub-title")}
-                        >
-                          {item.address}
-                        </h2>
                       </div>
                       <div className={cx("guest", "row")}>
                         <div className={cx("text")}>{item.unit}</div>
@@ -387,6 +389,7 @@ function ListingDetails() {
                           style={{ marginLeft: 15 }}
                           src={item.host}
                           className={cx("crumb-img")}
+                          alt=""
                         />
                       </div>
                     </div>
@@ -410,53 +413,23 @@ function ListingDetails() {
       </header>
       {/* Breadcrumbs */}
       <section className={cx("breadcrumbs")}>
+        <h1 className={cx("title")}>Listings</h1>
         <div className={cx("list-nav")}>
-          <Link to="/">
-            <div className={cx("nav")}>
-              {/* <img src={images.resort} alt="Home" /> */}
-            </div>
+          <Link to="/" className={cx("nav")}>
+            Home
           </Link>
-          <FontAwesomeIcon icon={faChevronRight} className={cx("icon-arrow")} />
-          <div className={cx("nav")}>
-            <Link to="/destinations">
-              <span className={cx("text-nav")}>Listing</span>
-            </Link>
-          </div>
+          <span className={cx("nav")}> - </span>
+          <span className={cx("nav", "text")}>Listings</span>
         </div>
       </section>
       {/* Main */}
       <main className={cx("main")}>
-        <div className={cx("top-content")}>
-          {/* <h1 className={cx("heading")}>
-            Rent Direct From Vacation Club Owners
-          </h1> */}
-          <div className={cx("heading")}>
-            <label>Timeshares</label>
-            <label style={{ color: "#1cb954" }}>Rentals</label>
-            <label>From</label>
-            <label>HCM</label>
-            <label>City</label>
-          </div>
-          <img className={cx("header-img")} src={images.koala} alt="pic" />
-          {/*Search*/}
-          <section className={cx("search")}>{/* <SearchPage /> */}</section>
-        </div>
-
         {/* Content */}
         <section className={cx("body")}>
-          {/* Favorite destination */}
-          <div className={cx("favorite-box")}>
-            <h2 className={cx("title")}></h2>
-            {/* List box */}
-            {/* <div className={cx("list-box")}>{renderFavoriteDestination()}</div> */}
-          </div>
-          {/* Top 25 resort */}
           <div className={cx("top-resort")}>
             {/* List box */}
-            <div style={{ marginTop: 60 }} className={cx("top-resort-header")}>
-              <h2 style={{ fontWeight: 600 }} className={cx("title")}>
-                Featured Listing
-              </h2>
+            <div className={cx("top-resort-header")}>
+              <h2 className={cx("title")}>Featured Listing</h2>
             </div>
             {/*Featured Listing */}
             <div className={cx("featured-listing")}>
@@ -464,32 +437,25 @@ function ListingDetails() {
             </div>
             {/*Listing Details */}
             <div className={cx("top-unit")}>
-              <div className={cx("crumb-unit")}>
-                <div style={{ fontWeight: "bold" }} className={cx("sub-title")}>
-                  Listing 4368 result
+              <div className={cx("listing-content")}>
+                <div className={cx("listing-item")}>
+                  <th className={cx("listing-dates")}>Listing 4368 result</th>
+                  <th className={cx("listing-unit")}>Unit</th>
+                  <th className={cx("listing-sleep")}>Sleeps</th>
+                  <th className={cx("listing-date")}>
+                    <span className={cx("show-for-medium-up")}>Dates</span>
+                  </th>
+                  <th className={cx("listing-night")}>
+                    <span className={cx("show-for-medium-up")}>Nights</span>
+                  </th>
+                  <th className={cx("listing-price")}>Price</th>
+                  <th className={cx("listing-host")}>
+                    <span className={cx("show-for-medium-up")}>Host</span>
+                  </th>
                 </div>
-              </div>
-              <div className={cx("left-content")}>
-                <div className={cx("row")}>
-                  <div className={cx("text")}>Unit</div>
-                </div>
-                <div className={cx("row")}>
-                  <div className={cx("text")}>Sleep</div>
-                </div>
-                <div className={cx("row")}>
-                  <div style={{ marginLeft: 0 }} className={cx("text")}>
-                    Dates/Nights
-                  </div>
-                </div>
-                <div className={cx("row")}>
-                  <div className={cx("text")}>Price</div>
-                </div>
-                <div className={cx("area", "row")}>
-                  <div className={cx("text")}>Host</div>
-                </div>
+                <div className={cx("detail-listing")}>{detailsListing()}</div>
               </div>
             </div>
-            <div>{detailsListing()}</div>
             <div className={cx("benefit")}>
               <div className={cx("crumb-benefit")}>
                 <img className={cx("benefit-img")} src={images.one} alt="pic" />
@@ -535,7 +501,7 @@ function ListingDetails() {
                   per year.
                 </p>
                 <label className={cx("bottom-text")}>
-                  KOALA helps these owners securely rent their unused timeshare
+                  TIVAS helps these owners securely rent their unused timeshare
                   to anyone in the world.
                 </label>
               </div>
@@ -572,11 +538,8 @@ function ListingDetails() {
               </div>
             </div>
           </section>
-          {/* Features Rentals */}
         </section>
       </main>
-
-      <div>{/* <PaymentIntro /> */}</div>
       <Footer />
     </div>
   );
