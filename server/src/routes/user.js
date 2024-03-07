@@ -22,4 +22,5 @@ router.put(
   controllers.editUser
 );
 
+
 export default router;

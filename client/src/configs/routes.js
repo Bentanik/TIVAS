@@ -75,38 +75,39 @@ const routes = [
     component: Policy,
     layout: null,
   },
-    {
-        path: "/admin/manageuser",
-        component: AdminManageUser,
-        layout: LayoutAdmin,
-    },
-    {
-        path: "/admin/manageproject",
-        component: AdminManageProject,
-        layout: LayoutAdmin,
-    },
+  {
+    path: "/admin/user/manageuser/ban",
+    component: AdminManageUser,
+    layout: LayoutAdmin,
+  },
+  {
+    path: "/admin/manageproject",
+    component: AdminManageProject,
+    layout: LayoutAdmin,
+  },
 
-    {
-        path: "/admin/userbanlist",
-        component: AdminUserBanList,
-        layout: LayoutAdmin,
-    },
+  {
+    path: "/admin/userbanlist",
+    component: AdminUserBanList,
+    layout: LayoutAdmin,
+  },
 
-    {
-        path: "/admin/typeroomdetail",
-        component: AdminRoomTypeDetail,
-        layout: LayoutAdmin,
-    },
+  {
+    path: "/admin/typeroomdetail",
+    component: AdminRoomTypeDetail,
+    layout: LayoutAdmin,
+  },
 
-    {
-        path: "/admin/projectdetail",
-        component: AdminProjectDetail,
-        layout: LayoutAdmin,
-    }, {
-        path: "/timesharedetail",
-        component: TimeshareDetail,
-        layout: null,
-    },
+  {
+    path: "/admin/projectdetail",
+    component: AdminProjectDetail,
+    layout: LayoutAdmin,
+  },
+  {
+    path: "/timesharedetail",
+    component: TimeshareDetail,
+    layout: null,
+  },
 ];
 
 export default routes;

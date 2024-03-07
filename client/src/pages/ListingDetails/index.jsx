@@ -380,9 +380,15 @@ function ListingDetails() {
                     <th className={cx("unit", "column")}>
                       <h4 className={cx("title")}>Unit</h4>
                     </th>
-                    <th className={cx("sleep", "column")}><h4 className={cx("title")}>Sleeps</h4></th>
-                    <th className={cx("date", "column")}><h4 className={cx("title")}>Dates</h4></th>
-                    <th className={cx("price", "column")}><h4 className={cx("title")}>Price</h4></th>
+                    <th className={cx("sleep", "column")}>
+                      <h4 className={cx("title")}>Sleeps</h4>
+                    </th>
+                    <th className={cx("date", "column")}>
+                      <h4 className={cx("title")}>Dates</h4>
+                    </th>
+                    <th className={cx("price", "column")}>
+                      <h4 className={cx("title")}>Price</h4>
+                    </th>
                   </tr>
                 </thead>
                 <tbody className={cx("tbody")}>
