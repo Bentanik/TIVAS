@@ -18,6 +18,7 @@ import AdminProjectDetail from "~/pages/AdminProjectDetail";
 import Banking from "~/components/Layouts/Banking";
 import AdminRoomTypeDetail from "~/pages/AdminRoomTypeDetail";
 import TimeshareDetail from "~/pages/TimeshareDetail";
+import AdminProjectReservation from "~/pages/AdminProjectReservation";
 
 const routes = [
   {
@@ -109,7 +110,7 @@ const routes = [
     layout: LayoutAdmin,
   },
   {
-    path: "/admin/user/manageuser/ban",
+    path: "/admin/manageuser/ban",
     component: AdminManageUser,
     layout: LayoutAdmin,
   },
@@ -134,6 +135,11 @@ const routes = [
   {
     path: "/admin/projectdetail",
     component: AdminProjectDetail,
+    layout: LayoutAdmin,
+  },
+  {
+    path: "/admin/manageproject/reservation",
+    component: AdminProjectReservation,
     layout: LayoutAdmin,
   },
 ];

@@ -25,74 +25,66 @@ import ToastNotify from "~/components/ToastNotify";
 const cx = classNames.bind(styles);
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-    "& .MuiDialogContent-root": {
-        padding: theme.spacing(2),
-    },
-    "& .MuiDialogActions-root": {
-        padding: theme.spacing(1),
-    },
+  "& .MuiDialogContent-root": {
+    padding: theme.spacing(2),
+  },
+  "& .MuiDialogActions-root": {
+    padding: theme.spacing(1),
+  },
 }));
 
 function TimeshareDetail() {
-    const [open, setOpen] = useState(false);
-    const [message, setMessage] = useState({});
-    const [timeshareData, setTimeshareData] = useState({});
-    const [typeRoomData, setTypeRoomData] = useState([]);
-    const [projectData, setProjectData] = useState([]);
-    const [listImage, setListImage] = useState([]);
-    const [amenities, setAmenities] = useState([]);
-    const [handClick, setHandleClick] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState({});
+  const [timeshareData, setTimeshareData] = useState({});
+  const [typeRoomData, setTypeRoomData] = useState([]);
+  const [projectData, setProjectData] = useState([]);
+  const [listImage, setListImage] = useState([]);
+  const [amenities, setAmenities] = useState([]);
+  const [handClick, setHandleClick] = useState(false);
 
-    const dispatch = useDispatch();
-    const currentUser = useSelector((state) => state.auth.login.user);
-    const axiosInstance = createAxios(dispatch, currentUser);
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.auth.login.user);
+  const axiosInstance = createAxios(dispatch, currentUser);
 
-    const { id } = useParams();
+  const { id } = useParams();
 
-    useEffect(() => {
-        if (message?.err === 1) {
-            toast.custom(
-                () => (
-                    <ToastNotify
-                        type="error"
-                        title="Error"
-                        desc={message?.message}
-                    />
-                ),
-                { duration: 2000 }
-            );
-        } else if (message?.err === 0) {
-            toast.custom(
-                () => (
-                    <ToastNotify
-                        type="success"
-                        title="Success"
-                        desc={message?.message}
-                    />
-                ),
-                { duration: 2000 }
-            );
-        }
-    }, [message]);
+  useEffect(() => {
+    if (message?.err === 1) {
+      toast.custom(
+        () => (
+          <ToastNotify type="error" title="Error" desc={message?.message} />
+        ),
+        { duration: 2000 }
+      );
+    } else if (message?.err === 0) {
+      toast.custom(
+        () => (
+          <ToastNotify type="success" title="Success" desc={message?.message} />
+        ),
+        { duration: 2000 }
+      );
+    }
+  }, [message]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const res = await getTimeshareDetailById(axiosInstance, id);
-            console.log(res);
-            if (res?.err === 0) {
-                setProjectData(res.data.Project);
-                setListImage(res.data.TypeRoom.images);
-                setTypeRoomData(res.data.TypeRoom);
-                setTimeshareData(res.data.TimeShare);
-                setAmenities(res.data.TypeRoom.amenities);
-            }
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await getTimeshareDetailById(axiosInstance, id);
+      console.log(res);
+      if (res?.err === 0) {
+        setProjectData(res.data.Project);
+        setListImage(res.data.TypeRoom.images);
+        setTypeRoomData(res.data.TypeRoom);
+        setTimeshareData(res.data.TimeShare);
+        setAmenities(res.data.TypeRoom.amenities);
+      }
 
-            if (projectData.status !== 2) {
-                setHandleClick(false);
-            }
-        };
-        fetchData();
-    }, []);
+      if (projectData.status !== 2) {
+        setHandleClick(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const image = listImage.map((item) => {
     return {
@@ -115,27 +107,27 @@ function TimeshareDetail() {
   var startDate = new Date(startDateString);
   var endDate = new Date(endDateString);
 
-    var formattedStartDate = formatDate(startDate);
-    var formattedEndDate = formatDate(endDate);
+  var formattedStartDate = formatDate(startDate);
+  var formattedEndDate = formatDate(endDate);
 
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-    const handleClose = () => {
-        setOpen(false);
-    };
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
 
-    return (
-        <div className={cx("timeshare-detail-wrapper")}>
-            <Toaster position="top-right" richColors expand={true} />
-            <div>
-                {/* Header */}
-                <header className={cx("header")}>
-                    {/* Navigations */}
-                    <section className={cx("navigation")}>
-                        <Navigations />
-                    </section>
-                </header>
+  return (
+    <div className={cx("timeshare-detail-wrapper")}>
+      <Toaster position="top-right" richColors expand={true} />
+      <div>
+        {/* Header */}
+        <header className={cx("header")}>
+          {/* Navigations */}
+          <section className={cx("navigation")}>
+            <Navigations />
+          </section>
+        </header>
 
         <div className={cx("content")}>
           <h1 className={cx("main-title")}>{projectData.name}</h1>
@@ -215,81 +207,75 @@ function TimeshareDetail() {
             <div className={cx("right-content")}>
               <div className={cx("booking-info")}>
                 <div className={cx("price")}>
-                  {timeshareData.price}${" "}
+                  {timeshareData.price}$
                   <span className={cx("text")}>Total</span>
                 </div>
 
-                                <div className={cx("dates")}>
-                                    <div className={cx("text-dates", "text")}>
-                                        DATES
-                                    </div>
-                                    <div className={cx("dates-detail", "text")}>
-                                        {formattedStartDate} -{" "}
-                                        {formattedEndDate}
-                                    </div>
-                                </div>
-
-                                <div className={cx("total", "row-booking")}>
-                                    <div className={cx("text")}>
-                                        Total (USD)
-                                    </div>
-                                    <div className={cx("price")}>
-                                        {timeshareData.price}$
-                                    </div>
-                                </div>
-
-                                <button
-                                    type="button"
-                                    className={cx("booking-btn", "text")}
-                                    onClick={() => setOpen(true)}
-                                    disabled={handClick}
-                                >
-                                    Book Now
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                <div className={cx("dates")}>
+                  <div className={cx("text-dates", "text")}>DATES</div>
+                  <div className={cx("dates-detail", "text")}>
+                    {formattedStartDate} - {formattedEndDate}
+                  </div>
                 </div>
 
-                {/* Footer */}
-                <footer className={cx("footer")}>
-                    <Footer />
-                </footer>
-            </div>
-            <>
-                <BootstrapDialog
-                    onClose={handleClose}
-                    aria-labelledby="customized-dialog-title"
-                    open={open}
+                <div className={cx("total", "row-booking")}>
+                  <div className={cx("text")}>Total (USD)</div>
+                  <div className={cx("price")}>{timeshareData.price}$</div>
+                </div>
+
+                <div className={cx("note")}>
+                  <p className={cx("text")}>
+                    <span className={cx("bold")}>Attention: </span>{" "}
+                     Please read the rules below carefully for better
+                    understanding before participating
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className={cx("booking-btn", "text")}
+                  onClick={() => setOpen(true)}
+                  disabled={handClick}
                 >
-                    <DialogTitle
-                        sx={{ m: 0, p: 2 }}
-                        id="customized-dialog-title"
-                    >
-                        Booking
-                    </DialogTitle>
-                    <IconButton
-                        aria-label="close"
-                        onClick={handleClose}
-                        sx={{
-                            position: "absolute",
-                            right: 8,
-                            top: 8,
-                            color: (theme) => theme.palette.grey[500],
-                        }}
-                    >
-                        <CloseIcon />
-                    </IconButton>
-                    <DialogContent dividers>
-                        <Booking
-                            handleClose={handleClose}
-                            setMessage={setMessage}
-                        />
-                    </DialogContent>
-                </BootstrapDialog>
-            </>
+                  Book Now
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-    );
+
+        {/* Footer */}
+        <footer className={cx("footer")}>
+          <Footer />
+        </footer>
+      </div>
+      <>
+        <BootstrapDialog
+          onClose={handleClose}
+          aria-labelledby="customized-dialog-title"
+          open={open}
+        >
+          <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+            Booking
+          </DialogTitle>
+          <IconButton
+            aria-label="close"
+            onClick={handleClose}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+          <DialogContent dividers>
+            <Booking handleClose={handleClose} setMessage={setMessage} />
+          </DialogContent>
+        </BootstrapDialog>
+      </>
+    </div>
+  );
 }
 
 export default TimeshareDetail;
