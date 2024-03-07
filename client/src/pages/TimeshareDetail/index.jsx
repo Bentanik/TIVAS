@@ -9,7 +9,7 @@ import images from "~/assets/images";
 
 import Footer from "~/components/Layouts/Footer";
 import { useState, useEffect } from "react";
-import { getProjectDetailById } from "~/controllers/project";
+import { getTimeshareDetailById } from "~/controllers/timeshare";
 import { useDispatch, useSelector } from "react-redux";
 import createAxios from "~/configs/axios";
 import { Backdrop, CircularProgress } from "@mui/material";
@@ -17,12 +17,55 @@ import { Backdrop, CircularProgress } from "@mui/material";
 const cx = classNames.bind(styles);
 
 function TimeshareDetail() {
-    const item = [
-        "Wi-Fi Internet Access",
-        "Jetted Tub",
-        "In Room Safe",
-        "Washer & Dryer",
-    ];
+    const [timeshareData, setTimeshareData] = useState({});
+    const [typeRoomData, setTypeRoomData] = useState([]);
+    const [projectData, setProjectData] = useState([]);
+    const [listImage, setListImage] = useState([]);
+    const [amenities, setAmenities] = useState([]);
+    const dispatch = useDispatch();
+    const currentUser = useSelector((state) => state.auth.login.user);
+    const axiosInstance = createAxios(dispatch, currentUser);
+
+    const { id } = useParams();
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const res = await getTimeshareDetailById(axiosInstance, id);
+            console.log(res);
+            if (res?.err === 0) {
+                setProjectData(res.data.Project);
+                setListImage(res.data.TypeRoom.images);
+                setTypeRoomData(res.data.TypeRoom);
+                setTimeshareData(res.data.TimeShare);
+                setAmenities(res.data.TypeRoom.amenities);
+            }
+        };
+        fetchData();
+    }, []);
+
+    const image = listImage.map((item) => {
+        return {
+            largeURL: item.pathUrl,
+            thumbnailURL: item.pathUrl,
+            width: 974,
+            height: 641,
+        };
+    });
+    function formatDate(date) {
+        var year = date.getFullYear();
+        var month = (date.getMonth() + 1).toString().padStart(2, "0");
+        var day = date.getDate().toString().padStart(2, "0");
+        return `${month}-${day}-${year}`;
+    }
+
+    var startDateString = timeshareData.startDate;
+    var endDateString = timeshareData.endDate;
+
+    var startDate = new Date(startDateString);
+    var endDate = new Date(endDateString);
+
+    var formattedStartDate = formatDate(startDate);
+    var formattedEndDate = formatDate(endDate);
 
     return (
         <div className={cx("timeshare-detail-wrapper")}>
@@ -34,28 +77,24 @@ function TimeshareDetail() {
                         <Navigations />
                     </section>
                 </header>
-                {/* List Image */}
-                <div className={cx("content")}>
-                    <h1 className={cx("main-title")}>WorldMark Indio</h1>
-                    <img
-                        src={images.resort}
-                        alt="Avatar"
-                        className={cx("img")}
-                    />
 
-                    {/* <div className={cx("list-img")}>
+                <div className={cx("content")}>
+                    <h1 className={cx("main-title")}>{projectData.name}</h1>
+
+                    {/* List Image */}
+                    <div className={cx("list-img")}>
                         <SimpleGallery
                             galleryID="my-test-gallery"
-                            images={listImage}
+                            images={image}
                         />
-                    </div> */}
+                    </div>
 
                     <div className={cx("content-info")}>
                         {/* Left Content */}
                         <div className={cx("left-content")}>
                             <div className={cx("bedroom-detail")}>
                                 <h2 className={cx("type-name")}>
-                                    1 Bedroom Deluxe
+                                    {typeRoomData.name}
                                 </h2>
                                 {/* First Row */}
                                 <div className={cx("row-wrapper")}>
@@ -67,7 +106,7 @@ function TimeshareDetail() {
                                                 alt="bed-icon"
                                             />
                                             <div className={cx("text")}>
-                                                1 Bedroom
+                                                {typeRoomData.bedrooms} Bedroom
                                             </div>
                                         </div>
 
@@ -78,7 +117,7 @@ function TimeshareDetail() {
                                                 alt="person-icon"
                                             />
                                             <div className={cx("text")}>
-                                                4 Guests
+                                                {typeRoomData.persons} Guests
                                             </div>
                                         </div>
                                     </div>
@@ -91,7 +130,7 @@ function TimeshareDetail() {
                                                 alt="area-icon"
                                             />
                                             <div className={cx("text")}>
-                                                753 - 1482 Sq Ft
+                                                {typeRoomData.size} Sq Ft
                                             </div>
                                         </div>
 
@@ -102,7 +141,7 @@ function TimeshareDetail() {
                                                 alt="bed-icon"
                                             />
                                             <div className={cx("text")}>
-                                                1 King
+                                                {typeRoomData.bedTypes}
                                             </div>
                                         </div>
                                     </div>
@@ -116,7 +155,7 @@ function TimeshareDetail() {
                                 <div className={cx("list-amenities")}>
                                     {/* Left List */}
                                     <div className={cx("left-list")}>
-                                        {item.map((item, index) => (
+                                        {amenities.map((item, index) => (
                                             <div
                                                 key={index}
                                                 className={cx("item")}
@@ -128,7 +167,7 @@ function TimeshareDetail() {
 
                                     {/* Between List */}
                                     <div className={cx("between-list")}>
-                                        {item.map((item, index) => (
+                                        {amenities?.map((item, index) => (
                                             <div
                                                 key={index}
                                                 className={cx("item")}
@@ -140,7 +179,7 @@ function TimeshareDetail() {
 
                                     {/* Right List */}
                                     <div className={cx("right-list")}>
-                                        {item.map((item, index) => (
+                                        {amenities?.map((item, index) => (
                                             <div
                                                 key={index}
                                                 className={cx("item")}
@@ -158,10 +197,7 @@ function TimeshareDetail() {
                                     Unit Description
                                 </h3>
                                 <div className={cx("desc")}>
-                                    Cozy yet spacious. Intimate yet extensive.
-                                    This one-bedroom features luxurious comfort
-                                    for memories together and space to escape
-                                    the getaway.
+                                    {typeRoomData.description}
                                 </div>
                             </div>
                         </div>
@@ -169,7 +205,7 @@ function TimeshareDetail() {
                         <div className={cx("right-content")}>
                             <div className={cx("booking-info")}>
                                 <div className={cx("price")}>
-                                    $2,079{" "}
+                                    {timeshareData.price}${" "}
                                     <span className={cx("text")}>Total</span>
                                 </div>
 
@@ -178,29 +214,8 @@ function TimeshareDetail() {
                                         DATES
                                     </div>
                                     <div className={cx("dates-detail", "text")}>
-                                        May 25 - Jun 01, 2024
-                                    </div>
-                                </div>
-
-                                <div
-                                    className={cx("total-dates", "row-booking")}
-                                >
-                                    <div className={cx("date", "text")}>
-                                        $270 x 7 nights
-                                    </div>
-                                    <div className={cx("total", "text")}>
-                                        $ 1,890
-                                    </div>
-                                </div>
-
-                                <div
-                                    className={cx("service-fee", "row-booking")}
-                                >
-                                    <div className={cx("text")}>
-                                        TIVAS service fee:
-                                    </div>
-                                    <div className={cx("price", "text")}>
-                                        $189
+                                        {formattedStartDate} -{" "}
+                                        {formattedEndDate}
                                     </div>
                                 </div>
 
@@ -208,7 +223,9 @@ function TimeshareDetail() {
                                     <div className={cx("text")}>
                                         Total (USD)
                                     </div>
-                                    <div className={cx("price")}>$2,079</div>
+                                    <div className={cx("price")}>
+                                        {timeshareData.price}$
+                                    </div>
                                 </div>
 
                                 <button
