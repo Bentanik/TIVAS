@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import ejs from "ejs";
 import db from "../models";
+import { pagination } from "../middlewares/pagination";
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const fs = require("fs");
@@ -146,10 +147,10 @@ export const editUser = ({ username, fullName, numberPhone }, fileData) => {
             fullName,
             numberPhone,
             avatarURL: isEmpty
-              ? userResponse.avatarURL 
+              ? userResponse.avatarURL
               : fileData?.avatar[0]?.path,
             avatarPathName: isEmpty
-              ? userResponse.avatarPathName 
+              ? userResponse.avatarPathName
               : fileData?.avatar[0]?.filename,
           },
           {
@@ -184,3 +185,43 @@ export const editUser = ({ username, fullName, numberPhone }, fileData) => {
     }
   });
 };
+
+export const getAllUsers = ({ page, limit, orderBy, orderType }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let response = [];
+      let pageInput = 1;
+      const queries = pagination({ page, limit, orderType, orderBy });
+      const userResponse = await db.User.findAll();
+      let countPages = userResponse.length !== 0 ? 1 : 0;
+      if (userResponse.length / queries.limit > 1) {
+        countPages = Math.ceil(userResponse.length / queries.limit)
+      }
+      if (page) {
+        pageInput = page
+      }
+      queries.raw = true;
+      queries.nest = true;
+      if (pageInput <= countPages) {
+        response = await db.User.findAll({
+          ...queries
+        })
+      }
+      resolve({
+        err: response.length !== 0 ? 0 : 1,
+        message: pageInput > countPages ?
+          `Can not find any Users in Page (${pageInput}) because there are only (${countPages}) Pages of Users!`
+          : response.length === 0 ?
+            'Can not find any Users!'
+            : 'Users found.',
+        data: response.length !== 0 ? response : null,
+        count: response.length !== 0 ? response.length : 0,
+        countPages: countPages,
+        page: pageInput
+      })
+    } catch (error) {
+      console.log(error);
+      reject(error);
+    }
+  })
+}
