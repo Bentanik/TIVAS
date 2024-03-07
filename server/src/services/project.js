@@ -562,8 +562,9 @@ export const getDetailsProject = (id) => {
     })
 }
 
-export const changeDate = ({
-    openDate
+export const updateBooking = ({
+    openDate,
+    closeDate
 }, id) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -573,14 +574,13 @@ export const changeDate = ({
                     id
                 }
             })
-                let ExDate = new Date(project.openDate).getTime();
-                let NewDate = new Date(convertDate(openDate)).getTime();
-              
-                if (ExDate > NewDate || ExDate == NewDate) {
+            if (project.status == 1 || project.status == 0 && openDate < closeDate ) {
+                if (openDate > closeDate || openDate == closeDate) {
                   errorMessage.push("Can not change openDate because new date is less than old openDate")
                 } else {
                     const update = await db.Project.update({
-                        openDate : convertDate(openDate)
+                        openDate : convertDate(openDate),
+                        closeDate : convertDate(closeDate)
                     },{
                         where : {
                             id
@@ -618,6 +618,10 @@ export const changeDate = ({
                         
                     }
                 }
+            }else {
+                errorMessage.push("Can not set booking time because this project in booking time")
+            }
+                
                 resolve({
                     err : project ? 1 : 0,
                     mess : project ? errorMessage[0] : errorMessage[0]
@@ -694,32 +698,69 @@ export const openBooking = (id) => {
             const message = [];
             const dateNow = new Date().toDateString()
             const check = await db.Project.findByPk(id)
-            if (check && check.status == 1){
-                // if(check.openDate !== dateNow){
-                //     message.push("not in the time to buy")
-                // }else{
-                await db.Project.update({
-                    status : 2,
-                },{
-                    where : {
-                        id
-                    }
-                })
-                await db.ReservationTicket.destroy({
-                    where : {
-                        status : 0
-                    }
-                })
-                message.push("This project is open now")
-            // }
-            }else { 
-                message.push("Project is not available")
+            console.log(check.openDate < dateNow);
+            // if (check && check.status == 1){
+            //     // if(check.openDate !== dateNow){
+            //     //     message.push("not in the time to buy")
+            //     // }else{
+            //     await db.Project.update({
+            //         status : 2,
+            //     },{
+            //         where : {
+            //             id
+            //         }
+            //     })
+            //     await db.ReservationTicket.destroy({
+            //         where : {
+            //             status : 0
+            //         }
+            //     })
+            //     message.push("This project is open now")
+            // // }
+            // }else { 
+            //     message.push("Project is not available")
 
-            }
+            // }
             resolve({
                 err : check ? 0 : 1,
                 mess : check ? message[0] : message[0] 
             })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
+export const updateReservation = ({
+    reservationDate,
+    reservationPrice
+}, id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const project = await db.Project.findByPk(id)
+            const message = [];
+            const dateNow = new Date().toDateString()
+            if(project.status == 0){
+                await db.Project.update({
+                    reservationDate : convertDate(reservationDate),
+                    reservationPrice
+                },{
+                    where:{
+                        id
+                    }
+                })
+                message.push("Success")
+            // }else if(dateNow >= reservationDate){
+            //     message.push("Can not set reservationDate in the past")
+            }else {
+                message.push("This project can not change reservation info or not available")
+            }
+                
+                resolve({
+                    err : project ? 1 : 0,
+                    mess : project ? message[0] : message[0]
+                })
         } catch (error) {
             console.log(error);
             reject(error);

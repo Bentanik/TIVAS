@@ -51,8 +51,13 @@ router.get(
   controllers.getDetailsProject
 )
 
-router.put("/changeOpenDate/:id",controllers.changeDate)
+//thay doi openDate va closeDate
+router.put("/changeBookingInfo/:id",controllers.updateBooking)
+//thay doi reservationPrice va reservationDate
+router.put("/changeReservationInfo/:id",controllers.updateReservation)
+//mo ban reservation ticket (status=2)
 router.put("/openReservationTicket/:id",controllers.openReservationTicket)
+//mo booking
 router.put("/openBooking/:id",controllers.openBooking)
 
 export default router;
