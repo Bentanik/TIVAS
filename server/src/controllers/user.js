@@ -43,3 +43,10 @@ export const editUser = async (req, res) => {
 
   return res.status(200).json(response);
 };
+
+export const getAllUsers = async (req, res) => {
+  const response = await services.getAllUsers(req.query);
+  return res.status(200).json(response);
+}
+
+

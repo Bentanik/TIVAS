@@ -130,13 +130,17 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
         try {
             //pagination and limit
             let response;
-            let countPages = 1;
+            let pageInput = 1;
             const queries = pagination({ page, limit, orderType, orderBy });
             const projectResponse = await db.Project.findAll();
-            if(projectResponse.length / limit > 1){
-                countPages = Math.ceil(projectResponse.length / limit)
+            let countPages = projectResponse.length !== 0 ? 1 : 0;
+            if(projectResponse.length / queries.limit > 1){
+                countPages = Math.ceil(projectResponse.length / queries.limit)
             }
-            if (page <= countPages) {
+            if(page){
+                pageInput = page
+            }
+            if (pageInput <= countPages) {
                 //queries.raw = true;
                 response = await db.Project.findAll({
                     raw: true,
@@ -158,13 +162,13 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
             }
             resolve({
                 err: (response && response.length !== 0) ? 0 : 1,
-                message: page > countPages ? 
-                `Can not find any Projects in Page (${page}) because there are only (${countPages}) Pages of Projects`
+                message: pageInput > countPages ? 
+                `Can not find any Projects in Page (${pageInput}) because there are only (${countPages}) Pages of Projects`
                 : (response && response.length !== 0) ? `Get all of projects results` : 'Can not find any projects!',
                 data: (response && response.length !== 0) ? response : null,
                 count: response ? response.length : 0,
                 countPages: countPages,
-                page: page
+                page: pageInput
             })
         } catch (error) {
             console.log(error);
