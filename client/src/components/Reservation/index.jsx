@@ -6,13 +6,48 @@ import AdminShowListing from "../AdminShowListing";
 
 import images from "~/assets/images";
 import { Link } from "react-router-dom";
+import { updateReservation } from "~/controllers/project";
+
+import createAxios from "~/configs/axios";
+import { useDispatch, useSelector } from "react-redux";
 
 const cx = classNames.bind(styles);
 
-function Reservation() {
+function convertDateFormat(inputDate) {
+    const parts = inputDate.split("-");
+    const reversedParts = parts.reverse();
+    const outputDate = reversedParts.join("/");
+    return outputDate;
+}
+
+function Reservation({ id, handleClose }) {
+    const dispatch = useDispatch();
+    const currentUser = useSelector((state) => state.auth.login.user);
+    const axiosInstance = createAxios(dispatch, currentUser);
+
+    const [reservationDate, setReservationDate] = useState("");
+    const [reservationPrice, setReservationPrice] = useState("");
+    const [openDate, setOpenDate] = useState("");
+
+    const [closeDate, setCloseDate] = useState("");
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        const form = {
+            reservationPrice: +reservationPrice,
+            reservationDate: convertDateFormat(reservationDate),
+            openDate: convertDateFormat(openDate),
+            closeDate: convertDateFormat(closeDate),
+        };
+        const res = await updateReservation(axiosInstance, id, form);
+        if (res?.err === 0) alert("Success");
+        else alert("Failure");
+        handleClose();
+    };
+
     return (
         <div className={cx("wrapper")}>
-            <div className={cx("content")}>
+            <form className={cx("content")} onSubmit={handleSubmit}>
                 <div className={cx("input-compo")}>
                     {/* Reservation Day */}
                     <div className={cx("group")}>
@@ -22,9 +57,13 @@ function Reservation() {
 
                         <input
                             id="reservation-day"
-                            type="text"
+                            type="date"
                             className={cx("input")}
                             placeholder="mm/dd/yyyy"
+                            value={reservationDate}
+                            onChange={(e) => {
+                                setReservationDate(e.target.value);
+                            }}
                         />
                     </div>
 
@@ -39,9 +78,13 @@ function Reservation() {
 
                         <input
                             id="reservation-price"
-                            type="text"
+                            type="number"
                             className={cx("input")}
                             placeholder="$"
+                            value={reservationPrice}
+                            onChange={(e) =>
+                                setReservationPrice(e.target.value)
+                            }
                         />
                     </div>
 
@@ -53,9 +96,11 @@ function Reservation() {
 
                         <input
                             id="open-date"
-                            type="text"
+                            type="date"
                             className={cx("input")}
                             placeholder="mm/dd/yyyy"
+                            value={openDate}
+                            onChange={(e) => setOpenDate(e.target.value)}
                         />
                     </div>
 
@@ -67,15 +112,21 @@ function Reservation() {
 
                         <input
                             id="close-day"
-                            type="text"
+                            type="date"
                             className={cx("input")}
                             placeholder="mm/dd/yyyy"
+                            value={closeDate}
+                            onChange={(e) => {
+                                setCloseDate(e.target.value);
+                            }}
                         />
                     </div>
                 </div>
 
-                <button className={cx("submit-btn")}>Submit</button>
-            </div>
+                <button type="submit" className={cx("submit-btn")}>
+                    Submit
+                </button>
+            </form>
         </div>
     );
 }

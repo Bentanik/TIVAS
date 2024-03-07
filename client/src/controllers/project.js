@@ -9,6 +9,15 @@ export const getTop10 = async (axiosInstance) => {
     }
 };
 
+export const getAllProject = async (axiosInstance) => {
+    try {
+        const res = await services.getAllProject(axiosInstance);
+        return res;
+    } catch (err) {
+        console.log(err);
+    }
+};
+
 export const getProjectDetailById = async (axiosInstance, id) => {
     try {
         const res = await services.getProjectDetailById(axiosInstance, id);
@@ -30,6 +39,24 @@ export const getAllTypeRoom = async (axiosInstance, id) => {
 export const getTypeRoom = async (axiosInstance, id) => {
     try {
         const res = await services.getTypeRoom(axiosInstance, id);
+        return res;
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+export const updateReservation = async (axiosInstance, id, form) => {
+    try {
+        const res = await services.updateReservation(axiosInstance, id, form);
+        return res;
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+export const openReservaion = async (axiosInstance, id) => {
+    try {
+        const res = await services.openReservaion(axiosInstance, id);
         return res;
     } catch (err) {
         console.log(err);
