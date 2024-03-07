@@ -91,3 +91,26 @@ export const getUserBuyTickets = async (req, res) => {
   const response = await services.getUserBuyTickets(id);
   return res.status(200).json(response);
 }
+
+export const getAllUserNoPriority = async (req, res) => {
+  const { id } = req.params;
+  const response = await services.getAllUserNoPriority(id);
+  return res.status(200).json(response);
+}
+
+export const getAllUserPriority = async (req, res) => {
+  const { id } = req.params;
+  const response = await services.getAllUserPriority(id);
+  return res.status(200).json(response);
+}
+
+// export const getAllFailedTickets = async (req, res) => {
+//   const { id } = req.params;
+//   const resposne = await services.get();
+// }
+
+export const getAllTicketsByUser = async (req, res) => {
+  const { id } = req.params;
+  const response = await services.getAllTicketsByUser(id);
+  return res.status(200).json(response);
+}

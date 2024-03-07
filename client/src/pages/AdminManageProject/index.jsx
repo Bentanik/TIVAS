@@ -56,8 +56,6 @@ function AdminManageProject() {
                     })}
                 </div>
             </div>
-        </div>
-    );
 }
 
 export default AdminManageProject;
