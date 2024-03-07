@@ -3,14 +3,15 @@ import styles from "./AdminProjectReservation.module.scss";
 import ListProject from "~/components/ListProject";
 import { useEffect, useState } from "react";
 import { Rating, Stack, Pagination } from "@mui/material";
-import { getProjectReservation } from "~/controllers/project";
+import { getProjectBooking, getProjectReservation } from "~/controllers/project";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import createAxios from "~/configs/axios";
+import ListProjectNo from "~/components/ListProjectNo";
 
 const cx = classNames.bind(styles);
 
-function AdminProjectReservation() {
+function AdminProjectCloseBooking() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -31,7 +32,7 @@ function AdminProjectReservation() {
 
   useEffect(() => {
     const fetchListing = async () => {
-      const res = await getProjectReservation(axiosInstance, { page: page });
+      const res = await getProjectBooking(axiosInstance, { page: page });
       setListReservaion(res.data);
       setCountPage(res.countPages);
       console.log(res);
@@ -53,7 +54,17 @@ function AdminProjectReservation() {
           </div>
 
           {listReservaion.map((item, index) => {
-            return <ListProject key={index} id={item?.id} image={item?.thumbnailPathUrl} name={item?.name} location={item?.location} openDate={item?.openDate} closeDate={item?.closeDate}/>;
+            return (
+              <ListProjectNo
+                key={index}
+                id={item?.id}
+                image={item?.thumbnailPathUrl}
+                name={item?.name}
+                location={item?.location}
+                openDate={item?.openDate}
+                closeDate={item?.closeDate}
+              />
+            );
           })}
           <Stack spacing={2}>
             <Pagination
@@ -71,4 +82,4 @@ function AdminProjectReservation() {
   );
 }
 
-export default AdminProjectReservation;
+export default AdminProjectCloseBooking;

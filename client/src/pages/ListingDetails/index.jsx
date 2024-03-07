@@ -294,8 +294,9 @@ function convertToDate(inputDate) {
 
   const month = date.getMonth();
   const day = date.getDate();
+  const year = date.getFullYear();
 
-  const result = monthNames[month] + " " + day;
+  const result = monthNames[month] + " " + day + " " + year;
   return result;
 }
 

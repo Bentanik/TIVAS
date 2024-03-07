@@ -11,11 +11,46 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useState } from "react";
 import { Button, TextField } from "@mui/material";
+import { putOpenBooking } from "~/controllers/project";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import createAxios from "~/configs/axios";
 
 const cx = classNames.bind(styles);
 
-function ListProject() {
+function convertToDate(inputDate) {
+  const date = new Date(inputDate);
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const month = date.getMonth();
+  const day = date.getDate();
+  const year = date.getFullYear();
+
+  const result = monthNames[month] + " " + day + " " + year;
+  return result;
+}
+
+function ListProject({ id, image, name, location, openDate, closeDate }) {
   const [open, setOpen] = useState(false);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const currentUser = useSelector((state) => state.auth.login.user);
+  const axiosInstance = createAxios(dispatch, currentUser);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -25,16 +60,27 @@ function ListProject() {
     setOpen(false);
   };
 
+  const handleBooking = async (e) => {
+    e.preventDefault();
+    const res = await putOpenBooking(axiosInstance, id);
+    if (res.err === 0) alert("Success");
+    else alert("failure");
+
+    handleClose();
+  };
+
   return (
     <div className={cx("project")}>
       <Link to="#!" className={cx("project-info")}>
-        <img src={images.resort} alt="Avatar" className={cx("img")} />
+        <img src={image} alt="Avatar" className={cx("img")} />
 
-        <div className={cx("text")}>TTC Resort Ninh Thuan</div>
-        <div className={cx("text")}>Phan Rang</div>
-        <div className={cx("text")}>2024-03-19</div>
-        <div className={cx("text", "up-coming")}>Up Comming</div>
-        <button className={cx("text")} onClick={handleClickOpen}>Open reservation</button>
+        <div className={cx("text")}>{name}</div>
+        <div className={cx("text")}>{location}</div>
+        <div className={cx("text")}>{convertToDate(openDate)}</div>
+        <div className={cx("text")}>{convertToDate(closeDate)}</div>
+        <button className={cx("text")} onClick={handleClickOpen}>
+          Open booking
+        </button>
       </Link>
       <Dialog
         open={open}
@@ -51,27 +97,12 @@ function ListProject() {
           },
         }}
       >
-        <DialogTitle>Subscribe</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            To subscribe to this website, please enter your email address here.
-            We will send updates occasionally.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            required
-            margin="dense"
-            id="name"
-            name="email"
-            label="Email Address"
-            type="email"
-            fullWidth
-            variant="standard"
-          />
-        </DialogContent>
+        <DialogTitle> Do you want to switch to booking?</DialogTitle>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button type="submit">Subscribe</Button>
+          <Button onClick={handleClose}>No</Button>
+          <Button type="submit" onClick={handleBooking}>
+            Yes
+          </Button>
         </DialogActions>
       </Dialog>
     </div>
