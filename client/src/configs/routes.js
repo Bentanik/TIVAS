@@ -60,11 +60,7 @@ const routes = [
         component: RoomTypeDetail,
         layout: null,
     },
-    {
-        path: "/listings",
-        component: ListingDetails,
-        layout: null,
-    },
+
     {
         path: "/timesharerentals",
         component: TimeshareRentals,
@@ -124,11 +120,7 @@ const routes = [
         component: RoomTypeDetail,
         layout: null,
     },
-    {
-        path: "/listing",
-        component: Listing,
-        layout: null,
-    },
+
     {
         path: "/listingdetails",
         component: ListingDetails,
