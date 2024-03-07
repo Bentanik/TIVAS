@@ -22,5 +22,9 @@ router.put(
   controllers.editUser
 );
 
+router.get(
+  "/getallusers",
+  controllers.getAllUsers,
+)
 
 export default router;
