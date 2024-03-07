@@ -1,6 +1,6 @@
 import classNames from "classnames/bind";
 import styles from "./ListingDetails.module.scss";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navigations from "~/components/Layouts/Navigations";
 import Footer from "~/components/Layouts/Footer";
 import images from "~/assets/images";
@@ -10,7 +10,10 @@ import { Link } from "react-router-dom";
 import SearchPage from "~/components/SearchPage";
 import Slider from "react-slick";
 import Search from "~/components/Search";
-import { Rating } from "@mui/material";
+import { Rating, Stack, Pagination } from "@mui/material";
+import { getAllTimeshare } from "~/controllers/timeshare";
+import { useDispatch, useSelector } from "react-redux";
+import createAxios from "~/configs/axios";
 
 const cx = classNames.bind(styles);
 
@@ -274,21 +277,28 @@ function CustomPrevArrow(props) {
 const settings = {
   infinite: true,
   speed: 700,
-  slidesToShow: 3,
+  slidesToShow: 4,
   slidesToScroll: 1,
   prevArrow: <CustomPrevArrow />,
   nextArrow: <CustomNextArrow />,
 };
 
 function ListingDetails() {
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.auth.login.user);
+  const axiosInstance = createAxios(dispatch, currentUser);
+
   const [input, setInput] = useState("");
   const [topResort, setTopResort] = useState(TOP_RESORT);
   const [featuredResort, setFeaturedResort] = useState(FEATURED_RESORT);
   const [favList, setFavList] = useState(FAVORITE_DESTINATIONS);
   const [listingResort, setListingResort] = useState(RESORT_DETAIL);
+  const [count, setCount] = useState(1);
+
+  const [page, setPage] = useState(1);
 
   const featuredListing = () => {
-    return featuredResort.map((item, index) => {
+    return featuredResort?.map((item, index) => {
       return (
         <div key={index}>
           <div className={cx("featured-box")}>
@@ -312,96 +322,20 @@ function ListingDetails() {
       );
     });
   };
-  const detailsListing = () => {
-    return listingResort.map((item, index) => {
-      return (
-        <div key={index} className={cx("room-type-wrapper")}>
-          <div className={cx("room-type-block")}>
-            <div className={cx("content-wrapper")}>
-              {/* Left content */}
-              <div className={cx("left-content")}>
-                <div className={cx("left-row")}>
-                  <div className={cx("list-item")}>
-                    {/* First List */}
-                    <div className={cx("first-list")}>
-                      <div className={cx("left-content")}>
-                        <img
-                          src={images.koala}
-                          alt="Thumb_Image"
-                          style={{ borderRadius: 12 }}
-                          className={cx("thumb-img")}
-                        />
-                        <div className={cx("name-content")}>
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "start",
-                              border: " 1px solid #b7b7b7",
-                              borderRadius: 5,
-                              alignItems: "center",
-                              color: "red",
-                              padding: 2,
-                              marginBottom: 8,
-                              width: 80,
-                            }}
-                            className={cx("deal-bandle")}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                            >
-                              <path
-                                d="M16.5 7.99992C16.5 9.49992 16 11.4999 13.6 12.2999C14.3 10.5999 14.4 8.89992 13.9 7.29992C13.2 5.19992 10.9 3.59992 9.3 2.69992C8.9 2.39992 8.2 2.79992 8.3 3.39992C8.3 4.49992 8 6.09992 6.3 7.79992C4.1 9.99992 3 12.2999 3 14.4999C3 17.3999 5 20.9999 9 20.9999C5 16.9999 8 13.4999 8 13.4999C8.8 19.3999 13 20.9999 15 20.9999C16.7 20.9999 20 19.7999 20 14.5999C20 11.4999 18.7 9.09992 17.6 7.69992C17.3 7.19992 16.6 7.49992 16.5 7.99992Z"
-                                fill="#FF0101"
-                              />
-                            </svg>
-                            <text className={cx("bandle")}>Hot Deal</text>
-                          </div>
-                          <h2 className={cx("sub-title")}>{item.name}</h2>
-                          <h2
-                            style={{ fontWeight: 400 }}
-                            className={cx("sub-title")}
-                          >
-                            {item.address}
-                          </h2>
-                        </div>
-                      </div>
-                      <div className={cx("guest", "row")}>
-                        <div className={cx("text")}>{item.unit}</div>
-                      </div>
-                      <div className={cx("area", "row")}>
-                        <div className={cx("text")}>{item.room}</div>
-                      </div>
-                      <div className={cx("area", "row")}>
-                        <div className={cx("text")}>{item.date}</div>
-                      </div>
-                      <div className={cx("area", "row")}>
-                        <div className={cx("text")}>{item.night}</div>
-                      </div>
-                      <div className={cx("area", "row")}>
-                        <div className={cx("text")}>{item.price}</div>
-                      </div>
-                      <div className={cx("icon")}>
-                        <img
-                          style={{ marginLeft: 15 }}
-                          src={item.host}
-                          className={cx("crumb-img")}
-                          alt=""
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    });
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
   };
+
+  useEffect(() => {
+    const fetchListing = async () => {
+      const res = await getAllTimeshare(axiosInstance, { page: page });
+      setListingResort(res.data);
+      console.log(res.data);
+      setCount(res.count);
+    };
+    fetchListing();
+  }, [page]);
 
   return (
     <div className={cx("destination-wrapper")}>
@@ -436,108 +370,132 @@ function ListingDetails() {
               <Slider {...settings}>{featuredListing()}</Slider>
             </div>
             {/*Listing Details */}
-            <div className={cx("top-unit")}>
-              <div className={cx("listing-content")}>
-                <div className={cx("listing-item")}>
-                  <th className={cx("listing-dates")}>Listing 4368 result</th>
-                  <th className={cx("listing-unit")}>Unit</th>
-                  <th className={cx("listing-sleep")}>Sleeps</th>
-                  <th className={cx("listing-date")}>
-                    <span className={cx("show-for-medium-up")}>Dates</span>
-                  </th>
-                  <th className={cx("listing-night")}>
-                    <span className={cx("show-for-medium-up")}>Nights</span>
-                  </th>
-                  <th className={cx("listing-price")}>Price</th>
-                  <th className={cx("listing-host")}>
-                    <span className={cx("show-for-medium-up")}>Host</span>
-                  </th>
-                </div>
-                <div className={cx("detail-listing")}>{detailsListing()}</div>
-              </div>
-            </div>
-            <div className={cx("benefit")}>
-              <div className={cx("crumb-benefit")}>
-                <img className={cx("benefit-img")} src={images.one} alt="pic" />
-                <p className={cx("benefit-text")}>
-                  #1 marketplace to rent directly from vacation club owners
-                </p>
-              </div>
-              <div className={cx("crumb-benefit")}>
-                <img className={cx("benefit-img")} src={images.two} alt="pic" />
-                <p className={cx("benefit-text")}>
-                  Unbeatable travel deals you won’t find anywhere else
-                </p>
-              </div>
-              <div className={cx("crumb-benefit")}>
-                <img
-                  className={cx("benefit-img")}
-                  src={images.three}
-                  alt="pic"
-                />
-                <p className={cx("benefit-text")}>
-                  {" "}
-                  You are protected, so go ahead and book with confidence
-                </p>
-              </div>
+            <div className={cx("list-listing")}>
+              <table className={cx("table")}>
+                <thead className={cx("thead")}>
+                  <tr>
+                    <th className={cx("project", "column")}>
+                      <h4 className={cx("title")}>Project</h4>
+                    </th>
+                    <th className={cx("unit", "column")}>
+                      <h4 className={cx("title")}>Unit</h4>
+                    </th>
+                    <th className={cx("sleep", "column")}>
+                      <h4 className={cx("title")}>Sleeps</h4>
+                    </th>
+                    <th className={cx("date", "column")}>
+                      <h4 className={cx("title")}>Dates</h4>
+                    </th>
+                    <th className={cx("price", "column")}>
+                      <h4 className={cx("title")}>Price</h4>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className={cx("tbody")}>
+                  <tr className={cx("trow")}>
+                    <td className={cx("project", "column")}>
+                      <figure className={cx("infor")}>
+                        <img
+                          src={images.heroImg}
+                          alt="image_one"
+                          className={cx("image")}
+                        />
+                        <section className={cx("box")}>
+                          <h3 className={cx("name-project", "text")}>
+                            Almar Nha Trang
+                          </h3>
+                          <div className={cx("location")}>
+                            <svg
+                              className={cx("icon")}
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6" />
+                            </svg>
+                            <span className={cx("position", "text")}>
+                              Vung tau
+                            </span>
+                          </div>
+                        </section>
+                      </figure>
+                    </td>
+                    <td className={cx("unit", "column")}>
+                      <span className={cx("name", "text")}>
+                        2 Bedroom Plus (2LK)
+                      </span>
+                    </td>
+                    <td className={cx("sleep", "column")}>
+                      <span className={cx("name")}>8</span>
+                    </td>
+                    <td className={cx("date", "column")}>
+                      <span className={cx("name")}>Mar 16 - Mar 23 2024</span>
+                    </td>
+                    <td className={cx("price", "column")}>
+                      <span className={cx("name")}>
+                        {`${Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          currency: "USD",
+                        }).format(3000)}`}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr className={cx("trow")}>
+                    <td className={cx("project", "column")}>
+                      <figure className={cx("infor")}>
+                        <img
+                          src={images.heroImg}
+                          alt="image_one"
+                          className={cx("image")}
+                        />
+                        <section className={cx("box")}>
+                          <h3 className={cx("name-project", "text")}>
+                            Almar Nha Trang
+                          </h3>
+                          <div className={cx("location")}>
+                            <svg
+                              className={cx("icon")}
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6" />
+                            </svg>
+                            <span className={cx("position", "text")}>
+                              Vung tau
+                            </span>
+                          </div>
+                        </section>
+                      </figure>
+                    </td>
+                    <td className={cx("unit", "column")}>
+                      <span className={cx("name", "text")}>
+                        2 Bedroom Plus (2LK)
+                      </span>
+                    </td>
+                    <td className={cx("sleep", "column")}>
+                      <span className={cx("name")}>8</span>
+                    </td>
+                    <td className={cx("date", "column")}>
+                      <span className={cx("name")}>Mar 16 - Mar 23 2024</span>
+                    </td>
+                    <td className={cx("price", "column")}>
+                      <span className={cx("name")}>
+                        {`${Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          currency: "USD",
+                        }).format(3000)}`}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
-          {/* FAQ's */}
-          <section className={cx("faq-wrapper")}>
-            <div className={cx("faq-content")}>
-              <div className={cx("top-content")}>
-                <h3 className={cx("text-header")}>
-                  Get first dibs on the world’s hottest timeshare rentals
-                </h3>
-                <p className={cx("crumb-text")}>
-                  Millions of timeshare owners worldwide own recurring vacation
-                  time with popular brands like Marriott, Wyndham, Disney, and
-                  more, but sometimes they’re unable to use it.
-                </p>
-                <p className={cx("crumb-text")}>
-                  What does this mean? Timeshare owners still have to pay for
-                  the time they don’t use. Renting to a vacationer helps them
-                  cover their fees instead of throwing away thousands of dollars
-                  per year.
-                </p>
-                <label className={cx("bottom-text")}>
-                  TIVAS helps these owners securely rent their unused timeshare
-                  to anyone in the world.
-                </label>
-              </div>
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                {" "}
-                <button className={cx("faq-button")}>Find More</button>
-              </div>
-            </div>
-          </section>
-          {/* I love deals */}
-          <section className={cx("explore-wrapper")}>
-            <div className={cx("explore-content")}>
-              <div className={cx("right-content")}>
-                <h3 className={cx("right-header")}>
-                  Get first dibs on the world’s hottest timeshare rentals
-                </h3>
-                <div className={cx("input", "click")}>
-                  <input
-                    type="text"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    className={cx("search-input")}
-                    placeholder="Email Address"
-                  />
-                  {/* <a href="!#"> */}
-                  <Link to={blog_link.link} className={cx("explore-link")}>
-                    Yes, I love a deal!
-                  </Link>
-                </div>
-                <div className={cx("checkbox")}>
-                  <input className={cx("input-checkbox")} type="checkbox" />
-                  <label>Yes, subscribe me for awesome deals</label>
-                </div>
-              </div>
-            </div>
-          </section>
         </section>
       </main>
       <Footer />
