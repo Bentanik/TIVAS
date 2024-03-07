@@ -1,7 +1,7 @@
 import db, { Sequelize } from "../models";
 const cloudinary = require('cloudinary').v2;
 import "dotenv/config";
-import { Model, Op, fn, col, literal } from "sequelize";
+import { Model, Op, fn, col, literal, INTEGER } from "sequelize";
 import { pagination } from "../middlewares/pagination";
 const nodemailer = require("nodemailer");
 
@@ -129,30 +129,41 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
     return new Promise(async (resolve, reject) => {
         try {
             //pagination and limit
+            let response;
+            let countPages = 1;
             const queries = pagination({ page, limit, orderType, orderBy });
-            //queries.raw = true;
-            const response = await db.Project.findAll({
-                raw: true,
-                attributes: ['id', 'name', 'thumbnailPathUrl', 'status', 'buildingStatus', 'reservationDate', 'reservationPrice', 'openDate', 'closeDate', 'features', 'attractions', 'locationID'],
-                ...queries,
-            })
-            if (response && response.length !== 0) {
-                for (let i = 0; i < response.length; i++) {
-                    const locationDB = await db.Location.findByPk(response[i].locationID);
-                    response[i].location = locationDB.name;
-                    if (response[i].features) {
-                        response[i].features = response[i].features.split(',');
-                    }
-                    if (response[i].attractions) {
-                        response[i].attractions = response[i].attractions.split(',');
+            const projectResponse = await db.Project.findAll();
+            if(projectResponse.length / limit > 1){
+                countPages = Math.ceil(projectResponse.length / limit)
+            }
+            if (page <= countPages) {
+                //queries.raw = true;
+                response = await db.Project.findAll({
+                    raw: true,
+                    attributes: ['id', 'name', 'thumbnailPathUrl', 'status', 'buildingStatus', 'reservationDate', 'reservationPrice', 'openDate', 'closeDate', 'features', 'attractions', 'locationID'],
+                    ...queries,
+                })
+                if (response && response.length !== 0) {
+                    for (let i = 0; i < response.length; i++) {
+                        const locationDB = await db.Location.findByPk(response[i].locationID);
+                        response[i].location = locationDB.name;
+                        if (response[i].features) {
+                            response[i].features = response[i].features.split(',');
+                        }
+                        if (response[i].attractions) {
+                            response[i].attractions = response[i].attractions.split(',');
+                        }
                     }
                 }
             }
             resolve({
                 err: (response && response.length !== 0) ? 0 : 1,
-                message: (response && response.length !== 0) ? `Get all of projects results` : 'Can not find any projects!',
+                message: page > countPages ? 
+                `Can not find any Projects in Page (${page}) because there are only (${countPages}) Pages of Projects`
+                : (response && response.length !== 0) ? `Get all of projects results` : 'Can not find any projects!',
                 data: (response && response.length !== 0) ? response : null,
                 count: response ? response.length : 0,
+                countPages: countPages,
                 page: page
             })
         } catch (error) {
@@ -179,7 +190,7 @@ export const getAllByLocation = (id) => {
             console.log(error);
             reject(error);
         }
-        
+
     })
 }
 
@@ -325,7 +336,7 @@ export const updateProject = ({
 }
 
 
-export const searchProject = ({ page, limit, orderType, orderBy, type, ...query }) => {
+export const searchProject = ({type, ...query }) => {
     return new Promise(async (resolve, reject) => {
         try {
             if (type) {
@@ -337,18 +348,17 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
             for (const [key, value] of Object.entries(query)) {
                 if (key !== 'location') {
                     whereClause[key] = { [Op.substring]: value };
-                }else{
+                } else {
                     locationDB = value;
                 }
             }
 
             //pagination and limit
-            const queries = pagination({ page, limit, orderType, orderBy });
-            queries.nest = true;
-            queries.raw = true;
             // queries.raw = true;
             console.log(whereClause.location);
             const response = await db.Project.findAll({
+                raw: true,
+                nest: true,
                 where: whereClause,
                 attributes: ['id', 'name', 'thumbnailPathUrl', 'status', 'buildingStatus', 'reservationDate', 'reservationPrice', 'openDate', 'closeDate', 'closeDate', 'features', 'attractions', 'locationID'],
                 include: [
@@ -378,7 +388,6 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
                 ],
                 group: ['TypeOfProjects.projectID', 'Project.name', 'Project.locationID', 'Project.thumbnailPathUrl', 'Project.id'],
                 having: type ? (literal(`COUNT(TypeOfProjects.projectID) = ${type.length}`)) : literal((`COUNT(TypeOfProjects.projectID) > 0`)),
-                ...queries,
                 subQuery: false,
             });
             if (response) {
@@ -398,7 +407,6 @@ export const searchProject = ({ page, limit, orderType, orderBy, type, ...query 
                 mess: (response && response.length !== 0) ? `Search Projects Results` : "Can not find any Projects!",
                 data: (response && response.length !== 0) ? response : null,
                 count: response ? response.length : 0,
-                page: page
             })
         } catch (error) {
             console.log(error);
