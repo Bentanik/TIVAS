@@ -18,6 +18,8 @@ import AdminProjectDetail from "~/pages/AdminProjectDetail";
 import Banking from "~/components/Layouts/Banking";
 import AdminRoomTypeDetail from "~/pages/AdminRoomTypeDetail";
 import TimeshareDetail from "~/pages/TimeshareDetail";
+import AdminProjectReservation from "~/pages/AdminProjectReservation";
+import AdminProjectCloseBooking from "~/pages/AdminProjectCloseBooking";
 
 const routes = [
   {
@@ -72,12 +74,6 @@ const routes = [
     component: TimeshareDetail,
     layout: null,
   },
-
-  {
-    path: "/user/account/profile",
-    component: Profile,
-    layout: ProfileLayout,
-  },
   {
     path: "/user/account/changepassword",
     component: ChangePassword,
@@ -100,11 +96,6 @@ const routes = [
     layout: null,
   },
   {
-    path: "/timesharerentals",
-    component: TimeshareRentals,
-    layout: null,
-  },
-  {
     path: "/timesharedetail/:id",
     component: TimeshareDetail,
     layout: null,
@@ -120,7 +111,7 @@ const routes = [
     layout: LayoutAdmin,
   },
   {
-    path: "/admin/user/manageuser/ban",
+    path: "/admin/manageuser/ban",
     component: AdminManageUser,
     layout: LayoutAdmin,
   },
@@ -145,6 +136,16 @@ const routes = [
   {
     path: "/admin/projectdetail",
     component: AdminProjectDetail,
+    layout: LayoutAdmin,
+  },
+  {
+    path: "/admin/manageproject/reservation",
+    component: AdminProjectReservation,
+    layout: LayoutAdmin,
+  },
+  {
+    path: "/admin/manageproject/closebooking",
+    component: AdminProjectCloseBooking,
     layout: LayoutAdmin,
   },
 ];
