@@ -23,15 +23,21 @@ function AdminUserBuyTimeshare() {
   useEffect(() => {
     const fetchData = async () => {
       const res = await getUserPriority(axiosInstance, id);
-      setListUser(res?.data);
+      if (res?.err === 0) {
+        setListUser(res?.data);
+      } else {
+          setListUser([]);
+      }
 
       const resOne = await getUserNoPriority(axiosInstance, id);
-      setListUser(resOne?.data);
-      
+      if (resOne?.err === 0) {
+        setListUserNo(resOne?.data);
+      } else {
+        setListUserNo([]);
+      }
     };
     fetchData();
   }, []);
-
 
   return (
     <div className={cx("wrapper")}>
@@ -49,7 +55,7 @@ function AdminUserBuyTimeshare() {
             </tr>
           </thead>
           <tbody className={cx("tbody")}>
-            {listUser.map((item, index) => {
+            {listUser?.map((item, index) => {
               return (
                 <tr key={index} className={cx("trow")}>
                   <td className={cx("project", "column")}>{item?.username}</td>
@@ -91,7 +97,7 @@ function AdminUserBuyTimeshare() {
             </tr>
           </thead>
           <tbody className={cx("tbody")}>
-            {listUserNo.map((item, index) => {
+            {listUserNo?.map((item, index) => {
               return (
                 <tr key={index} className={cx("trow")}>
                   <td className={cx("project", "column")}>{item?.username}</td>
