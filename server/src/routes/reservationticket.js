@@ -14,6 +14,16 @@ router.get("/getTimeSharePriority/:userID", controllers.getTimeSharePriority);
 
 router.get("/getUserTickets/:id",controllers.getUserTickets)
 
+//router.get("/getUserFailedTickets/:id", controllers.getUserFailedTickets)
+
 router.get("/getUserBuyTickets/:id", controllers.getUserBuyTickets)
+
+router.get("/getAllUserNoPriority/:id", controllers.getAllUserNoPriority)
+
+router.get("/getAllUserPriority/:id", controllers.getAllUserPriority)
+
+//router.get("/getAllFailedTickets/:id", controllers.getAllFailedTickets)
+
+router.get("/getAllTicketsByUser/:id", controllers.getAllTicketsByUser)
 
 export default router;

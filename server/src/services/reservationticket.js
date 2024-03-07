@@ -297,7 +297,7 @@ export const createReservation = ({
                                         : ticketDuplicated ?
                                             `TimeShare (${timeShareID}) has already registerd with the ticket (${code})!`
                                             : userUsedTicket ?
-                                                `Can not use two or more tickets to register one TimeShare! (User (${ticketResponse.userID}) has already use one ticket to register TimeShare(${timeShareID}))`
+                                                `Can not use two or more tickets to register one TimeShare! (User (${ticketResponse.userID}) has already used one ticket to register TimeShare(${timeShareID}))`
                                                 : 'Create successfully.',
             })
         }
@@ -496,12 +496,13 @@ export const getTimeSharePriority = (userID) => {
                         status: 2,
                     }
                 })
-                console.log(reservationTicketResponse);
                 if (reservationTicketResponse && reservationTicketResponse.length !== 0) {
                     for (let i = 0; i < reservationTicketResponse.length; i++) {
                         console.log(reservationTicketResponse[i]);
                         const timeShareResponse = await db.TimeShare.findByPk(reservationTicketResponse[i].timeShareID,
                             {
+                                nest: true,
+                                raw: true,
                                 attributes: ['id', 'price', 'startDate', 'endDate', 'saleStatus', 'createdAt'],
                                 include: {
                                     model: db.TypeRoom,
@@ -511,12 +512,17 @@ export const getTimeSharePriority = (userID) => {
                                         attributes: ['id'],
                                         include: {
                                             model: db.Project,
-                                            attributes: ['name', 'location', 'thumbnailPathUrl']
+                                            attributes: ['name', 'thumbnailPathUrl', 'locationID']
                                         }
                                     }
                                 },
                             });
-                        timeSharePriority.push(timeShareResponse);
+                        if (timeShareResponse) {
+                            console.log(timeShareResponse);
+                            const location = await db.Location.findByPk(timeShareResponse.TypeRoom.TypeOfProject.Project.locationID)
+                            timeShareResponse.TypeRoom.TypeOfProject.Project.location = location.name;
+                            timeSharePriority.push(timeShareResponse);
+                        }
                     }
                 }
             }
@@ -542,7 +548,7 @@ export const getUserTickets = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
             const userResponse = await db.User.findByPk(id);
-            let ticketResponse;
+            let ticketResponse = [];
             if (userResponse) {
                 ticketResponse = await db.ReservationTicket.findAll({
                     raw: true,
@@ -554,11 +560,14 @@ export const getUserTickets = (id) => {
                     for (let i = 0; i < ticketResponse.length; i++) {
                         const projectResponse = await db.Project.findByPk(ticketResponse[i].projectID);
                         ticketResponse[i].projectName = projectResponse.name;
+                        const timeShareResponse = await db.TimeShare.findByPk(ticketResponse[i].timeShareID);
+                        ticketResponse[i].startDate = timeShareResponse.startDate;
+                        ticketResponse[i].endDate = timeShareResponse.endDate;
                     }
                 }
             }
             resolve({
-                err: (ticketResponse && ticketResponse.length !== 0) ? 0 : 1,
+                err: (ticketResponse.length !== 0) ? 0 : 1,
                 message: !userResponse ?
                     `User (${id}) does not exist!`
                     : ticketResponse.length === 0 ?
@@ -601,11 +610,11 @@ export const getUserBuyTickets = (id) => {
             resolve({
                 err: response.length !== 0 ? 0 : 1,
                 message: !projectResponse ?
-                `Project (${id}) does not exist!`
-                : ticketResponse.length === 0 ?
-                `Can not find any Users have the reservation with Project(${id})!`
-                : `All Users have the reservation with Project(${id}).`,
-                data: response.length !== 0 ? response : 1
+                    `Project (${id}) does not exist!`
+                    : ticketResponse.length === 0 ?
+                        `Can not find any Users have the reservation with Project(${id})!`
+                        : `All Users have the reservation with Project(${id}).`,
+                data: response.length !== 0 ? response : 0
             })
         } catch (error) {
             console.log(error);
@@ -613,3 +622,117 @@ export const getUserBuyTickets = (id) => {
         }
     })
 }
+
+export const getAllUserNoPriority = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let ticketResponse = [];
+            let response = [];
+            const projectResponse = await db.Project.findByPk(id);
+            if (projectResponse) {
+                if (projectResponse.status === 3) {
+                    ticketResponse = await db.ReservationTicket.findAll({
+                        where: {
+                            projectID: id,
+                            status: 1
+                        }
+                    })
+                    if (ticketResponse.length !== 0) {
+                        const result = Object.groupBy(ticketResponse, ({ userID }) => userID)
+                        let count1 = 0
+                        for (let properties in result) {
+                            count1 = count1 + 1
+                        }
+                        for (let i = 0; i < count1; i++) {
+                            const userResponse = await db.User.findByPk(Object.getOwnPropertyNames(result)[i]);
+                            response.push(userResponse);
+                        }
+                    }
+                }
+            }
+            resolve({
+                err: response.length !== 0 ? 0 : 1,
+                message: !projectResponse ?
+                    `Project (${id}) does not exist!`
+                    : projectResponse.status !== 3 ?
+                        `Project (${id}) is not on checkPriority Stage!`
+                        : ticketResponse.length === 0 ?
+                            `Can not find any Users have the reservation with Project(${id})!`
+                            : `All Users have no Priority with Project(${id}).`,
+                data: response.length !== 0 ? response : 0
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
+export const getAllUserPriority = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let ticketResponse = [];
+            let response = [];
+            const projectResponse = await db.Project.findByPk(id);
+            if (projectResponse) {
+                if (projectResponse.status === 3) {
+                    ticketResponse = await db.ReservationTicket.findAll({
+                        where: {
+                            projectID: id,
+                            status: 2
+                        }
+                    })
+                    if (ticketResponse.length !== 0) {
+                        const result = Object.groupBy(ticketResponse, ({ userID }) => userID)
+                        let count1 = 0
+                        for (let properties in result) {
+                            count1 = count1 + 1
+                        }
+                        for (let i = 0; i < count1; i++) {
+                            const userResponse = await db.User.findByPk(Object.getOwnPropertyNames(result)[i]);
+                            response.push(userResponse);
+                        }
+                    }
+                }
+            }
+            resolve({
+                err: response.length !== 0 ? 0 : 1,
+                message: !projectResponse ?
+                    `Project (${id}) does not exist!`
+                    : projectResponse.status !== 3 ?
+                        `Project (${id}) is not on checkPriority Stage!`
+                        : ticketResponse.length === 0 ?
+                            `Can not find any Users have the reservation with Project(${id})!`
+                            : `All Users have Priority with Project(${id}).`,
+                data: response.length !== 0 ? response : 0
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
+export const getAllTicketsByUser = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const userResponse = await db.User.findByPk(id);
+            if(userResponse){
+                const ticketResponse = await db.ReservationTicket.findAll({
+                    raw: true,
+                    where: {
+                        userID: id,
+                    }
+                })
+                if(ticketResponse.length !== 0){
+
+                }
+            }
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
+
