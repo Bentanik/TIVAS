@@ -49,7 +49,7 @@ body {
         margin: 10px;
         .image {
             display: block;
-            width: 400px;
+            width: 450px;
             height: 280px;
             object-fit: cover;
         }
@@ -114,7 +114,7 @@ body {
 .slick-next {
     position: absolute;
     top: 50%;
-    right: 0px;
+    right: -35px;
     transform: translateY(-50%);
     z-index: 1;
 }
