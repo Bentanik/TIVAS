@@ -29,8 +29,8 @@ const LIST_NAV = [
         link: "/",
     },
     {
-        value: "Destinations",
-        link: "/destinations",
+        value: "Listings",
+        link: "/listings",
     },
 
     {

@@ -6,7 +6,7 @@ export const rejectBooking = async(req, res) => {
     return res.status(200).json(response);
 }
 
-export const payAddtionalBooking = async (req, res) => {
-    const response = await services.payAdditionalBooking(req.body);
+export const completeBooking = async (req, res) => {
+    const response = await services.completeBooking(req.body);
     return res.status(200).json(response);
 }

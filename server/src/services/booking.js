@@ -47,7 +47,7 @@ export const rejectBooking = ({
     })
 }
 
-export const payAdditionalBooking = ({
+export const completeBooking = ({
     userID,
     timeShareID,
 }) => {

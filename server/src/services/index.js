@@ -6,3 +6,4 @@ export * from "./room";
 export * from "./timeshare";
 export * from "./reservationticket";
 export * from "./booking";
+export * from "./location";
