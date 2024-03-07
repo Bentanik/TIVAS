@@ -11,5 +11,5 @@ export const getAllTypeRoom = (axiosInstance, id) => {
 };
 
 export const getTypeRoom = (axiosInstance, id) => {
-  return axiosInstance.get(`/api/v1/typeroom/${id}`);
-}
+    return axiosInstance.get(`/api/v1/typeroom/${id}`);
+};

@@ -8,3 +8,13 @@ export const getAllTimeshare = async (axiosInstance, form) => {
     console.log(err);
   }
 };
+
+export const getTimeshareDetailById = async (axiosInstance, id) => {
+    try {
+        const res = await services.getTimeshareDetailById(axiosInstance, id);
+        return res;
+    } catch (err) {
+        console.log(err);
+    }
+};
+

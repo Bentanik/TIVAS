@@ -108,6 +108,48 @@ const routes = [
     component: TimeshareDetail,
     layout: null,
   },
+    {
+        path: "/admin/projectdetail",
+        component: AdminProjectDetail,
+        layout: LayoutAdmin,
+    },
+
+    {
+        path: "/user/account/profile",
+        component: Profile,
+        layout: ProfileLayout,
+    },
+    {
+        path: "/user/account/changepassword",
+        component: ChangePassword,
+        layout: ProfileLayout,
+    },
+    {
+        path: "/user/account/banking",
+        component: Banking,
+        layout: ProfileLayout,
+    },
+    {
+        path: "/room-type-detail",
+        component: RoomTypeDetail,
+        layout: null,
+    },
+
+    {
+        path: "/listingdetails",
+        component: ListingDetails,
+        layout: null,
+    },
+    {
+        path: "/timesharerentals",
+        component: TimeshareRentals,
+        layout: null,
+    },
+    {
+        path: "/timesharedetail/:id",
+        component: TimeshareDetail,
+        layout: null,
+    },
 ];
 
 export default routes;
