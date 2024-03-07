@@ -134,10 +134,10 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
             const queries = pagination({ page, limit, orderType, orderBy });
             const projectResponse = await db.Project.findAll();
             let countPages = projectResponse.length !== 0 ? 1 : 0;
-            if(projectResponse.length / queries.limit > 1){
+            if (projectResponse.length / queries.limit > 1) {
                 countPages = Math.ceil(projectResponse.length / queries.limit)
             }
-            if(page){
+            if (page) {
                 pageInput = page
             }
             if (pageInput <= countPages) {
@@ -162,9 +162,9 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
             }
             resolve({
                 err: (response && response.length !== 0) ? 0 : 1,
-                message: pageInput > countPages ? 
-                `Can not find any Projects in Page (${pageInput}) because there are only (${countPages}) Pages of Projects`
-                : (response && response.length !== 0) ? `Get all of projects results` : 'Can not find any projects!',
+                message: pageInput > countPages ?
+                    `Can not find any Projects in Page (${pageInput}) because there are only (${countPages}) Pages of Projects`
+                    : (response && response.length !== 0) ? `Get all of projects results` : 'Can not find any projects!',
                 data: (response && response.length !== 0) ? response : null,
                 count: response ? response.length : 0,
                 countPages: countPages,
@@ -340,7 +340,7 @@ export const updateProject = ({
 }
 
 
-export const searchProject = ({type, ...query }) => {
+export const searchProject = ({ type, ...query }) => {
     return new Promise(async (resolve, reject) => {
         try {
             if (type) {
@@ -622,8 +622,9 @@ export const getDetailsProject = (id) => {
     })
 }
 
-export const changeDate = ({
-    openDate
+export const updateBooking = ({
+    openDate,
+    closeDate
 }, id) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -633,51 +634,54 @@ export const changeDate = ({
                     id
                 }
             })
-            let ExDate = new Date(project.openDate).getTime();
-            let NewDate = new Date(convertDate(openDate)).getTime();
-
-            if (ExDate > NewDate || ExDate == NewDate) {
-                errorMessage.push("Can not change openDate because new date is less than old openDate")
-            } else {
-                const update = await db.Project.update({
-                    openDate: convertDate(openDate)
-                }, {
-                    where: {
-                        id
-                    }
-                })
-                const user = await db.ReservationTicket.findAll({
-                    where: {
-                        projectID: id,
-                        status: 1
-                    }
-                })
-                errorMessage.push("Change openDate Success")
-                for (let i = 0; i < user.length; i++) {
-                    const user1 = await db.User.findByPk(user[i].userID)
-                    let transporter = nodemailer.createTransport({
-                        service: "gmail",
-                        auth: {
-                            user: process.env.GOOGE_APP_EMAIL,
-                            pass: process.env.GOOGLE_APP_PASSWORD,
-                        },
-                    });
-                    let mailOptions = {
-                        from: "Tivas",
-                        to: `${user1.email}`,
-                        subject: "Confirm received email",
-                        text: `Open date of ${project.name} is move to ${openDate} `
-                    };
-                    transporter.sendMail(mailOptions, function (error, info) {
-                        if (error) {
-                            console.log(error);
-                        } else {
-                            console.log("Email sent: " + info.response);
+            if (project.status == 1 || project.status == 0 && openDate < closeDate) {
+                if (openDate > closeDate || openDate == closeDate) {
+                    errorMessage.push("Can not change openDate because new date is less than old openDate")
+                } else {
+                    const update = await db.Project.update({
+                        openDate: convertDate(openDate),
+                        closeDate: convertDate(closeDate)
+                    }, {
+                        where: {
+                            id
                         }
-                    });
+                    })
+                    const user = await db.ReservationTicket.findAll({
+                        where: {
+                            projectID: id,
+                            status: 1
+                        }
+                    })
+                    errorMessage.push("Change openDate Success")
+                    for (let i = 0; i < user.length; i++) {
+                        const user1 = await db.User.findByPk(user[i].userID)
+                        let transporter = nodemailer.createTransport({
+                            service: "gmail",
+                            auth: {
+                                user: process.env.GOOGE_APP_EMAIL,
+                                pass: process.env.GOOGLE_APP_PASSWORD,
+                            },
+                        });
+                        let mailOptions = {
+                            from: "Tivas",
+                            to: `${user1.email}`,
+                            subject: "Confirm received email",
+                            text: `Open date of ${project.name} is move to ${openDate} `
+                        };
+                        transporter.sendMail(mailOptions, function (error, info) {
+                            if (error) {
+                                console.log(error);
+                            } else {
+                                console.log("Email sent: " + info.response);
+                            }
+                        });
 
+                    }
                 }
+            } else {
+                errorMessage.push("Can not set booking time because this project in booking time")
             }
+
             resolve({
                 err: project ? 1 : 0,
                 mess: project ? errorMessage[0] : errorMessage[0]
@@ -696,50 +700,30 @@ export const openReservationTicket = (id) => {
             const dateNow = new Date().toDateString()
             const check = await db.Project.findByPk(id)
             if (check) {
-                // if(check.reservationDate !== dateNow){
-                //     message.push("not in the time to buy")
-                // }else{
-                await db.Project.update({
-                    status: 1,
-                }, {
-                    where: {
-                        id
-                    }
-                })
-                // Fetch records that need to be updated
-                const timeSharesToUpdate = await db.TimeShare.findAll({
-                    include: [
-                        {
-                            model: db.TypeRoom,
-                            required: true,
-                            include: {
-                                model: db.TypeOfProject,
-                                required: true,
-                                as: 'TypeOfProject',
-                                where: {
-                                    projectID: id,
-                                },
-                            },
-                        },
-                    ],
-                });
+                if (check.status !== 1) {
+                    // if(check.reservationDate !== dateNow){
+                    //     message.push("not in the time to buy")
+                    // }else{
+                    await db.Project.update({
+                        status: 1,
+                    }, {
+                        where: {
+                            id
+                        }
+                    })
+                    message.push("You can buy reservation ticket now")
+                    // }
+                } else {
+                    message.push(`Project (${id}) is already opened for reservation!`)
 
-                // Perform updates in memory
-                timeSharesToUpdate.forEach((timeShare) => {
-                    timeShare.saleStatus = 1;
-                });
-
-                // Save changes back to the database
-                await Promise.all(timeSharesToUpdate.map((timeShare) => timeShare.save()));
-                message.push("You can buy reservation ticket now")
-                // }
+                }
             } else {
-                message.push("Can not buy reservation ticket now")
+                message.push(`Project (${id}) does not exist`)
 
             }
             resolve({
-                err: check ? 0 : 1,
-                mess: check ? message[0] : message[0]
+                err: (check && check.status !== 1) ? 0 : 1,
+                mess: (check && check.status !== 1) ? message[0] : message[0]
             })
         } catch (error) {
             console.log(error);
@@ -752,33 +736,120 @@ export const openBooking = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
             const message = [];
-            const dateNow = new Date().toDateString()
+            //const dateNow = new Date().toDateString()
             const check = await db.Project.findByPk(id)
-            if (check && check.status == 1) {
-                // if(check.openDate !== dateNow){
-                //     message.push("not in the time to buy")
-                // }else{
-                await db.Project.update({
-                    status: 2,
-                }, {
-                    where: {
-                        id
-                    }
-                })
-                // await db.ReservationTicket.destroy({
-                //     where : {
-                //         status : 0
-                //     }
-                // })
-                message.push("This project is open now")
+            //console.log(check.openDate < dateNow);
+            if (check) {
+                if (check.status !== 2) {
+                    // if(check.openDate !== dateNow){
+                    //     message.push("not in the time to buy")
+                    // }else{
+                    await db.Project.update({
+                        status: 2,
+                    }, {
+                        where: {
+                            id
+                        }
+                    })
+                    // Fetch records that need to be updated
+                    const timeSharesToUpdate = await db.TimeShare.findAll({
+                        include: [
+                            {
+                                model: db.TypeRoom,
+                                required: true,
+                                include: {
+                                    model: db.TypeOfProject,
+                                    required: true,
+                                    as: 'TypeOfProject',
+                                    where: {
+                                        projectID: id,
+                                    },
+                                },
+                            },
+                        ],
+                    });
+
+                    // Perform updates in memory
+                    timeSharesToUpdate.forEach((timeShare) => {
+                        timeShare.saleStatus = 1;
+                    });
+
+                    // Save changes back to the database
+                    await Promise.all(timeSharesToUpdate.map((timeShare) => timeShare.save()));
+                    message.push("This project is open now")
+                } else {
+                    message.push(`Project (${id}) is already opened for booking!`)
+                }
                 // }
             } else {
-                message.push("Project is not available")
+                message.push(`Project (${id}) does not exist!`);
 
             }
             resolve({
-                err: check ? 0 : 1,
-                mess: check ? message[0] : message[0]
+                err: (check && check.status !== 2) ? 0 : 1,
+                mess: (check && check.status !== 2) ? message[0] : message[0]
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
+export const updateReservation = ({
+    reservationDate,
+    reservationPrice
+}, id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const project = await db.Project.findByPk(id)
+            const message = [];
+            const dateNow = new Date().toDateString()
+            if (project) {
+                if (project.status === 1) {
+                    await db.Project.update({
+                        reservationDate: convertDate(reservationDate),
+                        reservationPrice
+                    }, {
+                        where: {
+                            id
+                        }
+                    })
+                    message.push("Success")
+                    // }else if(dateNow >= reservationDate){
+                    //     message.push("Can not set reservationDate in the past")
+                } else {
+                    message.push("This project can not change reservation info or not available")
+                }
+            } else {
+                message.push(`Project (${id}) does not exist!`)
+            }
+            resolve({
+                err: (project && project.status !== 1) ? 0 : 1,
+                mess: (project && project.status !== 1) ? message[0] : message[0]
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
+export const getReservation = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let response = {};
+            const projectResponse = await db.Project.findByPk(id);
+            if (projectResponse) {
+                response.reservationDate = projectResponse.reservationDate;
+                response.reservationPrice = projectResponse.reservationPrice;
+                response.openDate = projectResponse.openDate;
+                response.closeDate = projectResponse.closeDate;
+            }
+            resolve({
+                err: response.reservationDate ? 0 : 1,
+                message: response.reservationDate ? `Project (${id})'s reservation info.` : `Project(${id}) does not have any reservation info!`,
+                data: response.reservationDate ? response : null,
             })
         } catch (error) {
             console.log(error);

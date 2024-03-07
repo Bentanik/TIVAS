@@ -126,9 +126,9 @@ export const getDetailsProject = async (req, res) => {
   return res.status(200).json(response);
 }
 
-export const changeDate = async (req, res) => {
-  const { id } = req.params
-  const response = await services.changeDate(req.body, id);
+export const updateBooking = async (req,res) => {
+  const {id} = req.params
+  const response = await services.updateBooking(req.body,id);
   return res.status(200).json(response);
 }
 
@@ -141,5 +141,17 @@ export const openReservationTicket = async (req, res) => {
 export const openBooking = async (req, res) => {
   const { id } = req.params
   const response = await services.openBooking(id)
+  return res.status(200).json(response)
+}
+
+export const updateReservation = async (req,res) => {
+  const {id} = req.params
+  const response = await services.updateReservation(req.body,id)
+  return res.status(200).json(response)
+}
+
+export const getReservation = async (req, res) => {
+  const { id } = req.params
+  const response = await services.getReservation(id);
   return res.status(200).json(response)
 }
