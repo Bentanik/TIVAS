@@ -17,16 +17,9 @@ function AdminManageProject() {
                         <div className={cx("header")}>Location Name</div>
                         <div className={cx("header")}>Open Date</div>
                         <div className={cx("header")}>Status</div>
+                        <div className={cx("header")}></div>
                     </div>
 
-                    <ListProject />
-                    <ListProject />
-                    <ListProject />
-                    <ListProject />
-                    <ListProject />
-                    <ListProject />
-                    <ListProject />
-                    <ListProject />
                     <ListProject />
                 </div>
             </div>
