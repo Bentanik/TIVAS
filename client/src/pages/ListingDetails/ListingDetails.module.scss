@@ -258,6 +258,19 @@
     }
   }
 
+  .tfoot {
+    display: block;
+    margin-top: 15px;
+
+    .pagination {
+      .MuiButtonBase-root {
+        padding: 23px;
+        font-size: 2.2rem;
+        font-family: "Inter", sans-serif;
+      }
+    }
+  }
+
   .project {
     width: 400px;
 
@@ -313,9 +326,7 @@
     }
   }
 
-
   .sleep {
-    
     .name {
       font-family: "Inter", sans-serif;
       font-size: 1.5rem;

@@ -72,12 +72,6 @@ const routes = [
     component: TimeshareDetail,
     layout: null,
   },
-
-  {
-    path: "/user/account/profile",
-    component: Profile,
-    layout: ProfileLayout,
-  },
   {
     path: "/user/account/changepassword",
     component: ChangePassword,
@@ -97,11 +91,6 @@ const routes = [
   {
     path: "/listingdetails",
     component: ListingDetails,
-    layout: null,
-  },
-  {
-    path: "/timesharerentals",
-    component: TimeshareRentals,
     layout: null,
   },
   {
