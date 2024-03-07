@@ -173,21 +173,21 @@
 
 // Reservaiton
 .reservation {
-  padding: 50px 80px 0 50px;
-  text-align: right;
+    padding: 50px 80px 0 50px;
+    text-align: right;
 
-  .action {
-    display: inline-block;
-    font-family: "Inter", sans-serif;
-    padding: 20px 30px;
+    .action {
+        display: inline-block;
+        font-family: "Inter", sans-serif;
+        padding: 20px 30px;
 
-    font-size: 1.6rem;
-    background-color: orange;
-    cursor: pointer;
-    user-select: none;
+        font-size: 1.6rem;
+        background-color: orange;
+        cursor: pointer;
+        user-select: none;
 
-    &:hover {
-      color: #fff;
+        &:hover {
+            color: #fff;
+        }
     }
-  }
 }

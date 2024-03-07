@@ -135,7 +135,7 @@ const routes = [
     },
 
     {
-        path: "/timesharedetail",
+        path: "/timesharedetail/:id",
         component: TimeshareDetail,
         layout: null,
     },
