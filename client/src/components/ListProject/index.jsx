@@ -4,21 +4,109 @@ import styles from "./ListProject.module.scss";
 import images from "~/assets/images";
 import { Link } from "react-router-dom";
 
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import { useState } from "react";
+import { Button, TextField } from "@mui/material";
+import { putOpenBooking } from "~/controllers/project";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import createAxios from "~/configs/axios";
+
 const cx = classNames.bind(styles);
 
-function ListProject() {
-    return (
-        <div className={cx("project")}>
-            <Link to="#!" className={cx("project-info")}>
-                <img src={images.resort} alt="Avatar" className={cx("img")} />
+function convertToDate(inputDate) {
+  const date = new Date(inputDate);
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
-                <div className={cx("text")}>TTC Resort Ninh Thuan</div>
-                <div className={cx("text")}>Phan Rang</div>
-                <div className={cx("text")}>2024-03-19</div>
-                <div className={cx("text", "up-coming")}>Up Comming</div>
-            </Link>
-        </div>
-    );
+  const month = date.getMonth();
+  const day = date.getDate();
+  const year = date.getFullYear();
+
+  const result = monthNames[month] + " " + day + " " + year;
+  return result;
+}
+
+function ListProject({ id, image, name, location, openDate, closeDate }) {
+  const [open, setOpen] = useState(false);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const currentUser = useSelector((state) => state.auth.login.user);
+  const axiosInstance = createAxios(dispatch, currentUser);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleBooking = async (e) => {
+    e.preventDefault();
+    const res = await putOpenBooking(axiosInstance, id);
+    if (res.err === 0) alert("Success");
+    else alert("failure");
+
+    handleClose();
+  };
+
+  return (
+    <div className={cx("project")}>
+      <Link to="#!" className={cx("project-info")}>
+        <img src={image} alt="Avatar" className={cx("img")} />
+
+        <div className={cx("text")}>{name}</div>
+        <div className={cx("text")}>{location}</div>
+        <div className={cx("text")}>{convertToDate(openDate)}</div>
+        <div className={cx("text")}>{convertToDate(closeDate)}</div>
+        <button className={cx("text")} onClick={handleClickOpen}>
+          Open booking
+        </button>
+      </Link>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        PaperProps={{
+          component: "form",
+          onSubmit: (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.currentTarget);
+            const formJson = Object.fromEntries(formData.entries());
+            const email = formJson.email;
+            console.log(email);
+            handleClose();
+          },
+        }}
+      >
+        <DialogTitle> Do you want to switch to booking?</DialogTitle>
+        <DialogActions>
+          <Button onClick={handleClose}>No</Button>
+          <Button type="submit" onClick={handleBooking}>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
 }
 
 export default ListProject;
