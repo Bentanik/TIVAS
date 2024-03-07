@@ -63,6 +63,12 @@ router.put("/openBooking/:id",controllers.openBooking)
 
 router.get("/getReservation/:id", controllers.getReservation)
 
+router.put("/updateReservationInfo/:id", controllers.updateReservationInfo)
+
+router.put("/getAllProjectReservation", controllers.getAllProjectReservation)
+
+
+
 
 
 export default router;

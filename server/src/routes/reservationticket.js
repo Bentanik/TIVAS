@@ -14,4 +14,6 @@ router.get("/getTimeSharePriority/:userID", controllers.getTimeSharePriority);
 
 router.get("/getUserTickets/:id",controllers.getUserTickets)
 
+router.get("/getUserBuyTickets/:id", controllers.getUserBuyTickets)
+
 export default router;
