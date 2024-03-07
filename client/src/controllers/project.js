@@ -10,12 +10,12 @@ export const getTop10 = async (axiosInstance) => {
 };
 
 export const getAllProject = async (axiosInstance) => {
-    try {
-        const res = await services.getAllProject(axiosInstance);
-        return res;
-    } catch (err) {
-        console.log(err);
-    }
+  try {
+    const res = await services.getAllProject(axiosInstance);
+    return res;
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 export const getProjectDetailById = async (axiosInstance, id) => {
@@ -46,21 +46,21 @@ export const getTypeRoom = async (axiosInstance, id) => {
 };
 
 export const updateReservation = async (axiosInstance, id, form) => {
-    try {
-        const res = await services.updateReservation(axiosInstance, id, form);
-        return res;
-    } catch (err) {
-        console.log(err);
-    }
+  try {
+    const res = await services.updateReservation(axiosInstance, id, form);
+    return res;
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 export const openReservaion = async (axiosInstance, id) => {
-    try {
-        const res = await services.openReservaion(axiosInstance, id);
-        return res;
-    } catch (err) {
-        console.log(err);
-    }
+  try {
+    const res = await services.openReservaion(axiosInstance, id);
+    return res;
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 export const getProjectReservation = async (axiosInstance, form) => {
@@ -75,6 +75,15 @@ export const getProjectReservation = async (axiosInstance, form) => {
 export const getProjectBooking = async (axiosInstance, form) => {
   try {
     const res = await services.getProjectBooking(axiosInstance, form);
+    return res;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const getProjectTimeshare = async (axiosInstance, form) => {
+  try {
+    const res = await services.getProjectTimeshare(axiosInstance, form);
     return res;
   } catch (err) {
     console.log(err);
@@ -97,5 +106,4 @@ export const checkPriority = async (axiosInstance, id) => {
   } catch (err) {
     console.log(err);
   }
-}
-
+};

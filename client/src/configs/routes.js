@@ -21,6 +21,8 @@ import TimeshareDetail from "~/pages/TimeshareDetail";
 import Reservation from "~/components/Reservation";
 import AdminProjectReservation from "~/pages/AdminProjectReservation";
 import AdminProjectCloseBooking from "~/pages/AdminProjectCloseBooking";
+import AdminUserBuyTimeshare from "~/pages/AdminUserBuyTimeshare";
+import AdminProjectTimeshare from "~/pages/AdminProjectTimeshare";
 
 const routes = [
   {
@@ -147,6 +149,16 @@ const routes = [
   {
     path: "/admin/manageproject/closebooking",
     component: AdminProjectCloseBooking,
+    layout: LayoutAdmin,
+  },
+  {
+    path: "/admin/manageproject/projecttimeshare",
+    component: AdminProjectTimeshare,
+    layout: LayoutAdmin,
+  },
+  {
+    path: "/admin/manageproject/userbuytimeshare/:id",
+    component: AdminUserBuyTimeshare,
     layout: LayoutAdmin,
   },
 ];
