@@ -902,8 +902,8 @@ export const updateReservationInfo = (id, { reservationDate, reservationPrice, o
     return new Promise(async (resolve, reject) => {
         try {
             const projectResponse = await db.Project.findByPk(id)
-            const message = [];
-            const dateNow = new Date().toDateString()
+            //const message = [];
+            //const dateNow = new Date().toDateString()
             if (projectResponse) {
                 if (projectResponse.status === 0) {
                     await db.Project.update({

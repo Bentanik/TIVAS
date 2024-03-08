@@ -10,20 +10,26 @@ router.get("/checkPriority/:id", controllers.checkPriority);
 
 router.post("/createReservation", controllers.createReservation);
 
-router.get("/getTimeSharePriority/:userID", controllers.getTimeSharePriority);
+//router.get("/getTimeSharePriority/:userID", controllers.getTimeSharePriority);
 
-router.get("/getUserTickets/:id",controllers.getUserTickets)
+//router.get("/getUserTickets/:id",controllers.getUserTickets)
 
 //router.get("/getUserFailedTickets/:id", controllers.getUserFailedTickets)
 
-router.get("/getUserBuyTickets/:id", controllers.getUserBuyTickets)
+//router.get("/getUserBuyTickets/:id", controllers.getUserBuyTickets)
 
-router.get("/getAllUserNoPriority/:id", controllers.getAllUserNoPriority)
+router.get("/getAllUserNoPriorityByAdmin/:id", controllers.getAllUserNoPriorityByAdmin)
 
-router.get("/getAllUserPriority/:id", controllers.getAllUserPriority)
+router.get("/getAllUserPriorityByAdmin/:id", controllers.getAllUserPriorityByAdmin)
+
+router.get("/getAllUserNoPriorityByStaff/:id/:userID", controllers.getAllUserNoPriorityByStaff)
+
+router.get("/getAllUserPriorityByStaff/:id/:userID", controllers.getAllUserPriorityByStaff)
 
 //router.get("/getAllFailedTickets/:id", controllers.getAllFailedTickets)
 
-router.get("/getAllTicketsByUser/:id", controllers.getAllTicketsByUser)
+router.get("/getAllTicketsByUser/:id/:status", controllers.getAllTicketsByUser)
+
+router.get("/getAllTicketsByAdmin/:id", controllers.getAllTicketsByAdmin)
 
 export default router;
