@@ -551,16 +551,23 @@ export const getUserTickets = (id) => {
             let ticketResponse = [];
             if (userResponse) {
                 ticketResponse = await db.ReservationTicket.findAll({
+                    attributes: ['id', 'code', 'status', 'projectID', 'timeShareID'],
                     raw: true,
                     where: {
                         userID: id,
                     }
                 })
-                if (ticketResponse) {
+                if (ticketResponse.length !== 0) {
                     for (let i = 0; i < ticketResponse.length; i++) {
                         const projectResponse = await db.Project.findByPk(ticketResponse[i].projectID);
                         ticketResponse[i].projectName = projectResponse.name;
-                        const timeShareResponse = await db.TimeShare.findByPk(ticketResponse[i].timeShareID);
+                        const timeShareResponse = await db.TimeShare.findByPk(ticketResponse[i].timeShareID,{
+                            include: {
+                                model: db.TypeRoom
+                            }
+                        });
+                        ticketResponse[i].typeRoomID = timeShareResponse.TypeRoom.id
+                        ticketResponse[i].typeRoomName = timeShareResponse.TypeRoom.name
                         ticketResponse[i].startDate = timeShareResponse.startDate;
                         ticketResponse[i].endDate = timeShareResponse.endDate;
                     }
@@ -627,7 +634,6 @@ export const getAllUserNoPriority = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
             let ticketResponse = [];
-            let response = [];
             const projectResponse = await db.Project.findByPk(id);
             if (projectResponse) {
                 if (projectResponse.status === 3) {
@@ -638,14 +644,18 @@ export const getAllUserNoPriority = (id) => {
                         }
                     })
                     if (ticketResponse.length !== 0) {
-                        const result = Object.groupBy(ticketResponse, ({ userID }) => userID)
-                        let count1 = 0
-                        for (let properties in result) {
-                            count1 = count1 + 1
-                        }
-                        for (let i = 0; i < count1; i++) {
-                            const userResponse = await db.User.findByPk(Object.getOwnPropertyNames(result)[i]);
-                            response.push(userResponse);
+                        for (let i = 0; i < ticketResponse.length; i++) {
+                            const projectResponse = await db.Project.findByPk(ticketResponse[i].projectID);
+                            ticketResponse[i].projectName = projectResponse.name;
+                            const timeShareResponse = await db.TimeShare.findByPk(ticketResponse[i].timeShareID,{
+                                include: {
+                                    model: db.TypeRoom
+                                }
+                            });
+                            ticketResponse[i].typeRoomID = timeShareResponse.TypeRoom.id
+                            ticketResponse[i].typeRoomName = timeShareResponse.TypeRoom.name
+                            ticketResponse[i].startDate = timeShareResponse.startDate;
+                            ticketResponse[i].endDate = timeShareResponse.endDate;
                         }
                     }
                 }
@@ -659,7 +669,7 @@ export const getAllUserNoPriority = (id) => {
                         : ticketResponse.length === 0 ?
                             `Can not find any Users have the reservation with Project(${id})!`
                             : `All Users have no Priority with Project(${id}).`,
-                data: response.length !== 0 ? response : 0
+                data: ticketResponse,
             })
         } catch (error) {
             console.log(error);
@@ -672,7 +682,6 @@ export const getAllUserPriority = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
             let ticketResponse = [];
-            let response = [];
             const projectResponse = await db.Project.findByPk(id);
             if (projectResponse) {
                 if (projectResponse.status === 3) {
@@ -683,14 +692,18 @@ export const getAllUserPriority = (id) => {
                         }
                     })
                     if (ticketResponse.length !== 0) {
-                        const result = Object.groupBy(ticketResponse, ({ userID }) => userID)
-                        let count1 = 0
-                        for (let properties in result) {
-                            count1 = count1 + 1
-                        }
-                        for (let i = 0; i < count1; i++) {
-                            const userResponse = await db.User.findByPk(Object.getOwnPropertyNames(result)[i]);
-                            response.push(userResponse);
+                        for (let i = 0; i < ticketResponse.length; i++) {
+                            const projectResponse = await db.Project.findByPk(ticketResponse[i].projectID);
+                            ticketResponse[i].projectName = projectResponse.name;
+                            const timeShareResponse = await db.TimeShare.findByPk(ticketResponse[i].timeShareID,{
+                                include: {
+                                    model: db.TypeRoom
+                                }
+                            });
+                            ticketResponse[i].typeRoomID = timeShareResponse.TypeRoom.id
+                            ticketResponse[i].typeRoomName = timeShareResponse.TypeRoom.name
+                            ticketResponse[i].startDate = timeShareResponse.startDate;
+                            ticketResponse[i].endDate = timeShareResponse.endDate;
                         }
                     }
                 }
@@ -704,7 +717,7 @@ export const getAllUserPriority = (id) => {
                         : ticketResponse.length === 0 ?
                             `Can not find any Users have the reservation with Project(${id})!`
                             : `All Users have Priority with Project(${id}).`,
-                data: response.length !== 0 ? response : 0
+                data: ticketResponse
             })
         } catch (error) {
             console.log(error);
