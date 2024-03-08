@@ -18,6 +18,7 @@ import AdminProjectDetail from "~/pages/AdminProjectDetail";
 import Banking from "~/components/Layouts/Banking";
 import AdminRoomTypeDetail from "~/pages/AdminRoomTypeDetail";
 import TimeshareDetail from "~/pages/TimeshareDetail";
+import Reservation from "~/components/Reservation";
 import AdminProjectReservation from "~/pages/AdminProjectReservation";
 import AdminProjectCloseBooking from "~/pages/AdminProjectCloseBooking";
 

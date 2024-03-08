@@ -1,112 +1,173 @@
 import classNames from "classnames/bind";
 import styles from "./ListProject.module.scss";
+import Dialog from "@mui/material/Dialog";
+import {
+    DialogTitle,
+    IconButton,
+    DialogContent,
+    Button,
+    DialogActions,
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import CloseIcon from "@mui/icons-material/Close";
+
+import { getAllProject, openReservaion } from "~/controllers/project";
+import { useState, useEffect } from "react";
+// import { Link, useParams } from "react-router-dom";
+
+import AdminShowListing from "../AdminShowListing";
+import Reservation from "~/components/Reservation";
 
 import images from "~/assets/images";
 import { Link } from "react-router-dom";
 
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import { useState } from "react";
-import { Button, TextField } from "@mui/material";
-import { putOpenBooking } from "~/controllers/project";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import createAxios from "~/configs/axios";
+import { useDispatch, useSelector } from "react-redux";
 
 const cx = classNames.bind(styles);
 
-function convertToDate(inputDate) {
-  const date = new Date(inputDate);
-  const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
+function ListProject({ status, price, image, name, id, location }) {
+    const [open, setOpen] = useState(false);
+    const [openReservaionbtn, setOpenReservaionbtn] = useState(false);
+    const [click, setClick] = useState(false);
 
-  const month = date.getMonth();
-  const day = date.getDate();
-  const year = date.getFullYear();
+    const dispatch = useDispatch();
+    const currentUser = useSelector((state) => state.auth.login.user);
+    const axiosInstance = createAxios(dispatch, currentUser);
 
-  const result = monthNames[month] + " " + day + " " + year;
-  return result;
-}
+    // const [id, setId] = useState({});
 
-function ListProject({ id, image, name, location, openDate, closeDate }) {
-  const [open, setOpen] = useState(false);
+    // const { id } = useParams();
 
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+    const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+        "& .MuiDialogContent-root": {
+            padding: theme.spacing(2),
+        },
+        "& .MuiDialogActions-root": {
+            padding: theme.spacing(1),
+        },
+    }));
 
-  const currentUser = useSelector((state) => state.auth.login.user);
-  const axiosInstance = createAxios(dispatch, currentUser);
+    // useEffect(() => {
+    //     if (open === true) {
+    //         setClick(true);
+    //     }
+    // }, [open]);
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+    const handleClose = () => {
+        setOpen(false);
+    };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+    const handleOpenReservaion = async (e) => {
+        e.preventDefault();
+        const res = await openReservaion(axiosInstance, id);
+        if (res?.err === 0) alert(true);
+        else alert(false);
+        setOpenReservaionbtn(false);
+    };
 
-  const handleBooking = async (e) => {
-    e.preventDefault();
-    const res = await putOpenBooking(axiosInstance, id);
-    if (res.err === 0) alert("Success");
-    else alert("failure");
+    return (
+        <div className={cx("project")}>
+            {/* <div className={cx("project-info")}> */}
+            <div className={cx("project-info")}>
+                <img src={image} alt="Avatar" className={cx("img")} />
 
-    handleClose();
-  };
+                <div className={cx("text")}>{name}</div>
+                <div className={cx("text")}>{location}</div>
+                {/* <div className={cx("text", "up-coming")}>Up Comming</div> */}
+                <div className={cx("listing")}>
+                    <div>
+                        <button
+                            type="button"
+                            className={cx("booking-btn", "text")}
+                            onClick={() => setOpen(true)}
+                            disabled={click}
+                        >
+                            {price ? "Update" : "Reservation"}
+                        </button>
 
-  return (
-    <div className={cx("project")}>
-      <Link to="#!" className={cx("project-info")}>
-        <img src={image} alt="Avatar" className={cx("img")} />
-
-        <div className={cx("text")}>{name}</div>
-        <div className={cx("text")}>{location}</div>
-        <div className={cx("text")}>{convertToDate(openDate)}</div>
-        <div className={cx("text")}>{convertToDate(closeDate)}</div>
-        <button className={cx("text")} onClick={handleClickOpen}>
-          Open booking
-        </button>
-      </Link>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        PaperProps={{
-          component: "form",
-          onSubmit: (event) => {
-            event.preventDefault();
-            const formData = new FormData(event.currentTarget);
-            const formJson = Object.fromEntries(formData.entries());
-            const email = formJson.email;
-            console.log(email);
-            handleClose();
-          },
-        }}
-      >
-        <DialogTitle> Do you want to switch to booking?</DialogTitle>
-        <DialogActions>
-          <Button onClick={handleClose}>No</Button>
-          <Button type="submit" onClick={handleBooking}>
-            Yes
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
-  );
+                        <div>
+                            <BootstrapDialog
+                                onClose={handleClose}
+                                aria-labelledby="customized-dialog-title"
+                                open={open}
+                            >
+                                <DialogTitle
+                                    sx={{ m: 0, p: 2 }}
+                                    id="customized-dialog-title"
+                                >
+                                    Booking
+                                </DialogTitle>
+                                <IconButton
+                                    aria-label="close"
+                                    onClick={handleClose}
+                                    sx={{
+                                        position: "absolute",
+                                        right: 8,
+                                        top: 8,
+                                        color: (theme) =>
+                                            theme.palette.grey[500],
+                                    }}
+                                >
+                                    <CloseIcon />
+                                </IconButton>
+                                <DialogContent dividers>
+                                    <Reservation
+                                        id={id}
+                                        handleClose={handleClose}
+                                    />
+                                </DialogContent>
+                            </BootstrapDialog>
+                        </div>
+                    </div>
+                    {price && (
+                        <>
+                            <div>
+                                {status === 0 ? (
+                                    <button
+                                        type="option"
+                                        onClick={() =>
+                                            setOpenReservaionbtn(true)
+                                        }
+                                    >
+                                        Open reservation
+                                    </button>
+                                ) : (
+                                    <p>Opened Reservaion</p>
+                                )}
+                            </div>
+                            <>
+                                <Dialog
+                                    open={openReservaionbtn}
+                                    onClose={() => setOpenReservaionbtn(false)}
+                                    aria-labelledby="alert-dialog-title"
+                                    aria-describedby="alert-dialog-description"
+                                >
+                                    <DialogTitle id="alert-dialog-title">
+                                        {"Use Google's location service?"}
+                                    </DialogTitle>
+                                    <DialogContent></DialogContent>
+                                    <DialogActions>
+                                        <Button
+                                            onClick={() =>
+                                                setOpenReservaionbtn(false)
+                                            }
+                                        >
+                                            Disagree
+                                        </Button>
+                                        <Button onClick={handleOpenReservaion}>
+                                            Agree
+                                        </Button>
+                                    </DialogActions>
+                                </Dialog>
+                            </>
+                        </>
+                    )}
+                </div>
+            </div>
+        </div>
+        // </div>
+    );
 }
 
 export default ListProject;
