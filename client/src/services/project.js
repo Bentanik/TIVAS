@@ -15,7 +15,7 @@ export const getTypeRoom = (axiosInstance, id) => {
 };
 
 export const getAllProject = (axiosInstance) => {
-    return axiosInstance.get(`/api/v1/project/getAll?page=1`);
+    return axiosInstance.get(`/api/v1/project/getAll?page=1&limit=15`);
 };
 
 export const updateReservation = (axiosInstance, id, form) => {

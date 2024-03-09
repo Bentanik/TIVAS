@@ -102,21 +102,19 @@ function TimeshareDetail() {
             height: 641,
         };
     });
-    function formatDate(date) {
-        var year = date.getFullYear();
-        var month = (date.getMonth() + 1).toString().padStart(2, "0");
-        var day = date.getDate().toString().padStart(2, "0");
-        return `${month}-${day}-${year}`;
+
+    // Set Date
+    function formatDate(dateString) {
+        var date = new Date(dateString);
+        return date.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+        });
     }
 
-    var startDateString = timeshareData.startDate;
-    var endDateString = timeshareData.endDate;
-
-    var startDate = new Date(startDateString);
-    var endDate = new Date(endDateString);
-
-    var formattedStartDate = formatDate(startDate);
-    var formattedEndDate = formatDate(endDate);
+    var formattedStartDate = formatDate(timeshareData.startDate);
+    var formattedEndDate = formatDate(timeshareData.endDate);
 
     const handleClickOpen = () => {
         setOpen(true);

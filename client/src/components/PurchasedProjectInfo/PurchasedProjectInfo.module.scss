@@ -1,0 +1,14 @@
+.img {
+    width: 100px;
+    height: 100px;
+    padding: 10px;
+}
+.ticket-detail-wrapper {
+    border: #000 solid 1px;
+    width: 50%;
+
+    .ticket-detail {
+        // padding: 20px;
+        display: flex;
+    }
+}
