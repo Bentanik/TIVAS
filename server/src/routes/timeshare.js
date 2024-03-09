@@ -22,4 +22,19 @@ router.get(
     controllers.getDetailsTimeShare,
 )
 
+router.get(
+    "/getAllByStaff/:userID",
+    controllers.getAllTimeShareByStaff,
+)
+
+router.get(
+    "/getAllByStaff/:projectID/:userID",
+    controllers.getAllTimeShareOfProjectByStaff,
+)
+
+// router.get(
+//     "/:id/:userID",
+//     controllers.getDetailsTimeShareByStaff,
+// )
+
 export default router;

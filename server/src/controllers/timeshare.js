@@ -82,3 +82,15 @@ export const getDetailsTimeShare = async (req, res) => {
         return internalServerError("Error at Server Side!", res);
     }
 }
+
+export const getAllTimeShareByStaff = async (req, res) => {
+    const { userID } = req.params;
+    const response = await services.getAllTimeShareByStaff(userID, req.query);
+    return res.status(200).json(response); 
+}
+
+export const getAllTimeShareOfProjectByStaff = async (req, res) => {
+    const { projectID, userID } = req.params;
+    const response = await services.getAllTimeShareOfProjectByStaff(projectID, userID, req.query);
+    return res.status(200).json(response);
+}

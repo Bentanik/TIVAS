@@ -39,11 +39,6 @@ export const createNewProject = ({
 }, fileData) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const locationDB = await db.Location.findOne({
-                where: {
-                    name: location,
-                }
-            })
             let typeInDBError = 0;
             const imageProjectArray = [];
             const typeErrorMessage = [];
@@ -61,55 +56,51 @@ export const createNewProject = ({
                     typeErrorMessage.push(stringT[i])
                 }
             }
-            if (locationDB) {
-                if (typeInDBError === 0) {
-                    [project, created] = await db.Project.findOrCreate({
-                        where: { name },
-                        defaults: {
-                            name,
-                            description,
-                            buildingStatus,
-                            features,
-                            attractions,
-                            status: 0,
-                            thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : null,
-                            thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : null,
-                            locationID: locationDB.id
-                        },
-                    })
-                    console.log(created)
-                    if (created) {
-                        for (let i = 0; i < stringT.length; i++) {
-                            const TypeOfProject = await db.TypeOfProject.create({
-                                projectID: project.id,
-                                typeID: stringT[i] == "Villa" ? 1 : 2,
-                            })
-                        }
+            if (typeInDBError === 0) {
+                [project, created] = await db.Project.findOrCreate({
+                    where: { name },
+                    defaults: {
+                        name,
+                        description,
+                        buildingStatus,
+                        features,
+                        attractions,
+                        status: 0,
+                        thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : null,
+                        thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : null,
+                        locationID: locationDB.id
+                    },
+                })
+                console.log(created)
+                if (created) {
+                    for (let i = 0; i < stringT.length; i++) {
+                        const TypeOfProject = await db.TypeOfProject.create({
+                            projectID: project.id,
+                            typeID: stringT[i] == "Villa" ? 1 : 2,
+                        })
+                    }
 
-                        //Import images to imageTable
-                        if (fileData.images) {
-                            for (let i = 0; i < fileData.images.length; i++) {
-                                const image = {
-                                    pathUrl: fileData.images[i].path,
-                                    pathName: fileData.images[i].filename,
-                                    projectID: project.id
-                                }
-                                imageProjectArray.push(image);
+                    //Import images to imageTable
+                    if (fileData.images) {
+                        for (let i = 0; i < fileData.images.length; i++) {
+                            const image = {
+                                pathUrl: fileData.images[i].path,
+                                pathName: fileData.images[i].filename,
+                                projectID: project.id
                             }
-                            await db.Image.bulkCreate(imageProjectArray);
+                            imageProjectArray.push(image);
                         }
+                        await db.Image.bulkCreate(imageProjectArray);
                     }
                 }
             }
             resolve({
                 err: created ? 0 : 1,
-                mess: !locationDB ?
-                    `location (${location}) does not exist!` :
-                    typeInDBError > 0 ?
-                        `TypeOfProject: (${typeErrorMessage.join(',')}) not exist!`
-                        : created ?
-                            "Create Project Successfully."
-                            : "Project Name has been used!",
+                mess: typeInDBError > 0 ?
+                    `TypeOfProject: (${typeErrorMessage.join(',')}) not exist!`
+                    : created ?
+                        "Create Project Successfully."
+                        : "Project Name has been used!",
             })
             if (fileData && !created) {
                 console.log('123')
@@ -167,9 +158,7 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
             }
             resolve({
                 err: (response.length !== 0) ? 0 : 1,
-                message: pageInput > countPages ?
-                    `Can not find any Projects in Page (${pageInput}) because there are only (${countPages}) Pages of Projects`
-                    : (response.length !== 0) ? `Get all of projects results` : 'Can not find any projects!',
+                message: (response.length !== 0) ? `Get all of projects results` : 'Can not find any projects!',
                 data: (response.length !== 0) ? response : null,
                 count: response.length,
                 countPages: countPages,
@@ -196,8 +185,8 @@ export const getAllByLocation = (id) => {
                     attributes: ['id', 'name']
                 },
             })
-            if(response.length !== 0){
-                for(let i = 0; i < response.length; i++){
+            if (response.length !== 0) {
+                for (let i = 0; i < response.length; i++) {
                     response[i].location = response[i].Location.name;
                 }
             }
@@ -408,7 +397,7 @@ export const searchProject = ({ page, limit, orderBy, orderType, type, ...query 
                 group: ['TypeOfProjects.projectID', 'Project.name', 'Project.locationID', 'Project.thumbnailPathUrl', 'Project.id'],
                 having: type ? (literal(`COUNT(TypeOfProjects.projectID) = ${type.length}`)) : literal((`COUNT(TypeOfProjects.projectID) > 0`)),
                 subQuery: false,
-            }); 
+            });
             let countPages = projectResponse.length !== 0 ? 1 : 0;
             if (projectResponse.length / queries.limit > 1) {
                 countPages = Math.ceil(projectResponse.length / queries.limit)
@@ -468,9 +457,7 @@ export const searchProject = ({ page, limit, orderBy, orderType, type, ...query 
             }
             resolve({
                 err: (response.length !== 0) ? 0 : 1,
-                mess: pageInput > countPages ?
-                `Can not find any Projects in Page (${pageInput}) because there are only (${countPages}) Pages of Projects`
-                : (response.length !== 0) ? `Search Projects Results` : "Can not find any Projects!",
+                mess: (response.length !== 0) ? `Search Projects Results` : "Can not find any Projects!",
                 data: (response.length !== 0) ? response : null,
                 count: response.length !== 0 ? response.length : 0,
                 countPages: countPages,
