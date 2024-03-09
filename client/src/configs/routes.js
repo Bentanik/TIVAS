@@ -12,15 +12,11 @@ import Profile from "~/components/Layouts/Profile";
 import RoomTypeDetail from "~/components/RoomTypeDetail";
 import ChangePassword from "~/components/ChangePassword";
 import AdminManageUser from "~/pages/AdminManageUser";
-import AdminUserBanList from "~/pages/AdminUserBanList";
 import AdminManageProject from "~/pages/AdminManageProject";
 import AdminProjectDetail from "~/pages/AdminProjectDetail";
 import Banking from "~/components/Layouts/Banking";
 import AdminRoomTypeDetail from "~/pages/AdminRoomTypeDetail";
 import TimeshareDetail from "~/pages/TimeshareDetail";
-import Reservation from "~/components/Reservation";
-import AdminProjectReservation from "~/pages/AdminProjectReservation";
-import AdminProjectCloseBooking from "~/pages/AdminProjectCloseBooking";
 
 const routes = [
   {
@@ -121,13 +117,6 @@ const routes = [
     component: AdminManageProject,
     layout: LayoutAdmin,
   },
-
-  {
-    path: "/admin/user/userbanlist",
-    component: AdminUserBanList,
-    layout: LayoutAdmin,
-  },
-
   {
     path: "/admin/typeroomdetail",
     component: AdminRoomTypeDetail,
@@ -137,16 +126,6 @@ const routes = [
   {
     path: "/admin/projectdetail",
     component: AdminProjectDetail,
-    layout: LayoutAdmin,
-  },
-  {
-    path: "/admin/manageproject/reservation",
-    component: AdminProjectReservation,
-    layout: LayoutAdmin,
-  },
-  {
-    path: "/admin/manageproject/closebooking",
-    component: AdminProjectCloseBooking,
     layout: LayoutAdmin,
   },
 ];
