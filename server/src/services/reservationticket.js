@@ -4,6 +4,7 @@ import "dotenv/config";
 import { Model, Op, fn, col, literal, where } from "sequelize";
 const nodemailer = require("nodemailer");
 import ejs from "ejs";
+import { log } from "console";
 const fs = require("fs");
 
 function formatDate(date) {
@@ -499,7 +500,7 @@ export const checkPriority = (id) => {
                             endDate: formatDate(timeShare.endDate),
                             reservationPrice: reservation.reservationPrice,
                             timeSharePrice: timeShare.price,
-                            bookingPrice: timeShare.price - reservation.reservationPrice 
+                            bookingPrice: timeShare.price - reservation.reservationPrice
                         };
 
                         const renderedHtml = ejs.render(emailTemplate, data);
@@ -706,7 +707,7 @@ export const getAllUserNoPriorityByAdmin = (id) => {
                             },
                             {
                                 model: db.Project,
-                                attributes: ['id', 'name'],
+                                attributes: ['id', 'name', 'thumbnailPathUrl'],
                                 include: {
                                     model: db.Location,
                                     attributes: ['id', 'name'],
@@ -734,6 +735,7 @@ export const getAllUserNoPriorityByAdmin = (id) => {
                             ticket.username = ticketResponse[i].User.username;
                             ticket.projectID = ticketResponse[i].Project.id
                             ticket.projectName = ticketResponse[i].Project.name;
+                            ticket.projectThumbnailPathUrl = ticketResponse[i].Project.thumbnailPathUrl;
                             ticket.location = ticketResponse[i].Project.Location.name;
                             ticket.typeRoomID = ticketResponse[i].TimeShare.TypeRoom.id
                             ticket.typeRoomName = ticketResponse[i].TimeShare.TypeRoom.name
@@ -785,7 +787,7 @@ export const getAllUserPriorityByAdmin = (id) => {
                             },
                             {
                                 model: db.Project,
-                                attributes: ['id', 'name'],
+                                attributes: ['id', 'name', 'thumbnailPathUrl'],
                                 include: {
                                     model: db.Location,
                                     attributes: ['id', 'name'],
@@ -817,6 +819,7 @@ export const getAllUserPriorityByAdmin = (id) => {
                             ticket.username = ticketResponse[i].User.username;
                             ticket.projectID = ticketResponse[i].Project.id
                             ticket.projectName = ticketResponse[i].Project.name;
+                            ticket.projectThumbnailPathUrl = ticketResponse[i].Project.thumbnailPathUrl;
                             ticket.location = ticketResponse[i].Project.Location.name;
                             ticket.typeRoomID = ticketResponse[i].TimeShare.TypeRoom.id
                             ticket.typeRoomName = ticketResponse[i].TimeShare.TypeRoom.name
@@ -855,8 +858,13 @@ export const getAllUserNoPriorityByStaff = (id, userID) => {
             let response = [];
             let ticketResponse = [];
             const projectResponse = await db.Project.findByPk(id);
-            const userResponse = await db.User.findByPk(userID);
-            if (projectResponse && userResponse) {
+            const userResponse = await db.User.findByPk(userID, {
+                include: {
+                    model: db.RoleCode,
+                }
+            });
+            console.log(userResponse.RoleCode.roleName === 'Staff');
+            if (projectResponse && userResponse && userResponse.RoleCode.roleName === 'Staff') {
                 if (projectResponse.status === 3) {
                     ticketResponse = await db.ReservationTicket.findAll({
                         nest: true,
@@ -869,7 +877,7 @@ export const getAllUserNoPriorityByStaff = (id, userID) => {
                             },
                             {
                                 model: db.Project,
-                                attributes: ['id', 'name'],
+                                attributes: ['id', 'name', 'thumbnailPathUrl'],
                                 include: {
                                     model: db.Location,
                                     attributes: ['id', 'name'],
@@ -900,6 +908,7 @@ export const getAllUserNoPriorityByStaff = (id, userID) => {
                             ticket.username = ticketResponse[i].User.username;
                             ticket.projectID = ticketResponse[i].Project.id
                             ticket.projectName = ticketResponse[i].Project.name;
+                            ticket.projectThumbnailPathUrl = ticketResponse[i].Project.thumbnailPathUrl;
                             ticket.location = ticketResponse[i].Project.Location.name;
                             ticket.typeRoomID = ticketResponse[i].TimeShare.TypeRoom.id
                             ticket.typeRoomName = ticketResponse[i].TimeShare.TypeRoom.name
@@ -919,12 +928,14 @@ export const getAllUserNoPriorityByStaff = (id, userID) => {
                 message: !projectResponse ?
                     `Project (${id}) does not exist!`
                     : !userResponse ?
-                        `Staff (${userID}) does not exist!`
-                        : projectResponse.status !== 3 ?
-                            `Project (${id}) is not on checkPriority Stage!`
-                            : response.length === 0 ?
-                                `Can not find any Users have no Priority with Project(${id}) have TimeShares managed by Staff(${userID})!`
-                                : `All Users have no Priority with Project(${id}) have TimeShares managed by Staff(${userID}).`,
+                        `User (${userID}) does not exist!`
+                        : !(userResponse.RoleCode.roleName === 'Staff') ?
+                            `User (${userID}) is not a staff!`
+                            : projectResponse.status !== 3 ?
+                                `Project (${id}) is not on checkPriority Stage!`
+                                : response.length === 0 ?
+                                    `Can not find any Users have no Priority with Project(${id}) have TimeShares managed by Staff(${userID})!`
+                                    : `All Users have no Priority with Project(${id}) have TimeShares managed by Staff(${userID}).`,
                 data: response,
             })
         } catch (error) {
@@ -940,8 +951,14 @@ export const getAllUserPriorityByStaff = (id, userID) => {
             let response = [];
             let ticketResponse = [];
             const projectResponse = await db.Project.findByPk(id);
-            const userResponse = await db.User.findByPk(userID);
-            if (projectResponse && userResponse) {
+            const userResponse = await db.User.findByPk(userID, {
+                include: {
+                    model: db.RoleCode,
+                }
+            });
+            console.log(userResponse.RoleCode.roleName);
+            console.log(userResponse.RoleCode.roleName === 'Staff');
+            if (projectResponse && userResponse && userResponse.RoleCode.roleName === 'Staff') {
                 if (projectResponse.status === 3) {
                     ticketResponse = await db.ReservationTicket.findAll({
                         nest: true,
@@ -954,7 +971,7 @@ export const getAllUserPriorityByStaff = (id, userID) => {
                             },
                             {
                                 model: db.Project,
-                                attributes: ['id', 'name'],
+                                attributes: ['id', 'name', 'thumbnailPathUrl'],
                                 include: {
                                     model: db.Location,
                                     attributes: ['id', 'name'],
@@ -989,6 +1006,7 @@ export const getAllUserPriorityByStaff = (id, userID) => {
                             ticket.username = ticketResponse[i].User.username;
                             ticket.projectID = ticketResponse[i].Project.id
                             ticket.projectName = ticketResponse[i].Project.name;
+                            ticket.projectThumbnailPathUrl = ticketResponse[i].Project.thumbnailPathUrl;
                             ticket.location = ticketResponse[i].Project.Location.name;
                             ticket.typeRoomID = ticketResponse[i].TimeShare.TypeRoom.id
                             ticket.typeRoomName = ticketResponse[i].TimeShare.TypeRoom.name
@@ -1008,12 +1026,14 @@ export const getAllUserPriorityByStaff = (id, userID) => {
                 message: !projectResponse ?
                     `Project (${id}) does not exist!`
                     : !userResponse ?
-                        `Staff (${userID}) does not exist!`
-                        : projectResponse.status !== 3 ?
-                            `Project (${id}) is not on checkPriority Stage!`
-                            : response.length === 0 ?
-                                `Can not find any Users have Priority with Project(${id}) have TimeShares managed by Staff(${userID})!`
-                                : `All Users have Priority with Project(${id}) have TimeShares managed by Staff(${userID}).`,
+                        `User (${userID}) does not exist!`
+                        : !(userResponse.RoleCode.roleName === 'Staff') ?
+                            `User (${userID}) is not a staff!`
+                            : projectResponse.status !== 3 ?
+                                `Project (${id}) is not on checkPriority Stage!`
+                                : response.length === 0 ?
+                                    `Can not find any Users have Priority with Project(${id}) have TimeShares managed by Staff(${userID})!`
+                                    : `All Users have Priority with Project(${id}) have TimeShares managed by Staff(${userID}).`,
                 data: response,
             })
         } catch (error) {
@@ -1064,7 +1084,7 @@ export const getAllTicketsByUser = (id, status) => {
                         },
                         {
                             model: db.Project,
-                            attributes: ['id', 'name'],
+                            attributes: ['id', 'name', 'thumbnailPathUrl'],
                             include: {
                                 model: db.Location,
                                 attributes: ['id', 'name'],
@@ -1078,10 +1098,21 @@ export const getAllTicketsByUser = (id, status) => {
                                 atributes: ['id', 'name'],
                             }
                         },
-                        {
-                            model: db.Booking,
-                            attributes: ['id', 'status'],
-                        },
+                        (+status === 3 || +status === 4 || +status === 5) ?
+                            {
+                                model: db.Booking,
+                                attributes: ['id', 'status'],
+                                where: parseInt(status) === 4 ? {
+                                    status: 1
+                                } : parseInt(status) === 5 ? {
+                                    status: -1
+                                } : {
+                                    status: 0
+                                }
+                            } : {
+                                model: db.Booking,
+                                attributes: ['id', 'status'],
+                            },
                     ],
                 })
                 if (ticketResponse.length !== 0) {
@@ -1091,6 +1122,7 @@ export const getAllTicketsByUser = (id, status) => {
                         ticket.code = ticketResponse[i].code;
                         ticket.projectID = ticketResponse[i].Project.id
                         ticket.projectName = ticketResponse[i].Project.name;
+                        ticket.projectThumbnailPathUrl = ticketResponse[i].Project.thumbnailPathUrl;
                         ticket.location = ticketResponse[i].Project.Location.name
                         if (parseInt(status) !== 1) {
                             ticket.typeRoomID = ticketResponse[i].TimeShare.TypeRoom.id
@@ -1146,7 +1178,7 @@ export const getAllTicketsByAdmin = (id) => {
                         },
                         {
                             model: db.Project,
-                            attributes: ['id', 'name'],
+                            attributes: ['id', 'name', 'thumbnailPathUrl'],
                             include: {
                                 model: db.Location,
                                 attributes: ['id', 'name'],
@@ -1174,6 +1206,7 @@ export const getAllTicketsByAdmin = (id) => {
                         ticket.username = ticketResponse[i].User.username;
                         ticket.projectID = ticketResponse[i].Project.id
                         ticket.projectName = ticketResponse[i].Project.name;
+                        ticket.projectThumbnailPathUrl = ticketResponse[i].Project.thumbnailPathUrl;
                         ticket.location = ticketResponse[i].Project.Location.name;
                         ticket.typeRoomID = ticketResponse[i].TimeShare.TypeRoom.id
                         ticket.typeRoomName = ticketResponse[i].TimeShare.TypeRoom.name
