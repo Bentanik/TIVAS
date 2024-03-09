@@ -27,21 +27,11 @@ export const createReservation = async (axiosInstance, form) => {
   }
 };
 
-export const getUserPriority = async (axiosInstance, id) => {
+export const checkPriority = async (axiosInstance, id) => {
   try {
-    const res = await services.getUserPriority(axiosInstance, id);
+    const res = await services.checkPriority(axiosInstance, id);
     return res;
   } catch (err) {
     console.log(err);
   }
 };
-
-export const getUserNoPriority = async (axiosInstance, id) => {
-    try {
-      const res = await services.getUserNoPriority(axiosInstance, id);
-      return res;
-    } catch (err) {
-      console.log(err);
-    }
-  };
-  

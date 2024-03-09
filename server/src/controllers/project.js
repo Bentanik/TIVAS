@@ -126,9 +126,9 @@ export const getDetailsProject = async (req, res) => {
   return res.status(200).json(response);
 }
 
-export const updateBooking = async (req,res) => {
-  const {id} = req.params
-  const response = await services.updateBooking(req.body,id);
+export const updateBooking = async (req, res) => {
+  const { id } = req.params
+  const response = await services.updateBooking(req.body, id);
   return res.status(200).json(response);
 }
 
@@ -144,9 +144,9 @@ export const openBooking = async (req, res) => {
   return res.status(200).json(response)
 }
 
-export const updateReservation = async (req,res) => {
-  const {id} = req.params
-  const response = await services.updateReservation(req.body,id)
+export const updateReservation = async (req, res) => {
+  const { id } = req.params
+  const response = await services.updateReservation(req.body, id)
   return res.status(200).json(response)
 }
 
@@ -158,6 +158,23 @@ export const getReservation = async (req, res) => {
 
 export const updateReservationInfo = async (req, res) => {
   const { id } = req.params
+  const { reservationDate, reservationPrice, openDate, closeDate } = req.body;
+  if (!reservationDate || !reservationPrice || !openDate || !closeDate) {
+    return missValue("Missing value!", res);
+  }
+  const dateRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+  if (!dateRegex.test(reservationDate) || !dateRegex.test(openDate) || !dateRegex.test(closeDate)) {
+    return badRequest("Reservation Date, Open Date or Close Date must be like (dd/mm/yyyy) format!", res);
+  }
+  if (!isValidDate(reservationDate) || !isValidDate(openDate) || !isValidDate(closeDate)) {
+    return badRequest("Reservation Date, Open Date or Close Date must be a valid date!", res)
+  }
+  if (!/\b\d+(\.\d+)?\b/g.test(reservationPrice)) {
+    return badRequest("Reservation Price is required a NUMBER!")
+  }
+  if (reservationPrice < 0) {
+    return badRequest("Reservation Price must be higher than 0!", res)
+  }
   const response = await services.updateReservationInfo(id, req.body);
   return res.status(200).json(response);
 }

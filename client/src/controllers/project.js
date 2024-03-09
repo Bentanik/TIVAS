@@ -63,27 +63,9 @@ export const openReservaion = async (axiosInstance, id) => {
   }
 };
 
-export const getProjectReservation = async (axiosInstance, form) => {
+export const getProjectByStatus = async (axiosInstance, form) => {
   try {
-    const res = await services.getProjectReservation(axiosInstance, form);
-    return res;
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-export const getProjectBooking = async (axiosInstance, form) => {
-  try {
-    const res = await services.getProjectBooking(axiosInstance, form);
-    return res;
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-export const getProjectTimeshare = async (axiosInstance, form) => {
-  try {
-    const res = await services.getProjectTimeshare(axiosInstance, form);
+    const res = await services.getProjectByStatus(axiosInstance, form);
     return res;
   } catch (err) {
     console.log(err);
@@ -99,11 +81,3 @@ export const putOpenBooking = async (axiosInstance, id) => {
   }
 };
 
-export const checkPriority = async (axiosInstance, id) => {
-  try {
-    const res = await services.checkPriority(axiosInstance, id);
-    return res;
-  } catch (err) {
-    console.log(err);
-  }
-};
