@@ -881,7 +881,6 @@ export const getAllTicketsByUser = (id, status) => {
                         status: 2
                     }
                 })
-                console.log(ticketResponse);
                 if (ticketResponse.length !== 0) {
                     for (let i = 0; i < ticketResponse.length; i++) {
                         const projectResponse = await db.Project.findByPk(ticketResponse[i].projectID);
