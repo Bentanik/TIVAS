@@ -902,8 +902,8 @@ export const updateReservationInfo = (id, { reservationDate, reservationPrice, o
     return new Promise(async (resolve, reject) => {
         try {
             const projectResponse = await db.Project.findByPk(id)
-            const message = [];
-            const dateNow = new Date().toDateString()
+            //const message = [];
+            //const dateNow = new Date().toDateString()
             if (projectResponse) {
                 if (projectResponse.status === 0) {
                     await db.Project.update({
@@ -926,7 +926,7 @@ export const updateReservationInfo = (id, { reservationDate, reservationPrice, o
                         }
                     })
                 }
-                if (((projectResponse.openDate.getTime() !== convertDate(openDate).getTime()) || (projectResponse.closeDate.getTime() !== convertDate(closeDate).getTime())) && projectResponse.status === 1) {
+                if (((projectResponse.openDate?.getTime() !== convertDate(openDate).getTime()) || (projectResponse.closeDate?.getTime() !== convertDate(closeDate).getTime())) && projectResponse.status === 1) {
                     const user = await db.ReservationTicket.findAll({
                         where: {
                             projectID: id,
@@ -951,9 +951,9 @@ export const updateReservationInfo = (id, { reservationDate, reservationPrice, o
                             from: "Tivas",
                             to: `${user1.email}`,
                             subject: "Confirm received email",
-                            text: projectResponse.openDate.getTime() !== convertDate(openDate).getTime() && projectResponse.closeDate.getTime() !== convertDate(closeDate).getTime() ?
+                            text: projectResponse.openDate?.getTime() !== convertDate(openDate).getTime() && projectResponse.closeDate?.getTime() !== convertDate(closeDate).getTime() ?
                                 `Open date of ${projectResponse.name} is move to ${openDate} and Close date of ${projectResponse.name} is move to ${closeDate}`
-                                : projectResponse.openDate.getTime() !== convertDate(openDate).getTime() ?
+                                : projectResponse.openDate?.getTime() !== convertDate(openDate).getTime() ?
                                     `Open date of ${projectResponse.name} is move to ${openDate}`
                                     : `Close date of ${projectResponse.name} is move to ${closeDate}`
 
@@ -970,12 +970,12 @@ export const updateReservationInfo = (id, { reservationDate, reservationPrice, o
                 }
             }
             resolve({
-                err: !(projectResponse?.status === 1 && (projectResponse?.reservationDate.getTime() !== convertDate(reservationDate).getTime() || projectResponse?.reservationPrice !== reservationPrice)) && !(projectResponse?.status === 2 && (projectResponse?.openDate.getTime() !== convertDate(openDate).getTime() || projectResponse?.closeDate.getTime() !== convertDate(closeDate).getTime() || projectResponse?.reservationDate.getTime() !== convertDate(reservationDate).getTime() || projectResponse?.reservationPrice !== reservationPrice)) ? 0 : 1,
+                err: !(projectResponse?.status === 1 && (projectResponse.reservationDate?.getTime() !== convertDate(reservationDate).getTime() || projectResponse?.reservationPrice !== reservationPrice)) && !(projectResponse?.status === 2 && (projectResponse.openDate?.getTime() !== convertDate(openDate).getTime() || projectResponse.closeDate?.getTime() !== convertDate(closeDate).getTime() || projectResponse.reservationDate?.getTime() !== convertDate(reservationDate).getTime() || projectResponse?.reservationPrice !== reservationPrice)) ? 0 : 1,
                 message: !projectResponse ?
                     `Project (${id}) does not exist!` :
-                    projectResponse.status === 1 && (projectResponse.reservationDate.getTime() !== convertDate(reservationDate).getTime() || projectResponse.reservationPrice !== reservationPrice) ?
+                    projectResponse.status === 1 && (projectResponse.reservationDate?.getTime() !== convertDate(reservationDate).getTime() || projectResponse.reservationPrice !== reservationPrice) ?
                         `Can not update Reservation Date or Reservation Price because Project(${id}) is already opened for reservation!`
-                        : projectResponse.status === 2 && (projectResponse.openDate.getTime() !== convertDate(openDate).getTime() || projectResponse.closeDate.getTime() !== convertDate(closeDate).getTime() || projectResponse.reservationDate.getTime() !== convertDate(reservationDate).getTime() || projectResponse.reservationPrice !== reservationPrice) ?
+                        : projectResponse.status === 2 && (projectResponse.openDate?.getTime() !== convertDate(openDate).getTime() || projectResponse.closeDate?.getTime() !== convertDate(closeDate).getTime() || projectResponse.reservationDate?.getTime() !== convertDate(reservationDate).getTime() || projectResponse.reservationPrice !== reservationPrice) ?
                             `Can not update Reservation Date, Reservation Price, Open date or Close date because Project(${id}) is already opened for booking!`
                             : `Update Reservation for Project (${id}) successfully.`
             })

@@ -92,15 +92,27 @@ export const getUserBuyTickets = async (req, res) => {
   return res.status(200).json(response);
 }
 
-export const getAllUserNoPriority = async (req, res) => {
+export const getAllUserNoPriorityByAdmin = async (req, res) => {
   const { id } = req.params;
-  const response = await services.getAllUserNoPriority(id);
+  const response = await services.getAllUserNoPriorityByAdmin(id);
   return res.status(200).json(response);
 }
 
-export const getAllUserPriority = async (req, res) => {
+export const getAllUserPriorityByAdmin = async (req, res) => {
   const { id } = req.params;
-  const response = await services.getAllUserPriority(id);
+  const response = await services.getAllUserPriorityByAdmin(id);
+  return res.status(200).json(response);
+}
+
+export const getAllUserNoPriorityByStaff = async (req, res) => {
+  const { id, userID } = req.params;
+  const response = await services.getAllUserNoPriorityByStaff(id, userID);
+  return res.status(200).json(response);
+}
+
+export const getAllUserPriorityByStaff = async (req, res) => {
+  const { id, userID } = req.params;
+  const response = await services.getAllUserNoPriorityByStaff(id, userID);
   return res.status(200).json(response);
 }
 
@@ -110,7 +122,19 @@ export const getAllUserPriority = async (req, res) => {
 // }
 
 export const getAllTicketsByUser = async (req, res) => {
-  const { id } = req.params;
-  const response = await services.getAllTicketsByUser(id);
+  const { id, status } = req.params;
+  if(!/^\d+$/.test(id) || !/^\d+$/.test(status)){
+    return missValue("Missing value!", res);
+  }
+  const response = await services.getAllTicketsByUser(id, status);
   return res.status(200).json(response);
+}
+
+export const getAllTicketsByAdmin = async (req, res) => {
+  const { id } = req.params;
+  if(!/^\d+$/.test(id)){
+    return missValue("Missing value!", res);
+  }
+    const response = await services.getAllTicketsByAdmin(id);
+    return res.status(200).json(response);
 }
