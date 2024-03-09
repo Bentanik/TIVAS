@@ -112,7 +112,7 @@ export const getAllUserNoPriorityByStaff = async (req, res) => {
 
 export const getAllUserPriorityByStaff = async (req, res) => {
   const { id, userID } = req.params;
-  const response = await services.getAllUserNoPriorityByStaff(id, userID);
+  const response = await services.getAllUserPriorityByStaff(id, userID);
   return res.status(200).json(response);
 }
 
