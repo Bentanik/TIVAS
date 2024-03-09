@@ -32,6 +32,6 @@ router.get("/getAllTicketsByUser/:id/:status", controllers.getAllTicketsByUser)
 
 router.get("/getAllTicketsByAdmin/:id", controllers.getAllTicketsByAdmin)
 
-router.put("/refundUser/:id/:code", controllers.refundUser);
+//router.put("/refundUser/:id/:code", controllers.refundUser);
 
 export default router;

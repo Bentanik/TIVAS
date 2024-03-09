@@ -3,6 +3,25 @@ const cloudinary = require("cloudinary").v2;
 import "dotenv/config";
 import { Model, Op, fn, col, literal, where } from "sequelize";
 const nodemailer = require("nodemailer");
+import ejs from "ejs";
+const fs = require("fs");
+
+function formatDate(date) {
+    // Ensure 'date' is a valid Date object
+    if (!(date instanceof Date)) {
+        date = new Date(date);
+    }
+
+    // Get day, month, and year
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based
+    const year = date.getFullYear();
+
+    // Create the formatted date string
+    const formattedDate = `${day}/${month}/${year}`;
+
+    return formattedDate;
+}
 
 export const paymentReservation = (username) => {
     return new Promise(async (resolve, reject) => {
@@ -399,6 +418,24 @@ export const checkPriority = (id) => {
             await Promise.all(timeSharesToUpdate.map((timeShare) => timeShare.save()));
 
             const ticketResponse = await db.ReservationTicket.findAll({
+                include: [
+                    {
+                        model: db.User,
+                        attributes: ['id', 'username', 'email']
+                    },
+                    {
+                        model: db.Project,
+                        attributes: ['id', 'name']
+                    },
+                    {
+                        model: db.TimeShare,
+                        atributes: ['id', 'startDate', 'endDate'],
+                        include: {
+                            model: db.TypeRoom,
+                            attributes: ['id', 'name']
+                        }
+                    },
+                ],
                 where: {
                     projectID: id,
                     timeShareID: {
@@ -415,8 +452,8 @@ export const checkPriority = (id) => {
             for (let i = 0; i < count1; i++) {
                 const quantityTimeshare = await db.TimeShare.findByPk(Object.getOwnPropertyNames(result)[i])
                 for (let x = 0; x < quantityTimeshare.quantity; x++) {
-                    const timeshare = result[Object.getOwnPropertyNames(result)[i]][x]
-                    if (timeshare) {
+                    const reservation = result[Object.getOwnPropertyNames(result)[i]][x]
+                    if (reservation) {
                         await db.ReservationTicket.update({
                             status: 2
                         }, {
@@ -431,18 +468,18 @@ export const checkPriority = (id) => {
                                 id: result[Object.getOwnPropertyNames(result)[i]][x].dataValues.timeShareID
                             }
                         })
-                        const timeShareResponse = await db.TimeShare.findByPk(result[Object.getOwnPropertyNames(result)[i]][x].dataValues.timeShareID);
-                        const user = await db.User.findByPk(timeshare.userID)
-                        const ticket = await db.ReservationTicket.findByPk(result[Object.getOwnPropertyNames(result)[i]][x].dataValues.id);
-                        const startDateDB = new Date(ticket.updatedAt);
-                        const endDateDB = ticket.updatedAt;
+                        const timeShare = reservation.TimeShare;
+                        const user = reservation.User
+                        const project = reservation.Project
+                        const startDateDB = new Date(timeShare.updatedAt);
+                        const endDateDB = timeShare.updatedAt;
                         endDateDB.setDate(endDateDB.getDate() + 7);
                         await db.Booking.create({
                             startDate: startDateDB,
                             endDate: endDateDB,
                             status: 0,
-                            priceBooking: timeShareResponse.price - ticket.reservationPrice,
-                            reservationTicketID: ticket.id,
+                            priceBooking: timeShare.price - reservation.reservationPrice,
+                            reservationTicketID: reservation.id,
                         })
                         let transporter = nodemailer.createTransport({
                             service: "gmail",
@@ -451,12 +488,29 @@ export const checkPriority = (id) => {
                                 pass: process.env.GOOGLE_APP_PASSWORD,
                             },
                         });
+                        const emailTemplatePath = "src/template/EmailWinner/index.ejs";
+                        const emailTemplate = fs.readFileSync(emailTemplatePath, "utf-8");
+
+                        const data = {
+                            email: user.email,
+                            projectName: project.name,
+                            typeRoomName: timeShare.TypeRoom.name,
+                            startDate: formatDate(timeShare.startDate),
+                            endDate: formatDate(timeShare.endDate),
+                            reservationPrice: reservation.reservationPrice,
+                            timeSharePrice: timeShare.price,
+                            bookingPrice: timeShare.price - reservation.reservationPrice 
+                        };
+
+                        const renderedHtml = ejs.render(emailTemplate, data);
+
                         let mailOptions = {
                             from: "Tivas",
                             to: `${user.email}`,
                             subject: "Confirm received email",
-                            text: `You win a TimeShare with timeShareID: ${ticket.timeShareID}. Please coming back to our pages to see the details of your TimeShares. Our staffs will contact you later. Please remembering you have only 7 days to complete buying your winning TimeShares!`
+                            html: renderedHtml,
                         };
+
                         transporter.sendMail(mailOptions, function (error, info) {
                             if (error) {
                                 console.log(error);
