@@ -91,3 +91,50 @@ export const getUserBuyTickets = async (req, res) => {
   const response = await services.getUserBuyTickets(id);
   return res.status(200).json(response);
 }
+
+export const getAllUserNoPriorityByAdmin = async (req, res) => {
+  const { id } = req.params;
+  const response = await services.getAllUserNoPriorityByAdmin(id);
+  return res.status(200).json(response);
+}
+
+export const getAllUserPriorityByAdmin = async (req, res) => {
+  const { id } = req.params;
+  const response = await services.getAllUserPriorityByAdmin(id);
+  return res.status(200).json(response);
+}
+
+export const getAllUserNoPriorityByStaff = async (req, res) => {
+  const { id, userID } = req.params;
+  const response = await services.getAllUserNoPriorityByStaff(id, userID);
+  return res.status(200).json(response);
+}
+
+export const getAllUserPriorityByStaff = async (req, res) => {
+  const { id, userID } = req.params;
+  const response = await services.getAllUserNoPriorityByStaff(id, userID);
+  return res.status(200).json(response);
+}
+
+// export const getAllFailedTickets = async (req, res) => {
+//   const { id } = req.params;
+//   const resposne = await services.get();
+// }
+
+export const getAllTicketsByUser = async (req, res) => {
+  const { id, status } = req.params;
+  if(!/^\d+$/.test(id) || !/^\d+$/.test(status)){
+    return missValue("Missing value!", res);
+  }
+  const response = await services.getAllTicketsByUser(id, status);
+  return res.status(200).json(response);
+}
+
+export const getAllTicketsByAdmin = async (req, res) => {
+  const { id } = req.params;
+  if(!/^\d+$/.test(id)){
+    return missValue("Missing value!", res);
+  }
+    const response = await services.getAllTicketsByAdmin(id);
+    return res.status(200).json(response);
+}

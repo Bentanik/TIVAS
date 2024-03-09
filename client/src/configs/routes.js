@@ -12,13 +12,13 @@ import Profile from "~/components/Layouts/Profile";
 import RoomTypeDetail from "~/components/RoomTypeDetail";
 import ChangePassword from "~/components/ChangePassword";
 import AdminManageUser from "~/pages/AdminManageUser";
-import AdminUserBanList from "~/pages/AdminUserBanList";
 import AdminManageProject from "~/pages/AdminManageProject";
 import AdminProjectDetail from "~/pages/AdminProjectDetail";
 import Banking from "~/components/Layouts/Banking";
 import AdminRoomTypeDetail from "~/pages/AdminRoomTypeDetail";
 import TimeshareDetail from "~/pages/TimeshareDetail";
 import Purchase from "~/components/Purchase";
+import AdminUserBanList from "~/components/UserBanList";
 
 const routes = [
     {
@@ -54,11 +54,7 @@ const routes = [
         component: Banking,
         layout: ProfileLayout,
     },
-    {
-        path: "/room-type-detail",
-        component: RoomTypeDetail,
-        layout: null,
-    },
+
     {
         path: "/listings",
         component: ListingDetails,
@@ -82,20 +78,11 @@ const routes = [
     },
 
     {
-        path: "/user/account/profile",
-        component: Profile,
-        layout: ProfileLayout,
-    },
-    {
         path: "/user/account/changepassword",
         component: ChangePassword,
         layout: ProfileLayout,
     },
-    {
-        path: "/user/account/banking",
-        component: Banking,
-        layout: ProfileLayout,
-    },
+
     {
         path: "/room-type-detail",
         component: RoomTypeDetail,
@@ -107,11 +94,7 @@ const routes = [
         component: ListingDetails,
         layout: null,
     },
-    {
-        path: "/timesharerentals",
-        component: TimeshareRentals,
-        layout: null,
-    },
+
     {
         path: "/timesharedetail/:id",
         component: TimeshareDetail,
@@ -141,6 +124,23 @@ const routes = [
     {
         path: "/admin/user/userbanlist",
         component: AdminUserBanList,
+        layout: LayoutAdmin,
+    },
+
+    {
+        path: "/listingdetails",
+        component: ListingDetails,
+        layout: null,
+    },
+    {
+        path: "/timesharedetail/:id",
+        component: TimeshareDetail,
+        layout: null,
+    },
+
+    {
+        path: "/admin/manageuser/ban",
+        component: AdminManageUser,
         layout: LayoutAdmin,
     },
 

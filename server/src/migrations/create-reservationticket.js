@@ -15,6 +15,9 @@ module.exports = {
       status: {
         type: Sequelize.INTEGER
       },
+      reservationPrice: {
+        type: Sequelize.DOUBLE
+      },
       reservationDate: {
         type: Sequelize.DATE
       },

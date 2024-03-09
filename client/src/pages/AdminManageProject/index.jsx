@@ -24,7 +24,7 @@ function AdminManageProject() {
             console.log(res);
             if (res?.err === 0) {
                 setProjectData(res.data);
-                // console.log(res);
+                console.log(res);
             }
         };
         fetchData();

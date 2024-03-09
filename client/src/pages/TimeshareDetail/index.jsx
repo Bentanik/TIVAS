@@ -153,53 +153,47 @@ function TimeshareDetail() {
                                 <h2 className={cx("type-name")}>
                                     {typeRoomData.name}
                                 </h2>
-                                {/* First Row */}
                                 <div className={cx("row-wrapper")}>
-                                    <div className={cx("first", "row")}>
-                                        <div className={cx("bedroom", "row")}>
-                                            <img
-                                                className={cx("icon")}
-                                                src={images.bedIcon}
-                                                alt="bed-icon"
-                                            />
-                                            <div className={cx("text")}>
-                                                {typeRoomData.bedrooms} Bedroom
-                                            </div>
-                                        </div>
-
-                                        <div className={cx("guests", "row")}>
-                                            <img
-                                                className={cx("icon")}
-                                                src={images.personIcon}
-                                                alt="person-icon"
-                                            />
-                                            <div className={cx("text")}>
-                                                {typeRoomData.persons} Guests
-                                            </div>
+                                    <div className={cx("bedroom", "row")}>
+                                        <img
+                                            className={cx("icon")}
+                                            src={images.bedIcon}
+                                            alt="bed-icon"
+                                        />
+                                        <div className={cx("text")}>
+                                            {typeRoomData.bedrooms} Bedroom
                                         </div>
                                     </div>
-                                    {/* Second Row */}
-                                    <div className={cx("second", "row")}>
-                                        <div className={cx("area", "row")}>
-                                            <img
-                                                className={cx("icon")}
-                                                src={images.areaIcon}
-                                                alt="area-icon"
-                                            />
-                                            <div className={cx("text")}>
-                                                {typeRoomData.size} Sq Ft
-                                            </div>
-                                        </div>
 
-                                        <div className={cx("bedroom", "row")}>
-                                            <img
-                                                className={cx("icon")}
-                                                src={images.bedIcon}
-                                                alt="bed-icon"
-                                            />
-                                            <div className={cx("text")}>
-                                                {typeRoomData.bedTypes}
-                                            </div>
+                                    <div className={cx("guests", "row")}>
+                                        <img
+                                            className={cx("icon")}
+                                            src={images.personIcon}
+                                            alt="person-icon"
+                                        />
+                                        <div className={cx("text")}>
+                                            {typeRoomData.persons} Guests
+                                        </div>
+                                    </div>
+                                    <div className={cx("area", "row")}>
+                                        <img
+                                            className={cx("icon")}
+                                            src={images.areaIcon}
+                                            alt="area-icon"
+                                        />
+                                        <div className={cx("text")}>
+                                            {typeRoomData.size} Sq Ft
+                                        </div>
+                                    </div>
+
+                                    <div className={cx("bedroom", "row")}>
+                                        <img
+                                            className={cx("icon")}
+                                            src={images.bedIcon}
+                                            alt="bed-icon"
+                                        />
+                                        <div className={cx("text")}>
+                                            {typeRoomData.bedTypes}
                                         </div>
                                     </div>
                                 </div>
@@ -210,41 +204,11 @@ function TimeshareDetail() {
                                 <h3 className={cx("title")}>Unit Amenites</h3>
 
                                 <div className={cx("list-amenities")}>
-                                    {/* Left List */}
-                                    <div className={cx("left-list")}>
-                                        {amenities.map((item, index) => (
-                                            <div
-                                                key={index}
-                                                className={cx("item")}
-                                            >
-                                                {item}
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    {/* Between List */}
-                                    <div className={cx("between-list")}>
-                                        {amenities?.map((item, index) => (
-                                            <div
-                                                key={index}
-                                                className={cx("item")}
-                                            >
-                                                {item}
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    {/* Right List */}
-                                    <div className={cx("right-list")}>
-                                        {amenities?.map((item, index) => (
-                                            <div
-                                                key={index}
-                                                className={cx("item")}
-                                            >
-                                                {item}
-                                            </div>
-                                        ))}
-                                    </div>
+                                    {amenities.map((item, index) => (
+                                        <div key={index} className={cx("item")}>
+                                            {item}
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
 
@@ -262,7 +226,7 @@ function TimeshareDetail() {
                         <div className={cx("right-content")}>
                             <div className={cx("booking-info")}>
                                 <div className={cx("price")}>
-                                    {timeshareData.price}${" "}
+                                    {timeshareData.price}$
                                     <span className={cx("text")}>Total</span>
                                 </div>
 
@@ -285,6 +249,16 @@ function TimeshareDetail() {
                                     </div>
                                 </div>
 
+                                <div className={cx("note")}>
+                                    <p className={cx("text")}>
+                                        <span className={cx("bold")}>
+                                            Attention:{" "}
+                                        </span>{" "}
+                                        Please read the rules below carefully
+                                        for better understanding before
+                                        participating
+                                    </p>
+                                </div>
                                 <button
                                     type="button"
                                     className={cx("booking-btn", "text")}

@@ -1,17 +1,31 @@
 export const getTop10 = (axiosInstance) => {
-    return axiosInstance.get("/api/v1/project/top10");
+  return axiosInstance.get("/api/v1/project/top10");
 };
 
 export const getProjectDetailById = (axiosInstance, id) => {
-    return axiosInstance.get(`/api/v1/project/${id}`);
+  return axiosInstance.get(`/api/v1/project/${id}`);
 };
 
 export const getAllTypeRoom = (axiosInstance, id) => {
-    return axiosInstance.get(`/api/v1/typeroom/getAll/${id}`);
+  return axiosInstance.get(`/api/v1/typeroom/getAll/${id}`);
 };
 
 export const getTypeRoom = (axiosInstance, id) => {
-    return axiosInstance.get(`/api/v1/typeroom/${id}`);
+  return axiosInstance.get(`/api/v1/typeroom/${id}`);
+};
+
+export const getProjectByStatus = (axiosInstance, form) => {
+  const limit = 10;
+  const page = form.page;
+  const status = form.status;
+  return axiosInstance.get(
+    `/api/v1/project/search?page=${page}&limit=${limit}&status=${status}`
+  );
+};
+
+
+export const putOpenBooking = (axiosInstance, id) => {
+  return axiosInstance.put(`/api/v1/project/openBooking/${id}`);
 };
 
 export const getAllProject = (axiosInstance) => {

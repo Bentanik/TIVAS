@@ -64,7 +64,7 @@ function Purchase() {
                     aria-label="basic tabs example"
                 >
                     <Tab
-                        label="Purchased Project"
+                        label="Reservation Project"
                         {...a11yProps(0)}
                         className={cx("test")}
                         sx={{

@@ -62,3 +62,21 @@ export const openReservaion = async (axiosInstance, id) => {
         console.log(err);
     }
 };
+
+export const getProjectByStatus = async (axiosInstance, form) => {
+    try {
+        const res = await services.getProjectByStatus(axiosInstance, form);
+        return res;
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+export const putOpenBooking = async (axiosInstance, id) => {
+    try {
+        const res = await services.putOpenBooking(axiosInstance, id);
+        return res;
+    } catch (err) {
+        console.log(err);
+    }
+};
