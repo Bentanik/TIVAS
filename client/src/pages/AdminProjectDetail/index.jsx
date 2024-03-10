@@ -1,19 +1,49 @@
 import classNames from "classnames/bind";
 import styles from "./AdminProjectDetail.module.scss";
 import RoomType from "~/components/RoomType";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import images from "~/assets/images";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { getProjectDetailById } from "~/controllers/project";
+import { useDispatch, useSelector } from "react-redux";
+import createAxios from "~/configs/axios";
 
 const cx = classNames.bind(styles);
 
 function AdminProjectDetail() {
-  const [typeRooms, setTypeRooms] = useState([]);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const renderTypeRoom = () => {
-    return typeRooms.map((item, index) => <RoomType key={index} data={item} />);
-  };
+  const currentUser = useSelector((state) => state.auth.login.user);
+  const axiosInstance = createAxios(dispatch, currentUser);
+
+  const [typeRooms, setTypeRooms] = useState([]);
+  const [listImage, setListImage] = useState([]);
+  
+  const { id } = useParams();
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await getProjectDetailById(axiosInstance, 1);
+      if (res?.err === 0) {
+        setTypeRooms(res.data.TypeRoom);
+        setListImage(
+          res.data.Project.images.map((item) => {
+            return {
+              largeURL: item.pathUrl,
+              thumbnailURL: item.pathUrl,
+              width: 974,
+              height: 641,
+            };
+          })
+        );
+      }
+    };
+    fetchData();
+  }, []);
+
   return (
     <div className={cx("wrapper")}>
       <h1 className={cx("title")}>Project Detail Page</h1>
@@ -124,7 +154,6 @@ function AdminProjectDetail() {
         {/* Room Type */}
         <div className={cx("all-room-type")}>
           <h1 className={cx("title")}>Room Type</h1>
-          <div>{renderTypeRoom()}</div>
         </div>
       </div>
     </div>

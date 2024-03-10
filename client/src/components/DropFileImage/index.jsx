@@ -17,20 +17,22 @@ function DropImageFile(props) {
   const onDrop = () => wrapperRef.current.classList.remove("dragover");
 
   const onFileDrop = (e) => {
-    const newFile = e.target.files[0];
-    if (newFile) {
-      const allowedTypes = ["image/jpg", "image/jpeg", "image/png"];
-      if (allowedTypes.includes(newFile?.type)) {
-        const updatedList = [...fileList, newFile];
-        setFileList(updatedList);
-        newFile.preview = URL.createObjectURL(newFile);
-        props.onFileChange(updatedList);
-      } else {
-        props.setError(true);
-      }
-    }
-  };
+    const files = Array.from(e.target.files);
+    const allowedTypes = ["image/jpg", "image/jpeg", "image/png"];
 
+    const validFiles = files.filter((file) => allowedTypes.includes(file.type));
+
+    const updatedList = [...fileList, ...validFiles];
+    setFileList(updatedList);
+
+    validFiles.forEach((file) => {
+      file.preview = URL.createObjectURL(file);
+    });
+
+    console.log(updatedList);
+
+    props.onFileChange(updatedList);
+  };
   useEffect(() => {
     const timer = setTimeout(() => {
       props.setError(false);

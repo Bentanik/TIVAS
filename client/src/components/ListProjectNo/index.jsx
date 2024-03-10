@@ -78,9 +78,12 @@ function ListProjectNo({ id, image, name, location, openDate, closeDate }) {
         <div className={cx("text")}>{location}</div>
         <div className={cx("text")}>{convertToDate(openDate)}</div>
         <div className={cx("text")}>{convertToDate(closeDate)}</div>
-        <button className={cx("text")} onClick={handleClickOpen}>
-          Close booking
-        </button>
+        <Link
+          to={`/admin/manageproject/userbuytimeshare/${id}`}
+          className={cx("text")}
+        >
+          View user
+        </Link>
       </Link>
       <Dialog
         open={open}

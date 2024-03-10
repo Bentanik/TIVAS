@@ -223,10 +223,10 @@ export const refreshToken = ({ refreshToken }) => {
               where: { id: user.id },
               raw: true,
             });
-            const newAccessToken = res.refreshToken
+            const newAccessToken = res?.refreshToken
               ? generateAccessToken(user)
               : null;
-            const newRefreshToken = res.refreshToken
+            const newRefreshToken = res?.refreshToken
               ? generateRefreshToken(user)
               : null;
             if (res.refreshToken) {
