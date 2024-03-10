@@ -1072,7 +1072,7 @@ export const getAllTicketsByUser = ({ id, status, page, limit, orderBy, orderTyp
             let ticketAttributes = []
             if (parseInt(status) === 1) {
                 ticketAttributes = ['id', 'code', 'projectID', 'refund', 'createdAt', 'refundDate']
-            } else if (parseInt(status) === 2) {
+            } else if (parseInt(status) === 2 || parseInt(status) === 4) {
                 ticketAttributes = ['id', 'code', 'projectID', 'timeShareID', 'refund', 'updatedAt', 'refundDate', 'bookingDate']
             } else {
                 ticketAttributes = ['id', 'code', 'projectID', 'timeShareID', 'bookingDate']
@@ -1083,21 +1083,30 @@ export const getAllTicketsByUser = ({ id, status, page, limit, orderBy, orderTyp
                         nest: true,
                         raw: true,
                         attributes: ticketAttributes,
-                        where: parseInt(status) === 1 ? {
-                            userID: id,
-                            timeShareID: {
-                                [Op.eq]: null
+                        where: parseInt(status) === 1 ?
+                            {
+                                userID: id,
+                                timeShareID: {
+                                    [Op.eq]: null
+                                }
                             }
-                        } : parseInt(status) === 2 ? {
-                            userID: id,
-                            status: 1,
-                            timeShareID: {
-                                [Op.ne]: null
-                            }
-                        } : {
-                            userID: id,
-                            status: 2
-                        },
+                            : parseInt(status) === 2 ?
+                                {
+                                    userID: id,
+                                    status: 1,
+                                    timeShareID: {
+                                        [Op.ne]: null
+                                    }
+                                }
+                                : parseInt(status) === 4 ?
+                                    {
+                                        userID: id,
+                                        status: 1,
+                                    } :
+                                    {
+                                        userID: id,
+                                        status: 2
+                                    },
                         include: [
                             {
                                 model: db.User,
@@ -1119,13 +1128,13 @@ export const getAllTicketsByUser = ({ id, status, page, limit, orderBy, orderTyp
                                     atributes: ['id', 'name'],
                                 }
                             },
-                            (+status === 3 || +status === 4 || +status === 5) ?
+                            (+status === 3 || +status === 5 || +status === 6) ?
                                 {
                                     model: db.Booking,
                                     attributes: ['id', 'status', 'createdAt', 'updatedAt'],
-                                    where: parseInt(status) === 4 ? {
+                                    where: parseInt(status) === 5 ? {
                                         status: 1
-                                    } : parseInt(status) === 5 ? {
+                                    } : parseInt(status) === 6 ? {
                                         status: -1
                                     } : {
                                         status: 0
@@ -1148,21 +1157,30 @@ export const getAllTicketsByUser = ({ id, status, page, limit, orderBy, orderTyp
                             nest: true,
                             raw: true,
                             attributes: ticketAttributes,
-                            where: parseInt(status) === 1 ? {
-                                userID: id,
-                                timeShareID: {
-                                    [Op.eq]: null
+                            where: parseInt(status) === 1 ?
+                                {
+                                    userID: id,
+                                    timeShareID: {
+                                        [Op.eq]: null
+                                    }
                                 }
-                            } : parseInt(status) === 2 ? {
-                                userID: id,
-                                status: 1,
-                                timeShareID: {
-                                    [Op.ne]: null
-                                }
-                            } : {
-                                userID: id,
-                                status: 2
-                            },
+                                : parseInt(status) === 2 ?
+                                    {
+                                        userID: id,
+                                        status: 1,
+                                        timeShareID: {
+                                            [Op.ne]: null
+                                        }
+                                    }
+                                    : parseInt(status) === 4 ?
+                                        {
+                                            userID: id,
+                                            status: 1,
+                                        } :
+                                        {
+                                            userID: id,
+                                            status: 2
+                                        },
                             include: [
                                 {
                                     model: db.User,
@@ -1170,7 +1188,7 @@ export const getAllTicketsByUser = ({ id, status, page, limit, orderBy, orderTyp
                                 },
                                 {
                                     model: db.Project,
-                                    attributes: ['id', 'name', 'thumbnailPathUrl'],
+                                    attributes: ['id', 'name', 'thumbnailPathUrl', 'status'],
                                     include: {
                                         model: db.Location,
                                         attributes: ['id', 'name'],
@@ -1184,13 +1202,13 @@ export const getAllTicketsByUser = ({ id, status, page, limit, orderBy, orderTyp
                                         atributes: ['id', 'name'],
                                     }
                                 },
-                                (+status === 3 || +status === 4 || +status === 5) ?
+                                (+status === 3 || +status === 5 || +status === 6) ?
                                     {
                                         model: db.Booking,
                                         attributes: ['id', 'status', 'createdAt', 'updatedAt'],
-                                        where: parseInt(status) === 4 ? {
+                                        where: parseInt(status) === 5 ? {
                                             status: 1
-                                        } : parseInt(status) === 5 ? {
+                                        } : parseInt(status) === 6 ? {
                                             status: -1
                                         } : {
                                             status: 0
@@ -1218,7 +1236,7 @@ export const getAllTicketsByUser = ({ id, status, page, limit, orderBy, orderTyp
                                     ticket.startDate = ticketResponse[i].TimeShare.startDate;
                                     ticket.endDate = ticketResponse[i].TimeShare.endDate;
                                     ticket.price = ticketResponse[i].TimeShare.price;
-                                    if (parseInt(status) === 2) {
+                                    if (parseInt(status) === 2 || parseInt(status) === 4) {
                                         ticket.refund = ticketResponse[i].refund;
                                         ticket.refundDate = ticketResponse[i].refundDate;
                                         ticket.bookingTimeShareDate = ticketResponse[i].bookingDate
@@ -1226,7 +1244,7 @@ export const getAllTicketsByUser = ({ id, status, page, limit, orderBy, orderTyp
                                         ticket.bookingStatus = ticketResponse[i].Booking.status;
                                         if (parseInt(status) === 3) {
                                             ticket.bookingSuccessDate = ticketResponse[i].Booking.createdAt
-                                        } else if (parseInt(status) === 4) {
+                                        } else if (parseInt(status) === 5) {
                                             ticket.purchasedSuccessDate = ticketResponse[i].Booking.updatedAt
                                         } else {
                                             ticket.purchasedFailedDate = ticketResponse[i].Booking.updatedAt
@@ -1238,7 +1256,9 @@ export const getAllTicketsByUser = ({ id, status, page, limit, orderBy, orderTyp
                                     ticket.reservatedProjectDate = ticketResponse[i].createdAt
 
                                 }
-                                if (ticket.projectID) {
+                                console.log(ticketResponse[i].Project.status === 3 && (+status === 2 || +status === 1));
+                                console.log(ticketResponse[i].Project.status !== 3 && (+status === 4));
+                                if (!(ticketResponse[i].Project.status === 3 && (+status === 2 || +status === 1)) && !(ticketResponse[i].Project.status !== 3 && (+status === 4))) {
                                     response.push(ticket);
                                 }
                             }
@@ -1248,7 +1268,7 @@ export const getAllTicketsByUser = ({ id, status, page, limit, orderBy, orderTyp
                 else {
                     const orderBy = 'status';
                     const orderType = 'ASC';
-                    queries = pagination({page, limit, orderType, orderBy});
+                    queries = pagination({ page, limit, orderType, orderBy });
                     const ticketResponsePagination = await db.ReservationTicket.findAll({
                         nest: true,
                         raw: true,
@@ -1305,7 +1325,7 @@ export const getAllTicketsByUser = ({ id, status, page, limit, orderBy, orderTyp
                                 },
                                 {
                                     model: db.Project,
-                                    attributes: ['id', 'name', 'thumbnailPathUrl'],
+                                    attributes: ['id', 'name', 'thumbnailPathUrl', 'status'],
                                     include: {
                                         model: db.Location,
                                         attributes: ['id', 'name'],
@@ -1346,7 +1366,11 @@ export const getAllTicketsByUser = ({ id, status, page, limit, orderBy, orderTyp
                                         ticket.refund = ticketResponse[i].refund;
                                         ticket.refundDate = ticketResponse[i].refundDate;
                                         ticket.bookingTimeShareDate = ticketResponse[i].bookingDate
-                                        ticket.status = 'Booked';
+                                        if (ticketResponse[i].Project.status !== 3) {
+                                            ticket.status = 'Booked';
+                                        } else {
+                                            ticket.status = 'Booked failed';
+                                        }
                                     } else {
                                         ticket.bookingStatus = ticketResponse[i].Booking.status;
                                         if (ticketResponse[i].Booking.status === 0) {
@@ -1364,8 +1388,11 @@ export const getAllTicketsByUser = ({ id, status, page, limit, orderBy, orderTyp
                                     ticket.refund = ticketResponse[i].refund;
                                     ticket.refundDate = ticketResponse[i].refundDate;
                                     ticket.reservatedProjectDate = ticketResponse[i].createdAt;
-                                    ticket.status = 'Reservation';
-
+                                    if (ticketResponse[i].Project.status !== 3) {
+                                        ticket.status = 'Reservation';
+                                    } else {
+                                        ticket.status = 'Booked failed';
+                                    }
                                 }
                                 if (ticket.projectID) {
                                     response.push(ticket);
