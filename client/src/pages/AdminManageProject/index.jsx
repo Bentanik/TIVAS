@@ -48,7 +48,7 @@ function convertToDate(inputDate) {
   return result;
 }
 
-function AdminManageUser() {
+function AdminManageProject() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -77,6 +77,7 @@ function AdminManageUser() {
       }
     };
     fetchUser();
+    window.scrollTo(0, 0);
   }, [page]);
 
   useEffect(() => {
@@ -248,4 +249,4 @@ function AdminManageUser() {
   );
 }
 
-export default AdminManageUser;
+export default AdminManageProject;

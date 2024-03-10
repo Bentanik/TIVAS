@@ -119,7 +119,7 @@ const routes = [
     layout: LayoutAdmin,
   },
   {
-    path: "/admin/manageproject/projectdetail",
+    path: "/admin/manageproject/projectdetail/:id",
     component: AdminProjectDetail,
     layout: LayoutAdmin,
   },

@@ -98,3 +98,12 @@ export const createNewProject = async (axiosInstance, form) => {
     console.log(err);
   }
 };
+
+export const getAllTypeOfProject = async (axiosInstance, param) => {
+  try {
+    const res = await services.getAllTypeOfProject(axiosInstance, param);
+    return res;
+  } catch (err) {
+    console.log(err);
+  }
+};

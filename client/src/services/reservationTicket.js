@@ -31,4 +31,3 @@ export const getUserNoPriority = (axiosInstance, id) => {
     `/api/v1/ReservationTicket/getAllUserNoPriority/${id}`
   );
 };
-

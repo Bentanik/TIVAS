@@ -62,3 +62,7 @@ export const getAllWithType = (axiosInstance, form) => {
     `/api/v1/project/getAllWithType?page=${page}&limit=${limit}`
   );
 };
+
+export const getAllTypeOfProject = (axiosInstance, param) => {
+  return axiosInstance.get(`/api/v1/project/getTypeOfProject/${param}`);
+};

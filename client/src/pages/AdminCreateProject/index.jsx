@@ -203,7 +203,7 @@ function AdminCreateProject() {
               <select
                 className={cx("input")}
                 id="type"
-                valie={typeOfProject}
+                value={typeOfProject}
                 onChange={(e) => setTypeOfProject(e.target.value)}
               >
                 <option value="Villa">Villa</option>
