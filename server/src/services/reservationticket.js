@@ -695,15 +695,24 @@ export const getUserBuyTickets = (id) => {
     })
 }
 
-export const getAllUserNoPriorityByAdmin = (id) => {
+export const getAllUserNoPriorityByAdmin = (id, {
+    page,
+    limit,
+    orderBy,
+    orderType
+}) => {
     return new Promise(async (resolve, reject) => {
         try {
             let response = [];
             let ticketResponse = [];
+            let pageInput = 1;
+            let countPages = 0;
+            let queries = pagination({ page, limit, orderType, orderBy });
+
             const projectResponse = await db.Project.findByPk(id);
             if (projectResponse) {
                 if (projectResponse.status === 3) {
-                    ticketResponse = await db.ReservationTicket.findAll({
+                    const ticketResponsePagination = await db.ReservationTicket.findAll({
                         nest: true,
                         raw: true,
                         attributes: ['id', 'userID', 'projectID', 'timeShareID', 'refund'],
@@ -734,24 +743,66 @@ export const getAllUserNoPriorityByAdmin = (id) => {
                             status: 1,
                         }
                     })
-                    if (ticketResponse.length !== 0) {
-                        for (let i = 0; i < ticketResponse.length; i++) {
-                            const ticket = {};
-                            ticket.reservationID = ticketResponse[i].id
-                            ticket.userID = ticketResponse[i].User.id;
-                            ticket.username = ticketResponse[i].User.username;
-                            ticket.projectID = ticketResponse[i].Project.id
-                            ticket.projectName = ticketResponse[i].Project.name;
-                            ticket.projectThumbnailPathUrl = ticketResponse[i].Project.thumbnailPathUrl;
-                            ticket.location = ticketResponse[i].Project.Location.name;
-                            ticket.typeRoomID = ticketResponse[i].TimeShare.TypeRoom.id
-                            ticket.typeRoomName = ticketResponse[i].TimeShare.TypeRoom.name
-                            ticket.timeShareID = ticketResponse[i].TimeShare.id
-                            ticket.startDate = ticketResponse[i].TimeShare.startDate;
-                            ticket.endDate = ticketResponse[i].TimeShare.endDate;
-                            ticket.refund = ticketResponse[i].refund;
-                            if (ticket.projectID) {
-                                response.push(ticket);
+                    countPages = ticketResponsePagination.length !== 0 ? 1 : 0;
+                    if (ticketResponsePagination.length / queries.limit > 1) {
+                        countPages = Math.ceil(ticketResponsePagination.length / queries.limit)
+                    }
+                    if (page) {
+                        pageInput = page
+                    }
+                    if (pageInput <= countPages) {
+                        console.log(123);
+                        ticketResponse = await db.ReservationTicket.findAll({
+                            nest: true,
+                            raw: true,
+                            attributes: ['id', 'userID', 'projectID', 'timeShareID', 'refund'],
+                            include: [
+                                {
+                                    model: db.User,
+                                    attributes: ['id', 'username']
+                                },
+                                {
+                                    model: db.Project,
+                                    attributes: ['id', 'name', 'thumbnailPathUrl'],
+                                    include: {
+                                        model: db.Location,
+                                        attributes: ['id', 'name'],
+                                    }
+                                },
+                                {
+                                    model: db.TimeShare,
+                                    attributes: ['id', 'startDate', 'endDate'],
+                                    include: {
+                                        model: db.TypeRoom,
+                                        atributes: ['id', 'name'],
+                                    }
+                                },
+                            ],
+                            where: {
+                                projectID: id,
+                                status: 1,
+                            },
+                            ...queries,
+                        })
+                        if (ticketResponse.length !== 0) {
+                            for (let i = 0; i < ticketResponse.length; i++) {
+                                const ticket = {};
+                                ticket.reservationID = ticketResponse[i].id
+                                ticket.userID = ticketResponse[i].User.id;
+                                ticket.username = ticketResponse[i].User.username;
+                                ticket.projectID = ticketResponse[i].Project.id
+                                ticket.projectName = ticketResponse[i].Project.name;
+                                ticket.projectThumbnailPathUrl = ticketResponse[i].Project.thumbnailPathUrl;
+                                ticket.location = ticketResponse[i].Project.Location.name;
+                                ticket.typeRoomID = ticketResponse[i].TimeShare.TypeRoom.id
+                                ticket.typeRoomName = ticketResponse[i].TimeShare.TypeRoom.name
+                                ticket.timeShareID = ticketResponse[i].TimeShare.id
+                                ticket.startDate = ticketResponse[i].TimeShare.startDate;
+                                ticket.endDate = ticketResponse[i].TimeShare.endDate;
+                                ticket.refund = ticketResponse[i].refund;
+                                if (ticket.projectID) {
+                                    response.push(ticket);
+                                }
                             }
                         }
                     }
@@ -767,6 +818,9 @@ export const getAllUserNoPriorityByAdmin = (id) => {
                             `Can not find any Users have no Priority with Project(${id})!`
                             : `All Users have no Priority with Project(${id}).`,
                 data: response,
+                count: response.length,
+                countPages: countPages,
+                page: pageInput
             })
         } catch (error) {
             console.log(error);
@@ -775,15 +829,23 @@ export const getAllUserNoPriorityByAdmin = (id) => {
     })
 }
 
-export const getAllUserPriorityByAdmin = (id) => {
+export const getAllUserPriorityByAdmin = (id, {
+    page,
+    limit,
+    orderBy,
+    orderType
+}) => {
     return new Promise(async (resolve, reject) => {
         try {
             let response = [];
             let ticketResponse = [];
+            let pageInput = 1;
+            let countPages = 0;
+            let queries = pagination({ page, limit, orderType, orderBy });
             const projectResponse = await db.Project.findByPk(id);
             if (projectResponse) {
                 if (projectResponse.status === 3) {
-                    ticketResponse = await db.ReservationTicket.findAll({
+                    const ticketResponsePagination = await db.ReservationTicket.findAll({
                         nest: true,
                         raw: true,
                         attributes: ['id', 'userID', 'projectID', 'timeShareID'],
@@ -818,24 +880,69 @@ export const getAllUserPriorityByAdmin = (id) => {
                             status: 2,
                         }
                     })
-                    if (ticketResponse.length !== 0) {
-                        for (let i = 0; i < ticketResponse.length; i++) {
-                            const ticket = {};
-                            ticket.reservationID = ticketResponse[i].id
-                            ticket.userID = ticketResponse[i].User.id;
-                            ticket.username = ticketResponse[i].User.username;
-                            ticket.projectID = ticketResponse[i].Project.id
-                            ticket.projectName = ticketResponse[i].Project.name;
-                            ticket.projectThumbnailPathUrl = ticketResponse[i].Project.thumbnailPathUrl;
-                            ticket.location = ticketResponse[i].Project.Location.name;
-                            ticket.typeRoomID = ticketResponse[i].TimeShare.TypeRoom.id
-                            ticket.typeRoomName = ticketResponse[i].TimeShare.TypeRoom.name
-                            ticket.timeShareID = ticketResponse[i].TimeShare.id
-                            ticket.startDate = ticketResponse[i].TimeShare.startDate;
-                            ticket.endDate = ticketResponse[i].TimeShare.endDate;
-                            ticket.bookingStatus = ticketResponse[i].Booking.status;
-                            if (ticket.projectID) {
-                                response.push(ticket);
+                    countPages = ticketResponsePagination.length !== 0 ? 1 : 0;
+                    if (ticketResponsePagination.length / queries.limit > 1) {
+                        countPages = Math.ceil(ticketResponsePagination.length / queries.limit)
+                    }
+                    if (page) {
+                        pageInput = page
+                    }
+                    if (pageInput <= countPages) {
+                        ticketResponse = await db.ReservationTicket.findAll({
+                            nest: true,
+                            raw: true,
+                            attributes: ['id', 'userID', 'projectID', 'timeShareID'],
+                            include: [
+                                {
+                                    model: db.User,
+                                    attributes: ['id', 'username']
+                                },
+                                {
+                                    model: db.Project,
+                                    attributes: ['id', 'name', 'thumbnailPathUrl'],
+                                    include: {
+                                        model: db.Location,
+                                        attributes: ['id', 'name'],
+                                    }
+                                },
+                                {
+                                    model: db.TimeShare,
+                                    attributes: ['id', 'startDate', 'endDate'],
+                                    include: {
+                                        model: db.TypeRoom,
+                                        atributes: ['id', 'name'],
+                                    }
+                                },
+                                {
+                                    model: db.Booking,
+                                    attributes: ['id', 'status'],
+                                },
+                            ],
+                            where: {
+                                projectID: id,
+                                status: 2,
+                            },
+                            ...queries,
+                        })
+                        if (ticketResponse.length !== 0) {
+                            for (let i = 0; i < ticketResponse.length; i++) {
+                                const ticket = {};
+                                ticket.reservationID = ticketResponse[i].id
+                                ticket.userID = ticketResponse[i].User.id;
+                                ticket.username = ticketResponse[i].User.username;
+                                ticket.projectID = ticketResponse[i].Project.id
+                                ticket.projectName = ticketResponse[i].Project.name;
+                                ticket.projectThumbnailPathUrl = ticketResponse[i].Project.thumbnailPathUrl;
+                                ticket.location = ticketResponse[i].Project.Location.name;
+                                ticket.typeRoomID = ticketResponse[i].TimeShare.TypeRoom.id
+                                ticket.typeRoomName = ticketResponse[i].TimeShare.TypeRoom.name
+                                ticket.timeShareID = ticketResponse[i].TimeShare.id
+                                ticket.startDate = ticketResponse[i].TimeShare.startDate;
+                                ticket.endDate = ticketResponse[i].TimeShare.endDate;
+                                ticket.bookingStatus = ticketResponse[i].Booking.status;
+                                if (ticket.projectID) {
+                                    response.push(ticket);
+                                }
                             }
                         }
                     }
@@ -850,7 +957,10 @@ export const getAllUserPriorityByAdmin = (id) => {
                         : response.length === 0 ?
                             `Can not find any Users have Priority with Project(${id})!`
                             : `All Users have Priority with Project(${id}).`,
-                data: response
+                data: response,
+                count: response.length,
+                countPages: countPages,
+                page: pageInput
             })
         } catch (error) {
             console.log(error);
@@ -859,21 +969,23 @@ export const getAllUserPriorityByAdmin = (id) => {
     })
 }
 
-export const getAllUserNoPriorityByStaff = ({ id, userID }) => {
+export const getAllUserNoPriorityByStaff = ({ id, userID, page, limit, orderBy, orderType }) => {
     return new Promise(async (resolve, reject) => {
         try {
             let response = [];
             let ticketResponse = [];
+            let pageInput = 1;
+            let countPages = 0;
+            let queries = pagination({ page, limit, orderType, orderBy });
             const projectResponse = await db.Project.findByPk(id);
             const userResponse = await db.User.findByPk(userID, {
                 include: {
                     model: db.RoleCode,
                 }
             });
-            console.log(userResponse.RoleCode.roleName === 'Staff');
             if (projectResponse && userResponse && userResponse.RoleCode.roleName === 'Staff') {
                 if (projectResponse.status === 3) {
-                    ticketResponse = await db.ReservationTicket.findAll({
+                    const ticketResponsePagination = await db.ReservationTicket.findAll({
                         nest: true,
                         raw: true,
                         attributes: ['id', 'userID', 'projectID', 'timeShareID', 'refund'],
@@ -907,24 +1019,69 @@ export const getAllUserNoPriorityByStaff = ({ id, userID }) => {
                             status: 1,
                         }
                     })
-                    if (ticketResponse.length !== 0) {
-                        for (let i = 0; i < ticketResponse.length; i++) {
-                            const ticket = {};
-                            ticket.reservationID = ticketResponse[i].id
-                            ticket.userID = ticketResponse[i].User.id;
-                            ticket.username = ticketResponse[i].User.username;
-                            ticket.projectID = ticketResponse[i].Project.id
-                            ticket.projectName = ticketResponse[i].Project.name;
-                            ticket.projectThumbnailPathUrl = ticketResponse[i].Project.thumbnailPathUrl;
-                            ticket.location = ticketResponse[i].Project.Location.name;
-                            ticket.typeRoomID = ticketResponse[i].TimeShare.TypeRoom.id
-                            ticket.typeRoomName = ticketResponse[i].TimeShare.TypeRoom.name
-                            ticket.timeShareID = ticketResponse[i].TimeShare.id
-                            ticket.startDate = ticketResponse[i].TimeShare.startDate;
-                            ticket.endDate = ticketResponse[i].TimeShare.endDate;
-                            ticket.refund = ticketResponse[i].refund;
-                            if (ticket.projectID) {
-                                response.push(ticket);
+                    console.log(ticketResponsePagination);
+                    countPages = ticketResponsePagination.length !== 0 ? 1 : 0;
+                    if (ticketResponsePagination.length / queries.limit > 1) {
+                        countPages = Math.ceil(ticketResponsePagination.length / queries.limit)
+                    }
+                    if (page) {
+                        pageInput = page
+                    }
+                    if (pageInput <= countPages) {
+
+                        ticketResponse = await db.ReservationTicket.findAll({
+                            nest: true,
+                            raw: true,
+                            attributes: ['id', 'userID', 'projectID', 'timeShareID', 'refund'],
+                            include: [
+                                {
+                                    model: db.User,
+                                    attributes: ['id', 'username']
+                                },
+                                {
+                                    model: db.Project,
+                                    attributes: ['id', 'name', 'thumbnailPathUrl'],
+                                    include: {
+                                        model: db.Location,
+                                        attributes: ['id', 'name'],
+                                    }
+                                },
+                                {
+                                    model: db.TimeShare,
+                                    attributes: ['id', 'startDate', 'endDate'],
+                                    include: {
+                                        model: db.TypeRoom,
+                                        atributes: ['id', 'name'],
+                                    },
+                                    where: {
+                                        userID,
+                                    }
+                                },
+                            ],
+                            where: {
+                                projectID: id,
+                                status: 1,
+                            }
+                        })
+                        if (ticketResponse.length !== 0) {
+                            for (let i = 0; i < ticketResponse.length; i++) {
+                                const ticket = {};
+                                ticket.reservationID = ticketResponse[i].id
+                                ticket.userID = ticketResponse[i].User.id;
+                                ticket.username = ticketResponse[i].User.username;
+                                ticket.projectID = ticketResponse[i].Project.id
+                                ticket.projectName = ticketResponse[i].Project.name;
+                                ticket.projectThumbnailPathUrl = ticketResponse[i].Project.thumbnailPathUrl;
+                                ticket.location = ticketResponse[i].Project.Location.name;
+                                ticket.typeRoomID = ticketResponse[i].TimeShare.TypeRoom.id
+                                ticket.typeRoomName = ticketResponse[i].TimeShare.TypeRoom.name
+                                ticket.timeShareID = ticketResponse[i].TimeShare.id
+                                ticket.startDate = ticketResponse[i].TimeShare.startDate;
+                                ticket.endDate = ticketResponse[i].TimeShare.endDate;
+                                ticket.refund = ticketResponse[i].refund;
+                                if (ticket.projectID) {
+                                    response.push(ticket);
+                                }
                             }
                         }
                     }
@@ -944,6 +1101,9 @@ export const getAllUserNoPriorityByStaff = ({ id, userID }) => {
                                     `Can not find any Users have no Priority with Project(${id}) have TimeShares managed by Staff(${userID})!`
                                     : `All Users have no Priority with Project(${id}) have TimeShares managed by Staff(${userID}).`,
                 data: response,
+                count: response.length,
+                countPages: countPages,
+                page: pageInput
             })
         } catch (error) {
             console.log(error);
@@ -952,22 +1112,23 @@ export const getAllUserNoPriorityByStaff = ({ id, userID }) => {
     })
 }
 
-export const getAllUserPriorityByStaff = ({ id, userID }) => {
+export const getAllUserPriorityByStaff = ({ id, userID, page, limit, orderBy, orderType }) => {
     return new Promise(async (resolve, reject) => {
         try {
             let response = [];
             let ticketResponse = [];
+            let pageInput = 1;
+            let countPages = 0;
+            let queries = pagination({ page, limit, orderType, orderBy });
             const projectResponse = await db.Project.findByPk(id);
             const userResponse = await db.User.findByPk(userID, {
                 include: {
                     model: db.RoleCode,
                 }
             });
-            console.log(userResponse.RoleCode.roleName);
-            console.log(userResponse.RoleCode.roleName === 'Staff');
             if (projectResponse && userResponse && userResponse.RoleCode.roleName === 'Staff') {
                 if (projectResponse.status === 3) {
-                    ticketResponse = await db.ReservationTicket.findAll({
+                    const ticketResponsePagination = await db.ReservationTicket.findAll({
                         nest: true,
                         raw: true,
                         attributes: ['id', 'userID', 'projectID', 'timeShareID'],
@@ -1005,24 +1166,71 @@ export const getAllUserPriorityByStaff = ({ id, userID }) => {
                             status: 2,
                         }
                     })
-                    if (ticketResponse.length !== 0) {
-                        for (let i = 0; i < ticketResponse.length; i++) {
-                            const ticket = {};
-                            ticket.reservationID = ticketResponse[i].id
-                            ticket.userID = ticketResponse[i].User.id;
-                            ticket.username = ticketResponse[i].User.username;
-                            ticket.projectID = ticketResponse[i].Project.id
-                            ticket.projectName = ticketResponse[i].Project.name;
-                            ticket.projectThumbnailPathUrl = ticketResponse[i].Project.thumbnailPathUrl;
-                            ticket.location = ticketResponse[i].Project.Location.name;
-                            ticket.typeRoomID = ticketResponse[i].TimeShare.TypeRoom.id
-                            ticket.typeRoomName = ticketResponse[i].TimeShare.TypeRoom.name
-                            ticket.timeShareID = ticketResponse[i].TimeShare.id
-                            ticket.startDate = ticketResponse[i].TimeShare.startDate;
-                            ticket.endDate = ticketResponse[i].TimeShare.endDate;
-                            ticket.bookingStatus = ticketResponse[i].Booking.status;
-                            if (ticket.projectID) {
-                                response.push(ticket);
+                    countPages = ticketResponsePagination.length !== 0 ? 1 : 0;
+                    if (ticketResponsePagination.length / queries.limit > 1) {
+                        countPages = Math.ceil(ticketResponsePagination.length / queries.limit)
+                    }
+                    if (page) {
+                        pageInput = page
+                    }
+                    if (pageInput <= countPages) {
+                        ticketResponse = await db.ReservationTicket.findAll({
+                            nest: true,
+                            raw: true,
+                            attributes: ['id', 'userID', 'projectID', 'timeShareID'],
+                            include: [
+                                {
+                                    model: db.User,
+                                    attributes: ['id', 'username']
+                                },
+                                {
+                                    model: db.Project,
+                                    attributes: ['id', 'name', 'thumbnailPathUrl'],
+                                    include: {
+                                        model: db.Location,
+                                        attributes: ['id', 'name'],
+                                    }
+                                },
+                                {
+                                    model: db.TimeShare,
+                                    attributes: ['id', 'startDate', 'endDate'],
+                                    include: {
+                                        model: db.TypeRoom,
+                                        atributes: ['id', 'name'],
+                                    },
+                                    where: {
+                                        userID,
+                                    }
+                                },
+                                {
+                                    model: db.Booking,
+                                    attributes: ['id', 'status'],
+                                },
+                            ],
+                            where: {
+                                projectID: id,
+                                status: 2,
+                            }
+                        })
+                        if (ticketResponse.length !== 0) {
+                            for (let i = 0; i < ticketResponse.length; i++) {
+                                const ticket = {};
+                                ticket.reservationID = ticketResponse[i].id
+                                ticket.userID = ticketResponse[i].User.id;
+                                ticket.username = ticketResponse[i].User.username;
+                                ticket.projectID = ticketResponse[i].Project.id
+                                ticket.projectName = ticketResponse[i].Project.name;
+                                ticket.projectThumbnailPathUrl = ticketResponse[i].Project.thumbnailPathUrl;
+                                ticket.location = ticketResponse[i].Project.Location.name;
+                                ticket.typeRoomID = ticketResponse[i].TimeShare.TypeRoom.id
+                                ticket.typeRoomName = ticketResponse[i].TimeShare.TypeRoom.name
+                                ticket.timeShareID = ticketResponse[i].TimeShare.id
+                                ticket.startDate = ticketResponse[i].TimeShare.startDate;
+                                ticket.endDate = ticketResponse[i].TimeShare.endDate;
+                                ticket.bookingStatus = ticketResponse[i].Booking.status;
+                                if (ticket.projectID) {
+                                    response.push(ticket);
+                                }
                             }
                         }
                     }
@@ -1042,6 +1250,9 @@ export const getAllUserPriorityByStaff = ({ id, userID }) => {
                                     `Can not find any Users have Priority with Project(${id}) have TimeShares managed by Staff(${userID})!`
                                     : `All Users have Priority with Project(${id}) have TimeShares managed by Staff(${userID}).`,
                 data: response,
+                count: response.length,
+                countPages: countPages,
+                page: pageInput
             })
         } catch (error) {
             console.log(error);
@@ -1256,8 +1467,6 @@ export const getAllTicketsByUser = ({ id, status, page, limit, orderBy, orderTyp
                                     ticket.reservatedProjectDate = ticketResponse[i].createdAt
 
                                 }
-                                console.log(ticketResponse[i].Project.status === 3 && (+status === 2 || +status === 1));
-                                console.log(ticketResponse[i].Project.status !== 3 && (+status === 4));
                                 if (!(ticketResponse[i].Project.status === 3 && (+status === 2 || +status === 1)) && !(ticketResponse[i].Project.status !== 3 && (+status === 4))) {
                                     response.push(ticket);
                                 }
@@ -1361,7 +1570,6 @@ export const getAllTicketsByUser = ({ id, status, page, limit, orderBy, orderTyp
                                     ticket.timeShareID = ticketResponse[i].TimeShare.id
                                     ticket.startDate = ticketResponse[i].TimeShare.startDate;
                                     ticket.endDate = ticketResponse[i].TimeShare.endDate;
-                                    console.log(ticketResponse[i].Booking.id);
                                     if (!ticketResponse[i].Booking.id) {
                                         ticket.refund = ticketResponse[i].refund;
                                         ticket.refundDate = ticketResponse[i].refundDate;

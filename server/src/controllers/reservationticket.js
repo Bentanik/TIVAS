@@ -94,13 +94,13 @@ export const getUserBuyTickets = async (req, res) => {
 
 export const getAllUserNoPriorityByAdmin = async (req, res) => {
   const { id } = req.params;
-  const response = await services.getAllUserNoPriorityByAdmin(id);
+  const response = await services.getAllUserNoPriorityByAdmin(id, req.query);
   return res.status(200).json(response);
 }
 
 export const getAllUserPriorityByAdmin = async (req, res) => {
   const { id } = req.params;
-  const response = await services.getAllUserPriorityByAdmin(id);
+  const response = await services.getAllUserPriorityByAdmin(id, req.query);
   return res.status(200).json(response);
 }
 
