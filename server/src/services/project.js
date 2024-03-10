@@ -171,6 +171,88 @@ export const getAllProject = ({ page, limit, orderType, orderBy }) => {
     })
 }
 
+export const getAllWithType = ({ page, limit, orderType, orderBy }) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            //pagination and limit
+            let response = [];
+            let projectResponse = [];
+            let pageInput = 1;
+            const queries = pagination({ page, limit, orderType, orderBy });
+            const projectResponsePagination = await db.Project.findAll();
+            let countPages = projectResponsePagination.length !== 0 ? 1 : 0;
+            if (projectResponsePagination.length / queries.limit > 1) {
+                countPages = Math.ceil(projectResponsePagination.length / queries.limit)
+            }
+            if (page) {
+                pageInput = page
+            }
+            if (pageInput <= countPages) {
+                //queries.raw = true;
+                projectResponse = await db.Project.findAll({
+                    //raw: true,
+                    nest: true,
+                    attributes: ['id', 'name', 'thumbnailPathUrl', 'status', 'buildingStatus', 'reservationDate', 'reservationPrice', 'openDate', 'closeDate', 'features', 'attractions', 'locationID'],
+                    include: [
+                        {
+                            model: db.Location,
+                            attributes: ['id', 'name']
+                        },
+                        {
+                            model: db.TypeOfProject,
+                            include: {
+                                model: db.Type
+                            }
+                        },
+                    ],
+                    ...queries,
+                })
+                console.log(projectResponse[0].TypeOfProjects.length);
+                if (projectResponse.length !== 0) {
+                    for (let i = 0; i < projectResponse.length; i++) {
+                        //response[i].location = response[i].Location.name;
+                        const project = {};
+                        if (projectResponse[i].features) {
+                            project.features = projectResponse[i].features.split(',');
+                        }
+                        if (projectResponse[i].attractions) {
+                            project.attractions = projectResponse[i].attractions.split(',');
+                        }
+                        project.id = projectResponse[i].id;
+                        project.name = projectResponse[i].name;
+                        project.thumbnailPathUrl = projectResponse[i].thumbnailPathUrl;
+                        project.status = projectResponse[i].status;
+                        project.buildingStatus = projectResponse[i].buildingStatus;
+                        project.reservationDate = projectResponse[i].reservationDate;
+                        project.reservationPrice = projectResponse[i].reservationPrice;
+                        project.openDate = projectResponse[i].openDate;
+                        project.closeDate = projectResponse[i].closeDate;
+                        project.features = projectResponse[i].features;
+                        project.attractions = projectResponse[i].attractions;
+                        project.location = projectResponse[i].Location.name;
+                        project.typeOfProject = [];
+                        for(let j = 0; j < projectResponse[i].TypeOfProjects.length; j++){
+                            project.typeOfProject.push(projectResponse[i].TypeOfProjects[j].Type.name)
+                        }
+                        response.push(project);
+                    }
+                }
+            }
+            resolve({
+                err: (response.length !== 0) ? 0 : 1,
+                message: (response.length !== 0) ? `Get all of projects results` : 'Can not find any projects!',
+                data: (response.length !== 0) ? response : null,
+                count: response.length,
+                countPages: countPages,
+                page: pageInput
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
 export const getAllByLocation = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -488,7 +570,7 @@ export const searchNameAndLocationProject = (info, limit) => {
                         name: { [Op.substring]: info }
                     }
                 },
-                limit,
+                limit: 1,
             })
             const projectByNameResponse = await db.Project.findAll({
                 nest: true,

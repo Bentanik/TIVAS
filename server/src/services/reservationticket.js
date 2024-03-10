@@ -292,6 +292,10 @@ export const createReservation = ({
                                             code,
                                         }
                                     })
+                                    await db.ReservationTicket.update({
+                                        bookingDate: reservationResponse.bookingDate,
+                                    })
+
                                 }
                             }
                         }
@@ -852,7 +856,7 @@ export const getAllUserPriorityByAdmin = (id) => {
     })
 }
 
-export const getAllUserNoPriorityByStaff = (id, userID) => {
+export const getAllUserNoPriorityByStaff = ({id, userID}) => {
     return new Promise(async (resolve, reject) => {
         try {
             let response = [];
@@ -945,7 +949,7 @@ export const getAllUserNoPriorityByStaff = (id, userID) => {
     })
 }
 
-export const getAllUserPriorityByStaff = (id, userID) => {
+export const getAllUserPriorityByStaff = ({id, userID}) => {
     return new Promise(async (resolve, reject) => {
         try {
             let response = [];
@@ -1043,7 +1047,7 @@ export const getAllUserPriorityByStaff = (id, userID) => {
     })
 }
 
-export const getAllTicketsByUser = (id, status) => {
+export const getAllTicketsByUser = ({id, status}) => {
     return new Promise(async (resolve, reject) => {
         try {
             let response = [];
@@ -1051,11 +1055,11 @@ export const getAllTicketsByUser = (id, status) => {
             const userResponse = await db.User.findByPk(id);
             let ticketAttributes = []
             if (parseInt(status) === 1) {
-                ticketAttributes = ['id', 'code', 'projectID', 'refund']
+                ticketAttributes = ['id', 'code', 'projectID', 'refund', 'createdAt', 'refundDate']
             } else if (parseInt(status) === 2) {
-                ticketAttributes = ['id', 'code', 'projectID', 'timeShareID', 'refund']
+                ticketAttributes = ['id', 'code', 'projectID', 'timeShareID', 'refund', 'updatedAt', 'refundDate', 'bookingDate']
             } else {
-                ticketAttributes = ['id', 'code', 'projectID', 'timeShareID']
+                ticketAttributes = ['id', 'code', 'projectID', 'timeShareID', 'bookingDate']
             }
             if (userResponse) {
                 ticketResponse = await db.ReservationTicket.findAll({
@@ -1101,7 +1105,7 @@ export const getAllTicketsByUser = (id, status) => {
                         (+status === 3 || +status === 4 || +status === 5) ?
                             {
                                 model: db.Booking,
-                                attributes: ['id', 'status'],
+                                attributes: ['id', 'status', 'createdAt', 'updatedAt'],
                                 where: parseInt(status) === 4 ? {
                                     status: 1
                                 } : parseInt(status) === 5 ? {
@@ -1130,13 +1134,25 @@ export const getAllTicketsByUser = (id, status) => {
                             ticket.timeShareID = ticketResponse[i].TimeShare.id
                             ticket.startDate = ticketResponse[i].TimeShare.startDate;
                             ticket.endDate = ticketResponse[i].TimeShare.endDate;
-                            if (parseInt(status) !== 3) {
+                            if (parseInt(status) === 2) {
                                 ticket.refund = ticketResponse[i].refund;
+                                ticket.refundDate = ticketResponse[i].refundDate;
+                                ticket.bookingTimeShareDate = ticketResponse[i].bookingDate
                             } else {
                                 ticket.bookingStatus = ticketResponse[i].Booking.status;
+                                if(parseInt(status) === 3){
+                                    ticket.bookingSuccessDate = ticketResponse[i].Booking.createdAt
+                                }else if(parseInt(status) === 4){
+                                    ticket.purchasedSuccessDate = ticketResponse[i].Booking.updatedAt
+                                }else{
+                                    ticket.purchasedFailedDate = ticketResponse[i].Booking.updatedAt
+                                }
                             }
                         } else {
                             ticket.refund = ticketResponse[i].refund;
+                            ticket.refundDate = ticketResponse[i].refundDate;
+                            ticket.reservatedProjectDate = ticketResponse[i].createdAt
+
                         }
                         if (ticket.projectID) {
                             response.push(ticket);

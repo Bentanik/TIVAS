@@ -19,7 +19,7 @@ const isValidDate = (dateString) => {
 
 export const createNewTimeShare = async (req, res) => {
     try {
-        const { typeRoomID, userID } = req.params;
+        const { typeRoomID, userID } = req.query;
         const { price, startDate, endDate } = req.body;
         if(!price || !startDate || !endDate || !/^\d+$/.test(typeRoomID) || !/^\d+$/.test(userID)){
             return missValue("Missing value!", res);
@@ -37,7 +37,7 @@ export const createNewTimeShare = async (req, res) => {
         if(price < 0){
             return badRequest("Price must be higher than 0!", res)
         }
-        const response = await services.createNewTimeShare(typeRoomID, userID, req.body);
+        const response = await services.createNewTimeShare(req.query, req.body);
         return res.status(200).json(response);
     } catch (error) {
         console.log(error);
@@ -73,7 +73,7 @@ export const getDetailsTimeShare = async (req, res) => {
     try {
         const { id } = req.params;
         if(!/^\d+$/.test(id)){
-            return badRequest("projectID is required an INTEGER!", res);
+            return badRequest("projectID is required an INTEGER123!", res);
         }
         const response = await services.getDetailsTimeShare(id);
         res.status(200).json(response);
@@ -90,7 +90,11 @@ export const getAllTimeShareByStaff = async (req, res) => {
 }
 
 export const getAllTimeShareOfProjectByStaff = async (req, res) => {
-    const { projectID, userID } = req.params;
-    const response = await services.getAllTimeShareOfProjectByStaff(projectID, userID, req.query);
+    const response = await services.getAllTimeShareOfProjectByStaff(req.query);
     return res.status(200).json(response);
 }
+
+export const getDetailsTimeShareByStaff = async (req, res) => {
+    const response = await services.getDetailsTimeShareByStaff(req.query);
+    return res.status(200).json(response);
+  }

@@ -3,7 +3,7 @@ import * as controllers from "../controllers";
 const router = express.Router();
 
 router.post(
-    "/create/:typeRoomID/:userID",
+    "/create",
     controllers.createNewTimeShare,
 )
 
@@ -13,8 +13,18 @@ router.get(
 )
 
 router.get(
+    "/getAllByStaff/:userID",
+    controllers.getAllTimeShareByStaff,
+)
+
+router.get(
     "/getAll/:projectID",
     controllers.getAllTimeShareOfProject,
+)
+
+router.get(
+    "/getAllByStaff",
+    controllers.getAllTimeShareOfProjectByStaff,
 )
 
 router.get(
@@ -23,18 +33,8 @@ router.get(
 )
 
 router.get(
-    "/getAllByStaff/:userID",
-    controllers.getAllTimeShareByStaff,
+    "",
+    controllers.getDetailsTimeShareByStaff,
 )
-
-router.get(
-    "/getAllByStaff/:projectID/:userID",
-    controllers.getAllTimeShareOfProjectByStaff,
-)
-
-// router.get(
-//     "/:id/:userID",
-//     controllers.getDetailsTimeShareByStaff,
-// )
 
 export default router;

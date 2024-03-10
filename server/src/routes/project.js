@@ -16,6 +16,7 @@ router.post(
   controllers.createNewProject
 )
 router.get("/getAll",controllers.getAllProject)
+router.get("/getAllWithType", controllers.getAllWithType);
 router.get("/getAllByLocation/:id", controllers.getAllByLocation)
 router.delete("/delete/:id",controllers.deleteProjects)
 router.put(
@@ -38,18 +39,13 @@ router.get(
 )
 
 router.get(
-  "/searchNameAndLocationProject/:info/:limit",
+  "/searchNameAndLocationProject",
   controllers.searchNameAndLocationProject,
 )
 
 router.get(
   "/top10",
   controllers.getTop10
-)
-
-router.get(
-  "/:id",
-  controllers.getDetailsProject
 )
 
 //thay doi openDate va closeDate
@@ -66,6 +62,11 @@ router.get("/getReservation/:id", controllers.getReservation)
 router.put("/updateReservationInfo/:id", controllers.updateReservationInfo)
 
 router.put("/getAllProjectReservation", controllers.getAllProjectReservation)
+
+router.get(
+  "/:id",
+  controllers.getDetailsProject
+)
 
 
 
