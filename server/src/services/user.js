@@ -75,15 +75,6 @@ export const getUser = ({ username }) => {
         },
         raw: true,
       });
-
-      // const customer = res
-      //   ? await stripe.paymentMethods.list({
-      //       customer: res.refundHistoryID,
-      //       type: "card",
-      //     })
-      //   : null;
-      // console.log("Card: ", customer.data[0].card);
-      // console.log("billing_details: ", customer.data[0].billing_details);
       resolve({
         err: res ? 0 : 1,
         mess: res ? "Successully" : "No user data",
@@ -192,36 +183,119 @@ export const getAllUsers = ({ page, limit, orderBy, orderType }) => {
       let response = [];
       let pageInput = 1;
       const queries = pagination({ page, limit, orderType, orderBy });
-      const userResponse = await db.User.findAll();
+      const userResponse = await db.User.findAll({
+        where: { roleID: 3 },
+        raw: true,
+      });
       let countPages = userResponse.length !== 0 ? 1 : 0;
       if (userResponse.length / queries.limit > 1) {
-        countPages = Math.ceil(userResponse.length / queries.limit)
+        countPages = Math.ceil(userResponse.length / queries.limit);
       }
       if (page) {
-        pageInput = page
+        pageInput = page;
       }
       queries.raw = true;
       queries.nest = true;
       if (pageInput <= countPages) {
         response = await db.User.findAll({
-          ...queries
-        })
+          where: { roleID: 3 },
+          attributes: { exclude: ["password"] },
+          ...queries,
+        });
       }
       resolve({
         err: response.length !== 0 ? 0 : 1,
-        message: pageInput > countPages ?
-          `Can not find any Users in Page (${pageInput}) because there are only (${countPages}) Pages of Users!`
-          : response.length === 0 ?
-            'Can not find any Users!'
-            : 'Users found.',
+        message:
+          pageInput > countPages
+            ? `Can not find any Users in Page (${pageInput}) because there are only (${countPages}) Pages of Users!`
+            : response.length === 0
+            ? "Can not find any Users!"
+            : "Users found.",
         data: response.length !== 0 ? response : null,
         count: response.length !== 0 ? response.length : 0,
         countPages: countPages,
-        page: pageInput
-      })
+        page: pageInput,
+      });
     } catch (error) {
       console.log(error);
       reject(error);
     }
-  })
-}
+  });
+};
+
+export const getBankingUser = ({ username }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const res = await db.User.findOne({
+        where: { username },
+        attributes: {
+          exclude: ["password", "banStatus", "roleID", "refreshToken"],
+        },
+        raw: true,
+      });
+
+      const customer = res
+        ? await stripe.paymentMethods.list({
+            customer: res.refundHistoryID,
+            type: "card",
+          })
+        : null;
+      const brand = customer.data[0].card.brand;
+      const last4 = customer.data[0].card.last4;
+      const exp_month = customer.data[0].card.exp_month;
+      const exp_year = customer.data[0].card.exp_year;
+      resolve({
+        err: res ? 0 : 1,
+        mess: res ? "Successfully" : "Failure",
+        data: res
+          ? {
+              username,
+              brand,
+              last4,
+              exp_month,
+              exp_year,
+            }
+          : null,
+      });
+    } catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  });
+};
+
+export const banUser = ({ id, reasonBan }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const res = await db.User.update(
+        { reasonBan, banStatus: 1 },
+        { where: { id } }
+      );
+      resolve({
+        err: res ? 0 : 1,
+        mess: res ? "Ban this user successfully" : "This user ban failed",
+      });
+    } catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  });
+};
+
+export const unBanUser = ({ id }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const res = await db.User.update(
+        { reasonBan: "", banStatus: 0 },
+        { where: { id } }
+      );
+      resolve({
+        err: res ? 0 : 1,
+        mess: res ? "Unban this user successfully" : "This user unban failed",
+      });
+    } catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  });
+};
