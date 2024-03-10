@@ -1,17 +1,21 @@
 import classNames from "classnames/bind";
-import styles from "./PurchasedProject.module.scss";
+import styles from "./PurchasedSuccess.module.scss";
+// import PurchasedProjectInfo from "~/components/PurchasedProjectInfo";
 import images from "~/assets/images";
 import Tippy from "@tippyjs/react";
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Rating, Stack, Pagination } from "@mui/material";
-import { getAllTimeshare } from "~/controllers/timeshare";
+import { getAllTicketByUser } from "~/controllers/reservationTicket";
+
 import { useDispatch, useSelector } from "react-redux";
 import createAxios from "~/configs/axios";
-import { getAllTicketByUser } from "~/controllers/reservationTicket";
 
 const cx = classNames.bind(styles);
 
+const limit = 5;
+
+// Set Date
 function formatDate(dateString) {
     var date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -21,9 +25,7 @@ function formatDate(dateString) {
     });
 }
 
-const limit = 5;
-
-function PurchasedProject() {
+function PurchasedSuccess() {
     const [reservationProject, setReservationProject] = useState([]);
     const [countPage, setCountPage] = useState(1);
     const [page, setPage] = useState(1);
@@ -34,14 +36,14 @@ function PurchasedProject() {
     const currentUser = useSelector((state) => state.auth.login.user);
     const axiosInstance = createAxios(dispatch, currentUser);
 
-    const { status } = useParams();
-
     const handlePageChange = (event, value) => {
         setPage(value);
     };
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
+
+    const { status } = useParams();
 
     useEffect(() => {
         const fetchListing = async () => {
@@ -65,7 +67,8 @@ function PurchasedProject() {
     return (
         <div className={cx("wrapper")}>
             <div className={cx("row")}>
-                <h1 className={cx("title")}>Reservation Project</h1>
+                <h1 className={cx("title")}>Timeshare Booked</h1>
+
                 <Tippy
                     content="This is all reservation ticket you buy for project"
                     placement="top"
@@ -90,10 +93,19 @@ function PurchasedProject() {
                                     <th className={cx("project", "column")}>
                                         <h4 className={cx("title")}>Project</h4>
                                     </th>
-                                    <th className={cx("unit", "column")}>
+                                    <th className={cx("date", "column")}>
                                         <h4 className={cx("title")}>
-                                            Reservation Date
+                                            Booked Date
                                         </h4>
+                                    </th>
+
+                                    <th className={cx("sleep", "column")}>
+                                        <h4 className={cx("title")}>
+                                            TypeRoom
+                                        </h4>
+                                    </th>
+                                    <th className={cx("date", "column")}>
+                                        <h4 className={cx("title")}>Date</h4>
                                     </th>
                                     <th className={cx("date", "column")}>
                                         <h4 className={cx("title")}>Code</h4>
@@ -177,21 +189,43 @@ function PurchasedProject() {
                                                     </section>
                                                 </figure>
                                             </td>
+                                            {/* <td className={cx("unit", "column")}>
+                                        <span className={cx("name", "text")}>
+                                            cc
+                                        </span>
+                                    </td> */}
                                             <td
-                                                className={cx("unit", "column")}
+                                                className={cx(
+                                                    "sleep",
+                                                    "column"
+                                                )}
                                             >
-                                                <span
-                                                    className={cx(
-                                                        "name",
-                                                        "text"
-                                                    )}
-                                                >
+                                                <span className={cx("name")}>
                                                     {formatDate(
-                                                        item?.reservatedProjectDate
+                                                        item?.bookingTimeShareDate
                                                     )}
                                                 </span>
                                             </td>
-
+                                            <td
+                                                className={cx(
+                                                    "type-room",
+                                                    "column"
+                                                )}
+                                            >
+                                                <span className={cx("name")}>
+                                                    {item?.typeRoomName}
+                                                </span>
+                                            </td>
+                                            <td
+                                                className={cx("date", "column")}
+                                            >
+                                                <span className={cx("name")}>
+                                                    {formatDate(
+                                                        item?.startDate
+                                                    )}{" "}
+                                                    {formatDate(item?.endDate)}
+                                                </span>
+                                            </td>
                                             <td
                                                 className={cx("date", "column")}
                                             >
@@ -205,24 +239,24 @@ function PurchasedProject() {
                             </tbody>
                         </table>
                     </div>
-                    <tfoot className={cx("tfoot")}>
-                        <tr className={cx("trow")}>
-                            <Stack spacing={2}>
-                                <Pagination
-                                    count={countPage}
-                                    page={page}
-                                    variant="outlined"
-                                    shape="rounded"
-                                    onChange={handlePageChange}
-                                    className={cx("pagination")}
-                                />
-                            </Stack>
-                        </tr>
-                    </tfoot>
                 </div>
+                <tfoot className={cx("tfoot")}>
+                    <tr className={cx("trow")}>
+                        <Stack spacing={2}>
+                            <Pagination
+                                count={countPage}
+                                page={page}
+                                variant="outlined"
+                                shape="rounded"
+                                onChange={handlePageChange}
+                                className={cx("pagination")}
+                            />
+                        </Stack>
+                    </tr>
+                </tfoot>
             </div>
         </div>
     );
 }
 
-export default PurchasedProject;
+export default PurchasedSuccess;

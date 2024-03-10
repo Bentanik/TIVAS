@@ -1,5 +1,5 @@
 import classNames from "classnames/bind";
-import styles from "./TimeshareBooked.module.scss";
+import styles from "./AllReservation.module.scss";
 // import PurchasedProjectInfo from "~/components/PurchasedProjectInfo";
 import images from "~/assets/images";
 import Tippy from "@tippyjs/react";
@@ -7,6 +7,10 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Rating, Stack, Pagination } from "@mui/material";
 import { getAllTicketByUser } from "~/controllers/reservationTicket";
+
+import Button from "@mui/material/Button";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 
 import { useDispatch, useSelector } from "react-redux";
 import createAxios from "~/configs/axios";
@@ -25,10 +29,11 @@ function formatDate(dateString) {
     });
 }
 
-function TimeshareBooked() {
+function AllReservation() {
     const [reservationProject, setReservationProject] = useState([]);
     const [countPage, setCountPage] = useState(1);
     const [page, setPage] = useState(1);
+    const [anchorEl, setAnchorEl] = useState(null);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -64,6 +69,14 @@ function TimeshareBooked() {
         fetchListing();
     }, [page]);
 
+    const open = Boolean(anchorEl);
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
     return (
         <div className={cx("wrapper")}>
             <div className={cx("row")}>
@@ -93,22 +106,21 @@ function TimeshareBooked() {
                                     <th className={cx("project", "column")}>
                                         <h4 className={cx("title")}>Project</h4>
                                     </th>
-                                    <th className={cx("date", "column")}>
-                                        <h4 className={cx("title")}>
-                                            Booked Date
-                                        </h4>
-                                    </th>
 
                                     <th className={cx("sleep", "column")}>
                                         <h4 className={cx("title")}>
                                             TypeRoom
                                         </h4>
                                     </th>
-                                    <th className={cx("date", "column")}>
-                                        <h4 className={cx("title")}>Date</h4>
-                                    </th>
+
                                     <th className={cx("date", "column")}>
                                         <h4 className={cx("title")}>Code</h4>
+                                    </th>
+                                    <th className={cx("date", "column")}>
+                                        <h4 className={cx("title")}>Status</h4>
+                                    </th>
+                                    <th className={cx("date", "column")}>
+                                        <h4 className={cx("title")}>Action</h4>
                                     </th>
                                 </tr>
                             </thead>
@@ -194,18 +206,7 @@ function TimeshareBooked() {
                                             cc
                                         </span>
                                     </td> */}
-                                            <td
-                                                className={cx(
-                                                    "sleep",
-                                                    "column"
-                                                )}
-                                            >
-                                                <span className={cx("name")}>
-                                                    {formatDate(
-                                                        item?.bookingTimeShareDate
-                                                    )}
-                                                </span>
-                                            </td>
+
                                             <td
                                                 className={cx(
                                                     "type-room",
@@ -213,25 +214,115 @@ function TimeshareBooked() {
                                                 )}
                                             >
                                                 <span className={cx("name")}>
-                                                    {item?.typeRoomName}
+                                                    {item?.typeRoomName ? (
+                                                        item?.typeRoomName
+                                                    ) : (
+                                                        <div
+                                                            className={cx(
+                                                                "empty"
+                                                            )}
+                                                        >
+                                                            Empty
+                                                        </div>
+                                                    )}
                                                 </span>
                                             </td>
-                                            <td
-                                                className={cx("date", "column")}
-                                            >
-                                                <span className={cx("name")}>
-                                                    {formatDate(
-                                                        item?.startDate
-                                                    )}{" "}
-                                                    {formatDate(item?.endDate)}
-                                                </span>
-                                            </td>
+
                                             <td
                                                 className={cx("date", "column")}
                                             >
                                                 <span className={cx("name")}>
                                                     {item?.code}
                                                 </span>
+                                            </td>
+                                            <td
+                                                className={cx("date", "column")}
+                                            >
+                                                <span className={cx("name")}>
+                                                    {item?.status}
+                                                </span>
+                                            </td>
+
+                                            <td
+                                                className={cx("date", "column")}
+                                            >
+                                                <div>
+                                                    <Menu
+                                                        id="basic-menu"
+                                                        anchorEl={anchorEl}
+                                                        open={open}
+                                                        onClose={handleClose}
+                                                        MenuListProps={{
+                                                            "aria-labelledby":
+                                                                "basic-button",
+                                                        }}
+                                                        className={cx(
+                                                            "menu-wrapper"
+                                                        )}
+                                                    >
+                                                        <MenuItem
+                                                            className={cx(
+                                                                "text-item"
+                                                            )}
+                                                            onClick={
+                                                                handleClose
+                                                            }
+                                                        >
+                                                            Profile
+                                                        </MenuItem>
+                                                        <MenuItem
+                                                            className={cx(
+                                                                "text-item"
+                                                            )}
+                                                            onClick={
+                                                                handleClose
+                                                            }
+                                                        >
+                                                            My account
+                                                        </MenuItem>
+                                                        <MenuItem
+                                                            className={cx(
+                                                                "text-item"
+                                                            )}
+                                                            onClick={
+                                                                handleClose
+                                                            }
+                                                        >
+                                                            Logout
+                                                        </MenuItem>
+                                                    </Menu>
+                                                    <Button
+                                                        id="basic-button"
+                                                        aria-controls={
+                                                            open
+                                                                ? "basic-menu"
+                                                                : undefined
+                                                        }
+                                                        aria-haspopup="true"
+                                                        aria-expanded={
+                                                            open
+                                                                ? "true"
+                                                                : undefined
+                                                        }
+                                                        onClick={handleClick}
+                                                    >
+                                                        <svg
+                                                            // onClick={toggleOpen}
+                                                            className={cx(
+                                                                "icon"
+                                                            )}
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="16"
+                                                            height="16"
+                                                            fill="currentColor"
+                                                            viewBox="0 0 16 16"
+                                                        >
+                                                            <path d="M2 2.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V3a.5.5 0 0 0-.5-.5zM3 3H2v1h1z" />
+                                                            <path d="M5 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M5.5 7a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 4a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1z" />
+                                                            <path d="M1.5 7a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5zM2 7h1v1H2zm0 3.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm1 .5H2v1h1z" />
+                                                        </svg>
+                                                    </Button>
+                                                </div>
                                             </td>
                                         </tr>
                                     );
@@ -259,4 +350,4 @@ function TimeshareBooked() {
     );
 }
 
-export default TimeshareBooked;
+export default AllReservation;
