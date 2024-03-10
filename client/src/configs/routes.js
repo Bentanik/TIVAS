@@ -44,7 +44,7 @@ const routes = [
     },
 
     {
-        path: "/user/account/purchase",
+        path: "/user/account/purchase/:status",
         component: Purchase,
         layout: ProfileLayout,
     },

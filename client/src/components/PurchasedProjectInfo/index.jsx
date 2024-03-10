@@ -42,14 +42,16 @@ function PurchasedProjectInfo() {
                 <table className={cx("table")}>
                     <thead className={cx("thead")}>
                         <tr>
+                            <th className={cx("column", "index")}>
+                                <h4 className={cx("title")}>ID</h4>
+                            </th>
                             <th className={cx("project", "column")}>
-                                <h4 className={cx("title")}>Thumbnail</h4>
+                                <h4 className={cx("title")}>Project</h4>
                             </th>
                             <th className={cx("unit", "column")}>
-                                <h4 className={cx("title")}>Project Name</h4>
-                            </th>
-                            <th className={cx("sleep", "column")}>
-                                <h4 className={cx("title")}>Location</h4>
+                                <h4 className={cx("title")}>
+                                    Reservation Date
+                                </h4>
                             </th>
                             <th className={cx("date", "column")}>
                                 <h4 className={cx("title")}>
@@ -64,6 +66,9 @@ function PurchasedProjectInfo() {
                             className={cx("trow")}
                             // onClick={() => handleNavigate(item.id)}
                         >
+                            <td className={cx("index", "column")}>
+                                <span className={cx("num", "text")}>1</span>
+                            </td>
                             <td className={cx("project", "column")}>
                                 <figure className={cx("infor")}>
                                     <img
@@ -71,7 +76,7 @@ function PurchasedProjectInfo() {
                                         alt="image_one"
                                         className={cx("image")}
                                     />
-                                    {/* <section className={cx("box")}>
+                                    <section className={cx("box")}>
                                         <h3
                                             className={cx(
                                                 "name-project",
@@ -100,36 +105,34 @@ function PurchasedProjectInfo() {
                                                 cc
                                             </span>
                                         </div>
-                                    </section> */}
+                                    </section>
                                 </figure>
                             </td>
                             <td className={cx("unit", "column")}>
                                 <span className={cx("name", "text")}>cc</span>
                             </td>
-                            <td className={cx("sleep", "column")}>
-                                <span className={cx("name")}>cc</span>
-                            </td>
+
                             <td className={cx("date", "column")}>
                                 <span className={cx("name")}>cc</span>
                             </td>
                         </tr>
                     </tbody>
-                    <tfoot className={cx("tfoot")}>
-                        <tr className={cx("trow")}>
-                            <Stack spacing={2}>
-                                <Pagination
-                                    count={countPage}
-                                    page={page}
-                                    variant="outlined"
-                                    shape="rounded"
-                                    onChange={handlePageChange}
-                                    className={cx("pagination")}
-                                />
-                            </Stack>
-                        </tr>
-                    </tfoot>
                 </table>
             </div>
+            <tfoot className={cx("tfoot")}>
+                <tr className={cx("trow")}>
+                    <Stack spacing={2}>
+                        <Pagination
+                            count={countPage}
+                            page={page}
+                            variant="outlined"
+                            shape="rounded"
+                            onChange={handlePageChange}
+                            className={cx("pagination")}
+                        />
+                    </Stack>
+                </tr>
+            </tfoot>
         </div>
     );
 }

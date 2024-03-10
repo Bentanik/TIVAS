@@ -9,6 +9,18 @@
     height: 1000px;
 }
 
+.title {
+    font-family: "Inter", sans-serif;
+    font-size: 3rem;
+    font-weight: 600;
+}
+
+.icon {
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+}
+
 .row {
     display: flex;
     justify-content: space-between;

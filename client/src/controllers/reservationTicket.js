@@ -35,3 +35,12 @@ export const checkPriority = async (axiosInstance, id) => {
         console.log(err);
     }
 };
+
+export const getAllTicketByUser = async (axiosInstance, form) => {
+    try {
+        const res = await services.getAllTicketByUser(axiosInstance, form);
+        return res;
+    } catch (err) {
+        console.log(err);
+    }
+};

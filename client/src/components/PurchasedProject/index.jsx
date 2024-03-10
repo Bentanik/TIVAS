@@ -17,8 +17,8 @@ function PurchasedProject() {
                     placement="top"
                 >
                     <img
-                        className={cx("locate-icon")}
-                        src={images.locateIcon}
+                        className={cx("icon")}
+                        src={images.importantIcon}
                         alt="Locate Icon"
                     />
                 </Tippy>
