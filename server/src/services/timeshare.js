@@ -69,7 +69,7 @@ export const getAllTimeShare = ({
 }) => {
     return new Promise(async (resolve, reject) => {
         try {
-            let response;
+            let response = [];
             let pageInput = 1;
             const queries = pagination({ page, limit, orderType, orderBy });
             const timeShareResponse = await db.TimeShare.findAll();
@@ -77,7 +77,7 @@ export const getAllTimeShare = ({
             if (timeShareResponse.length / queries.limit > 1) {
                 countPages = Math.ceil(timeShareResponse.length / queries.limit)
             }
-            if(page){
+            if (page) {
                 pageInput = page
             }
             queries.nest = true;
@@ -94,6 +94,10 @@ export const getAllTimeShare = ({
                             include: {
                                 model: db.Project,
                                 attributes: ['id', 'name', 'thumbnailPathUrl', 'locationID'],
+                                include: {
+                                    model: db.Location,
+                                    attributes: ['id', 'name']
+                                }
                             }
                         }
                     },
@@ -101,18 +105,15 @@ export const getAllTimeShare = ({
                 })
                 if (response.length !== 0) {
                     for (let i = 0; i < response.length; i++) {
-                        const locationDB = await db.Location.findByPk(response[i].TypeRoom.TypeOfProject.Project.locationID);
-                        response[i].location = locationDB.name;
+                        response[i].location = response[i].TypeRoom.TypeOfProject.Project.Location.name;
                     }
                 }
             }
             resolve({
-                err: (response && response.length !== 0) ? 0 : 1,
-                message: pageInput > countPages ?
-                    `Can not find any TimeShares in Page (${pageInput}) because there are only (${countPages}) Pages of TimeShares`
-                    : (response && response.length !== 0) ? `All TimeShares Result` : `Can not find any TimeShares`,
-                data: (response && response.length !== 0) ? response : null,
-                count: response ? response.length : 0,
+                err: (response.length !== 0) ? 0 : 1,
+                message: (response.length !== 0) ? `All TimeShares Result` : `Can not find any TimeShares`,
+                data: (response.length !== 0) ? response : null,
+                count: response.length,
                 countPages: countPages,
                 page: pageInput
             })
@@ -162,7 +163,7 @@ export const getAllTimeShareOfProject = (projectID, {
                 if (timeShareResponse.length / queries.limit > 1) {
                     countPages = Math.ceil(timeShareResponse.length / queries.limit)
                 }
-                if(page){
+                if (page) {
                     pageInput = page
                 }
                 console.log(page);
@@ -170,6 +171,8 @@ export const getAllTimeShareOfProject = (projectID, {
                 console.log(page <= countPages);
                 if (pageInput <= countPages) {
                     response = await db.TimeShare.findAll({
+                        raw: true,
+                        nest: true,
                         attributes: ['id', 'price', 'startDate', 'endDate', 'saleStatus', 'createdAt'],
                         include: {
                             model: db.TypeRoom,
@@ -183,7 +186,11 @@ export const getAllTimeShareOfProject = (projectID, {
                                 },
                                 include: {
                                     model: db.Project,
-                                    attributes: ['id', 'name', 'thumbnailPathUrl', 'locationID']
+                                    attributes: ['id', 'name', 'thumbnailPathUrl', 'locationID'],
+                                    include: {
+                                        model: db.Location,
+                                        attributes: ['id', 'name']
+                                    }
                                 }
                             }
                         },
@@ -192,8 +199,7 @@ export const getAllTimeShareOfProject = (projectID, {
 
                     if (response.length !== 0) {
                         for (let i = 0; i < response.length; i++) {
-                            const locationDB = await db.Location.findByPk(response[i].TypeRoom.TypeOfProject.Project.locationID);
-                            response[i].location = locationDB.name;
+                            response[i].location = response[i].TypeRoom.TypeOfProject.Project.Location.name;
                         }
                     }
                 }
@@ -203,10 +209,8 @@ export const getAllTimeShareOfProject = (projectID, {
                 err: response.length !== 0 ? 0 : 1,
                 message: !projectResponse ?
                     `Can not find Project (${projectID})` :
-                    pageInput > countPages ?
-                        `Can not find any TimeShares in Page (${pageInput}) because there are only (${countPages}) Pages of TimeShares`
-                        : !(response.length !== 0) ? `Can not find any TimeShares of Project (${projectID})`
-                            : `All TimeShares Result`,
+                    !(response.length !== 0) ? `Can not find any TimeShares of Project (${projectID})`
+                        : `All TimeShares Result`,
                 data: response.length !== 0 ? response : null,
                 count: response.length !== 0 ? response.length : 0,
                 page: pageInput,
@@ -237,10 +241,16 @@ export const getDetailsTimeShare = (id) => {
                             include: {
                                 model: db.Project,
                                 attributes: ['id', 'name', 'description', 'features', 'attractions', 'reservationPrice', 'openDate', 'status', 'thumbnailPathUrl', 'locationID'],
-                                include: {
-                                    model: db.Image,
-                                    attributes: ['pathUrl'],
-                                }
+                                include: [
+                                    {
+                                        model: db.Image,
+                                        attributes: ['pathUrl'],
+                                    },
+                                    {
+                                        model: db.Location,
+                                        attributes: ['id', 'name'],
+                                    }
+                                ]
                             }
                         },
                         {
@@ -271,12 +281,11 @@ export const getDetailsTimeShare = (id) => {
                     description: timeShareResponse.TypeRoom.description,
                     images: timeShareResponse.TypeRoom.Images,
                 };
-                const locationDB = await db.Location.findByPk(timeShareResponse.TypeRoom.TypeOfProject.Project.locationID);
                 response.Project = {
                     id: timeShareResponse.TypeRoom.TypeOfProject.Project.id,
                     name: timeShareResponse.TypeRoom.TypeOfProject.Project.name,
                     description: timeShareResponse.TypeRoom.TypeOfProject.Project.description,
-                    location: locationDB.name,
+                    location: timeShareResponse.TypeRoom.TypeOfProject.Project.Location.name,
                     features: timeShareResponse.TypeRoom.TypeOfProject.Project.features?.split(','),
                     attraction: timeShareResponse.TypeRoom.TypeOfProject.Project.attractions?.split(','),
                     reservationPrice: timeShareResponse.TypeRoom.TypeOfProject.Project.reservationPrice,
@@ -294,6 +303,227 @@ export const getDetailsTimeShare = (id) => {
         } catch (error) {
             console.log(error);
             reject(error)
+        }
+    })
+}
+
+export const getAllTimeShareByStaff = (userID, {
+    page,
+    limit,
+    orderBy,
+    orderType,
+}) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let countPages = 0;
+            let pageInput = 1;
+            const queries = pagination({ page, limit, orderType, orderBy });
+            queries.nest = true;
+            queries.raw = true;
+            let response = [];
+            queries.nest = true;
+            queries.raw = true;
+            const userResponse = await db.User.findByPk(userID, {
+                include: [
+                    {
+                        model: db.RoleCode
+                    },
+                ]
+            });
+            if (userResponse && userResponse.RoleCode.roleName === 'Staff') {
+                const timeShareResponse = await db.TimeShare.findAll({
+                    attributes: [],
+                    include: [
+                        {
+                            model: db.User,
+                            attributes: [],
+                            where: {
+                                id: userID,
+                            }
+                        },
+                    ]
+                });
+                countPages = timeShareResponse.length !== 0 ? 1 : 0;
+                if (timeShareResponse.length / queries.limit > 1) {
+                    countPages = Math.ceil(timeShareResponse.length / queries.limit)
+                }
+                if (page) {
+                    pageInput = page
+                }
+                if (pageInput <= countPages) {
+                    response = await db.TimeShare.findAll({
+                        raw: true,
+                        nest: true,
+                        attributes: ['id', 'price', 'startDate', 'endDate', 'saleStatus', 'createdAt'],
+                        include: [
+                            {
+                                model: db.TypeRoom,
+                                attributes: ['id', 'name', 'persons'],
+                                required: true,
+                                include: {
+                                    model: db.TypeOfProject,
+                                    attributes: ['id'],
+                                    include: {
+                                        model: db.Project,
+                                        attributes: ['id', 'name', 'thumbnailPathUrl', 'locationID'],
+                                        include: {
+                                            model: db.Location,
+                                            attributes: ['id', 'name']
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                model: db.User,
+                                where: {
+                                    id: userID,
+                                }
+                            }
+                        ],
+                        ...queries,
+                    })
+
+                    if (response.length !== 0) {
+                        for (let i = 0; i < response.length; i++) {
+                            response[i].location = response[i].TypeRoom.TypeOfProject.Project.Location.name;
+                        }
+                    }
+                }
+            }
+            resolve({
+                err: (response.length !== 0) ? 0 : 1,
+                message: !userResponse ?
+                    `User (${userID}) does not exist!`
+                    : !(userResponse.RoleCode.roleName === 'Staff') ?
+                        `User (${userID}) is not a staff!`
+                        : (response.length !== 0) ? `All TimeShares of Staff ${userID} Result` : `Can not find any TimeShares of Staff (${userID})`,
+                data: (response.length !== 0) ? response : null,
+                count: response.length,
+                countPages: countPages,
+                page: pageInput
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
+export const getAllTimeShareOfProjectByStaff = (projectID, userID, {
+    page,
+    limit,
+    orderBy,
+    orderType,
+}) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let countPages = 0;
+            let pageInput = 1;
+            const queries = pagination({ page, limit, orderType, orderBy });
+            queries.nest = true;
+            queries.raw = true;
+            let response = [];
+            queries.nest = true;
+            queries.raw = true;
+            const userResponse = await db.User.findByPk(userID, {
+                include: {
+                    model: db.RoleCode
+                }
+            });
+            const projectResponse = await db.Project.findByPk(projectID);
+            if (userResponse && userResponse.RoleCode.roleName === 'Staff' && projectResponse) {
+                const timeShareResponse = await db.TimeShare.findAll({
+                    attributes: [],
+                    include:
+                        [
+                            {
+                                model: db.User,
+                                attributes: [],
+                                where: {
+                                    id: userID,
+                                },
+                            },
+                            {
+                                model: db.TypeRoom,
+                                attributes: [],
+                                required: true,
+                                include: {
+                                    model: db.TypeOfProject,
+                                    attributes: [],
+                                    where: {
+                                        projectID
+                                    },
+                                }
+                            }
+                        ]
+                });
+                countPages = timeShareResponse.length !== 0 ? 1 : 0;
+                if (timeShareResponse.length / queries.limit > 1) {
+                    countPages = Math.ceil(timeShareResponse.length / queries.limit)
+                }
+                if (page) {
+                    pageInput = page
+                }
+                if (pageInput <= countPages) {
+                    response = await db.TimeShare.findAll({
+                        raw: true,
+                        nest: true,
+                        attributes: ['id', 'price', 'startDate', 'endDate', 'saleStatus', 'createdAt'],
+                        include: [
+                            {
+                                model: db.TypeRoom,
+                                attributes: ['id', 'name', 'persons'],
+                                required: true,
+                                include: {
+                                    model: db.TypeOfProject,
+                                    attributes: ['id'],
+                                    where: {
+                                        projectID
+                                    },
+                                    include: {
+                                        model: db.Project,
+                                        attributes: ['id', 'name', 'thumbnailPathUrl', 'locationID'],
+                                        include: {
+                                            model: db.Location,
+                                            attributes: ['id', 'name']
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                model: db.User,
+                                where: {
+                                    id: userID,
+                                }
+                            }
+                        ],
+                        ...queries,
+                    })
+
+                    if (response.length !== 0) {
+                        for (let i = 0; i < response.length; i++) {
+                            response[i].location = response[i].TypeRoom.TypeOfProject.Project.Location.name;
+                        }
+                    }
+                }
+            }
+            resolve({
+                err: (response.length !== 0) ? 0 : 1,
+                message: !userResponse ?
+                    `User (${userID}) does not exist!`
+                    : !(userResponse.RoleCode.roleName === 'Staff') ?
+                        `User (${userID}) is not a staff!`
+                        : !projectResponse ?
+                            `Project (${projectID}) does not exist!`
+                            : (response.length !== 0) ? `All TimeShares of Staff ${userID} Result` : `Can not find any TimeShares of Staff (${userID})`,
+                data: (response.length !== 0) ? response : null,
+                count: response.length,
+                countPages: countPages,
+                page: pageInput
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
         }
     })
 }

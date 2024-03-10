@@ -6,8 +6,8 @@ import ExpandList from "~/components/ExpandList";
 import SearchPage from "~/components/SearchPage";
 
 import { Link, useParams } from "react-router-dom";
-import { getAllProject } from "~/controllers/project";
-import { getAllLocation } from "~/controllers/location";
+import { getAllProjects } from "~/controllers/project";
+import { getAllLocations } from "~/controllers/location";
 
 import images from "~/assets/images";
 
@@ -34,8 +34,8 @@ function Search({}) {
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await getAllProject(axiosInstance, id);
-            const resLocation = await getAllLocation(axiosInstance);
+            const res = await getAllProjects(axiosInstance, id);
+            const resLocation = await getAllLocations(axiosInstance);
 
             if (res?.err === 0) {
                 setProjectData(res.data);

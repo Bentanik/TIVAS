@@ -18,6 +18,7 @@ import React, { useEffect, useState } from "react";
 
 import images from "~/assets/images";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { stepButtonClasses } from "@mui/material";
 
 const cx = classNames.bind(styles);
 
@@ -56,6 +57,7 @@ function a11yProps(index) {
 
 function Purchase() {
     const [value, setValue] = useState(0);
+    const [reservationProject, setReservationProject] = useState([]);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -67,7 +69,6 @@ function Purchase() {
     };
 
     const { status } = useParams();
-    const { id } = useParams();
 
     const handleNavigate = (status) => {
         navigate(`/user/account/purchase/${status}`);
@@ -79,9 +80,11 @@ function Purchase() {
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await getAllTicketByUser(axiosInstance, id, status);
-
-            console.log(res);
+            const res = await getAllTicketByUser(axiosInstance, {
+                id: 10,
+                status,
+            });
+            setReservationProject(res?.data);
         };
         fetchData();
     }, []);
@@ -157,7 +160,9 @@ function Purchase() {
                 </Tabs>
             </Box>
             <CustomTabPanel value={value} index={0}>
-                <PurchasedProject />
+                <PurchasedProject
+                    reservationProjectDetail={reservationProject}
+                />
             </CustomTabPanel>
             <CustomTabPanel value={value} index={1}>
                 <TimeshareBooked />

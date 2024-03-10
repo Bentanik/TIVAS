@@ -6,7 +6,7 @@ import Tippy from "@tippyjs/react";
 
 const cx = classNames.bind(styles);
 
-function PurchasedProject() {
+function PurchasedProject({ reservationProjectDetail }) {
     return (
         <div className={cx("wrapper")}>
             <div className={cx("row")}>
@@ -25,7 +25,9 @@ function PurchasedProject() {
             </div>
 
             <div className={cx("content")}>
-                <PurchasedProjectInfo />
+                <PurchasedProjectInfo
+                    reservationProjectDetail={reservationProjectDetail}
+                />
             </div>
         </div>
     );

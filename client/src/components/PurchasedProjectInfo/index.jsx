@@ -10,9 +10,10 @@ import createAxios from "~/configs/axios";
 
 const cx = classNames.bind(styles);
 
-function PurchasedProjectInfo() {
+function PurchasedProjectInfo({ reservationProjectDetail }) {
     const [countPage, setCountPage] = useState(1);
     const [page, setPage] = useState(1);
+    console.log(reservationProjectDetail);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -36,6 +37,17 @@ function PurchasedProjectInfo() {
         };
         fetchListing();
     }, [page]);
+
+    // Set Date
+    function formatDate(dateString) {
+        var date = new Date(dateString);
+        return date.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+        });
+    }
+
     return (
         <div className={cx("ticket-detail-wrapper")}>
             <div className={cx("ticket-detail")}>
@@ -61,61 +73,75 @@ function PurchasedProjectInfo() {
                         </tr>
                     </thead>
                     <tbody className={cx("tbody")}>
-                        <tr
-                            // key={index}
-                            className={cx("trow")}
-                            // onClick={() => handleNavigate(item.id)}
-                        >
-                            <td className={cx("index", "column")}>
-                                <span className={cx("num", "text")}>1</span>
-                            </td>
-                            <td className={cx("project", "column")}>
-                                <figure className={cx("infor")}>
-                                    <img
-                                        src={images.resort}
-                                        alt="image_one"
-                                        className={cx("image")}
-                                    />
-                                    <section className={cx("box")}>
-                                        <h3
-                                            className={cx(
-                                                "name-project",
-                                                "text"
+                        {reservationProjectDetail?.map((item, index) => {
+                            return (
+                                <tr
+                                    // key={index}
+                                    className={cx("trow")}
+                                    // onClick={() => handleNavigate(item.id)}
+                                >
+                                    <td className={cx("index", "column")}>
+                                        <span className={cx("num", "text")}>
+                                            {index + 1}
+                                        </span>
+                                    </td>
+                                    <td className={cx("project", "column")}>
+                                        <figure className={cx("infor")}>
+                                            <img
+                                                src={
+                                                    item?.projectThumbnailPathUrl
+                                                }
+                                                alt="image_one"
+                                                className={cx("image")}
+                                            />
+                                            <section className={cx("box")}>
+                                                <h3
+                                                    className={cx(
+                                                        "name-project",
+                                                        "text"
+                                                    )}
+                                                >
+                                                    {item?.projectName}
+                                                </h3>
+                                                <div className={cx("location")}>
+                                                    <svg
+                                                        className={cx("icon")}
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="16"
+                                                        height="16"
+                                                        fill="currentColor"
+                                                        viewBox="0 0 16 16"
+                                                    >
+                                                        <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6" />
+                                                    </svg>
+                                                    <span
+                                                        className={cx(
+                                                            "position",
+                                                            "text"
+                                                        )}
+                                                    >
+                                                        {item?.location}
+                                                    </span>
+                                                </div>
+                                            </section>
+                                        </figure>
+                                    </td>
+                                    <td className={cx("unit", "column")}>
+                                        <span className={cx("name", "text")}>
+                                            {formatDate(
+                                                item?.reservatedProjectDate
                                             )}
-                                        >
-                                            cc
-                                        </h3>
-                                        <div className={cx("location")}>
-                                            <svg
-                                                className={cx("icon")}
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="16"
-                                                height="16"
-                                                fill="currentColor"
-                                                viewBox="0 0 16 16"
-                                            >
-                                                <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6" />
-                                            </svg>
-                                            <span
-                                                className={cx(
-                                                    "position",
-                                                    "text"
-                                                )}
-                                            >
-                                                cc
-                                            </span>
-                                        </div>
-                                    </section>
-                                </figure>
-                            </td>
-                            <td className={cx("unit", "column")}>
-                                <span className={cx("name", "text")}>cc</span>
-                            </td>
+                                        </span>
+                                    </td>
 
-                            <td className={cx("date", "column")}>
-                                <span className={cx("name")}>cc</span>
-                            </td>
-                        </tr>
+                                    <td className={cx("date", "column")}>
+                                        <span className={cx("name")}>
+                                            {item?.code}
+                                        </span>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>
