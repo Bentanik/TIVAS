@@ -108,12 +108,7 @@ const routes = [
     layout: LayoutAdmin,
   },
   {
-    path: "/admin/manageuser/ban",
-    component: AdminManageUser,
-    layout: LayoutAdmin,
-  },
-  {
-    path: "/admin/manageproject",
+    path: "/admin/manageproject/listproject",
     component: AdminManageProject,
     layout: LayoutAdmin,
   },
@@ -122,10 +117,14 @@ const routes = [
     component: AdminRoomTypeDetail,
     layout: LayoutAdmin,
   },
-
   {
-    path: "/admin/projectdetail",
+    path: "/admin/manageproject/projectdetail",
     component: AdminProjectDetail,
+    layout: LayoutAdmin,
+  },
+  {
+    path: "/admin/manageuser/listuser",
+    component: AdminManageUser,
     layout: LayoutAdmin,
   },
 ];

@@ -23,7 +23,6 @@ export const getProjectByStatus = (axiosInstance, form) => {
   );
 };
 
-
 export const getProjectTimeshare = (axiosInstance, form) => {
   const limit = 10;
   const page = form.page;
@@ -36,8 +35,12 @@ export const putOpenBooking = (axiosInstance, id) => {
   return axiosInstance.put(`/api/v1/project/openBooking/${id}`);
 };
 
-export const getAllProject = (axiosInstance) => {
-  return axiosInstance.get(`/api/v1/project/getAll?page=1`);
+export const getAllProject = (axiosInstance, form) => {
+  const limit = form.limit;
+  const page = form.page;
+  return axiosInstance.get(
+    `/api/v1/project/getAll?page=${page}&limit=${limit}`
+  );
 };
 
 export const updateReservation = (axiosInstance, id, form) => {
@@ -46,4 +49,16 @@ export const updateReservation = (axiosInstance, id, form) => {
 
 export const openReservaion = (axiosInstance, id) => {
   return axiosInstance.put(`api/v1/project/openReservationTicket/${id}`);
+};
+
+export const createNewProject = (axiosInstance, form) => {
+  return axiosInstance.post("/api/v1/project/create", form);
+};
+
+export const getAllWithType = (axiosInstance, form) => {
+  const limit = form.limit;
+  const page = form.page;
+  return axiosInstance.get(
+    `/api/v1/project/getAllWithType?page=${page}&limit=${limit}`
+  );
 };

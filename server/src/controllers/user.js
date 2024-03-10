@@ -42,12 +42,32 @@ export const editUser = async (req, res) => {
   const response = await services.editUser(req.body, req.files);
 
   return res.status(200).json(response);
-}
-  
+};
+
 export const getAllUsers = async (req, res) => {
   const response = await services.getAllUsers(req.query);
   return res.status(200).json(response);
+};
 
-}
+export const getBankingUser = async (req, res) => {
+  const { username } = req.params;
+  if (!username) {
+    return missValue("Missing username");
+  }
+  const response = await services.getBankingUser(req.params);
+  return res.status(200).json(response);
+};
+
+export const banUser = async (req, res) => {
+  const { id, reasonBan } = req.body;
+  const response = await services.banUser(req.body);
+  return res.status(200).json(response);
+};
+
+export const unBanUser = async (req, res) => {
+  const { id } = req.body;
+  const response = await services.unBanUser(req.body);
+  return res.status(200).json(response);
+};
 
 

@@ -22,9 +22,10 @@ router.put(
   controllers.editUser
 );
 
-router.get(
-  "/getallusers",
-  controllers.getAllUsers,
-)
+router.get("/getallusers", controllers.getAllUsers);
+
+router.get("/getbankinguser/:username", controllers.getBankingUser);
+router.post("/banuser/", controllers.banUser);
+router.post("/unbanuser/", controllers.unBanUser);
 
 export default router;

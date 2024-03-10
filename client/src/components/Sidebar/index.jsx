@@ -4,7 +4,8 @@ import { Link, useLocation } from "react-router-dom";
 import images from "~/assets/images";
 import { useDispatch, useSelector } from "react-redux";
 import createAxios from "~/configs/axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getAvatarUser } from "~/controllers/user";
 const cx = classNames.bind(styles);
 
 function Sidebar() {
@@ -13,13 +14,28 @@ function Sidebar() {
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.login.user);
   const axiosInstance = createAxios(dispatch, currentUser);
-  const userState = useSelector((state) => state.user.user?.data);
+
+  const [imgAvatar, setImgAvatar] = useState("");
+
+
+  useEffect(() => {
+    const fetchGetAvatarUser = async () => {
+      const res = await getAvatarUser(
+        axiosInstance,
+        currentUser?.data?.username
+      );
+      if (res) setImgAvatar(res.data.avatarURL);
+      else setImgAvatar("");
+    };
+    fetchGetAvatarUser();
+    // eslint-disable-next-line no-use-before-define, react-hooks/exhaustive-deps
+  }, [currentUser]);
 
   return (
     <div className={cx("wrapper")}>
       <div className={cx("avatar")}>
         <img
-          src={userState?.data?.avatarURL}
+          src={imgAvatar}
           alt="Avatar"
           className={cx("img")}
         />

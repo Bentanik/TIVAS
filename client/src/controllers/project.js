@@ -9,9 +9,18 @@ export const getTop10 = async (axiosInstance) => {
   }
 };
 
-export const getAllProject = async (axiosInstance) => {
+export const getAllProjects = async (axiosInstance, form) => {
   try {
-    const res = await services.getAllProject(axiosInstance);
+    const res = await services.getAllProject(axiosInstance, form);
+    return res;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const getAllWithType = async (axiosInstance, form) => {
+  try {
+    const res = await services.getAllWithType(axiosInstance, form);
     return res;
   } catch (err) {
     console.log(err);
@@ -81,3 +90,11 @@ export const putOpenBooking = async (axiosInstance, id) => {
   }
 };
 
+export const createNewProject = async (axiosInstance, form) => {
+  try {
+    const res = await services.createNewProject(axiosInstance, form);
+    return res;
+  } catch (err) {
+    console.log(err);
+  }
+};

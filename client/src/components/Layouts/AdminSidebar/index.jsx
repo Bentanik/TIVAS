@@ -7,9 +7,6 @@ import { useState } from "react";
 const cx = classNames.bind(styles);
 
 function AdminSidebar() {
-  // const renderOptions = OPTIONS.map((item, index) => {
-  //     return
-  // })
   const location = useLocation();
 
   const [user, setUser] = useState(false);
@@ -104,10 +101,10 @@ function AdminSidebar() {
           </div>
           {user === true && (
             <div className={cx("list-child")}>
-              <Link to="/admin/manageuser/ban">
+              <Link to="/admin/manageuser/listuser">
                 <div
                   className={cx("children", {
-                    active: location.pathname.includes("/ban"),
+                    active: location.pathname.includes("/listuser"),
                   })}
                 >
                   <svg
@@ -120,26 +117,7 @@ function AdminSidebar() {
                   >
                     <path d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8" />
                   </svg>
-                  <h4 className={cx("text")}>User ban</h4>
-                </div>
-              </Link>
-              <Link to="/admin/manageuser/unban">
-                <div
-                  className={cx("children", {
-                    active: location.pathname.includes("/unban"),
-                  })}
-                >
-                  <svg
-                    className={cx("icon")}
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8" />
-                  </svg>
-                  <h4 className={cx("text")}>User ban</h4>
+                  <h4 className={cx("text")}>List user</h4>
                 </div>
               </Link>
             </div>
@@ -181,10 +159,10 @@ function AdminSidebar() {
             </svg>
           </div>
           <div className={cx("list-child")}>
-            <Link to="/admin/manageproject/reservation">
+            <Link to="/admin/manageproject/listproject">
               <div
                 className={cx("children", {
-                  active: location.pathname.includes("/reservation"),
+                  active: location.pathname.includes("/listproject"),
                 })}
               >
                 <svg
@@ -197,47 +175,7 @@ function AdminSidebar() {
                 >
                   <path d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8" />
                 </svg>
-                <h4 className={cx("text")}>Project is reservation</h4>
-              </div>
-            </Link>
-
-            <Link to="/admin/manageproject/closebooking">
-              <div
-                className={cx("children", {
-                  active: location.pathname.includes("/closebooking"),
-                })}
-              >
-                <svg
-                  className={cx("icon")}
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8" />
-                </svg>
-                <h4 className={cx("text")}>Project booking</h4>
-              </div>
-            </Link>
-
-            <Link to="/admin/manageproject/projecttimeshare">
-              <div
-                className={cx("children", {
-                  active: location.pathname.includes("/projecttimeshare"),
-                })}
-              >
-                <svg
-                  className={cx("icon")}
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8" />
-                </svg>
-                <h4 className={cx("text")}>Project purchased</h4>
+                <h4 className={cx("text")}>List project</h4>
               </div>
             </Link>
           </div>
