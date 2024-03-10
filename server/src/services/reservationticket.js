@@ -270,7 +270,6 @@ export const createReservation = ({
                             }
                         })
                         if (userTicketResponse) {
-
                             ticketDuplicated = await db.ReservationTicket.findOne({
                                 where: {
                                     code,
@@ -293,7 +292,11 @@ export const createReservation = ({
                                         }
                                     })
                                     await db.ReservationTicket.update({
-                                        bookingDate: reservationResponse.bookingDate,
+                                        bookingDate: userTicketResponse.updatedAt,
+                                    }, {
+                                        where: {
+                                            code,
+                                        }
                                     })
 
                                 }
@@ -316,9 +319,7 @@ export const createReservation = ({
                                 `Project (${projectResponse.id}) is not open for reservation!`
                                 : !timeShareBelongsToProject ?
                                     `TimeShare (${timeShareID}) does not belong to Project which is registerd in Ticket (${code})`
-                                    : ticketResponse.status !== 1 ?
-                                        //`Ticket (${code}) does not activate!`
-                                        //: !userTicketResponse ?
+                                    : !userTicketResponse ?
                                         `Ticket (${code}) does not belong to User (${userID})!`
                                         : ticketDuplicated ?
                                             `TimeShare (${timeShareID}) has already registerd with the ticket (${code})!`
@@ -856,7 +857,7 @@ export const getAllUserPriorityByAdmin = (id) => {
     })
 }
 
-export const getAllUserNoPriorityByStaff = ({id, userID}) => {
+export const getAllUserNoPriorityByStaff = ({ id, userID }) => {
     return new Promise(async (resolve, reject) => {
         try {
             let response = [];
@@ -949,7 +950,7 @@ export const getAllUserNoPriorityByStaff = ({id, userID}) => {
     })
 }
 
-export const getAllUserPriorityByStaff = ({id, userID}) => {
+export const getAllUserPriorityByStaff = ({ id, userID }) => {
     return new Promise(async (resolve, reject) => {
         try {
             let response = [];
@@ -1047,7 +1048,7 @@ export const getAllUserPriorityByStaff = ({id, userID}) => {
     })
 }
 
-export const getAllTicketsByUser = ({id, status}) => {
+export const getAllTicketsByUser = ({ id, status }) => {
     return new Promise(async (resolve, reject) => {
         try {
             let response = [];
@@ -1140,11 +1141,11 @@ export const getAllTicketsByUser = ({id, status}) => {
                                 ticket.bookingTimeShareDate = ticketResponse[i].bookingDate
                             } else {
                                 ticket.bookingStatus = ticketResponse[i].Booking.status;
-                                if(parseInt(status) === 3){
+                                if (parseInt(status) === 3) {
                                     ticket.bookingSuccessDate = ticketResponse[i].Booking.createdAt
-                                }else if(parseInt(status) === 4){
+                                } else if (parseInt(status) === 4) {
                                     ticket.purchasedSuccessDate = ticketResponse[i].Booking.updatedAt
-                                }else{
+                                } else {
                                     ticket.purchasedFailedDate = ticketResponse[i].Booking.updatedAt
                                 }
                             }

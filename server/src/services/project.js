@@ -774,6 +774,39 @@ export const getDetailsProject = (id) => {
     })
 }
 
+export const getTypeOfProject = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            let typeResponse = [];
+            const projectResponse = await db.Project.findByPk(id);
+            if(projectResponse){
+                typeResponse = await db.Type.findAll({
+                    attributes: ['name'],
+                    include: {
+                        model: db.TypeOfProject,
+                        attributes: [],
+                        where: {
+                            projectID: id,
+                        }
+                    }
+                })
+            }
+            resolve({
+                err: typeResponse.length !== 0 ? 0 : 1,
+                message: !projectResponse ?
+                `Project (${id}) does not exist!`
+                : typeResponse.length === 0 ?
+                `Can not find any type of project (${id})`
+                : `Type of project (${id}).`,
+                data: typeResponse,
+            })
+        } catch (error) {
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
 export const updateBooking = ({
     openDate,
     closeDate

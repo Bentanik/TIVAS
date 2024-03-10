@@ -48,6 +48,11 @@ router.get(
   controllers.getTop10
 )
 
+router.get(
+  "/getTypeOfProject/:id",
+  controllers.getTypeOfProject,
+)
+
 //thay doi openDate va closeDate
 router.put("/changeBookingInfo/:id",controllers.updateBooking)
 //thay doi reservationPrice va reservationDate
