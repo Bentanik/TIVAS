@@ -22,13 +22,13 @@ router.get("/getAllUserNoPriorityByAdmin/:id", controllers.getAllUserNoPriorityB
 
 router.get("/getAllUserPriorityByAdmin/:id", controllers.getAllUserPriorityByAdmin)
 
-router.get("/getAllUserNoPriorityByStaff/:id/:userID", controllers.getAllUserNoPriorityByStaff)
+router.get("/getAllUserNoPriorityByStaff", controllers.getAllUserNoPriorityByStaff)
 
-router.get("/getAllUserPriorityByStaff/:id/:userID", controllers.getAllUserPriorityByStaff)
+router.get("/getAllUserPriorityByStaff", controllers.getAllUserPriorityByStaff)
 
 //router.get("/getAllFailedTickets/:id", controllers.getAllFailedTickets)
 
-router.get("/getAllTicketsByUser/:id/:status", controllers.getAllTicketsByUser)
+router.get("/getAllTicketsByUser", controllers.getAllTicketsByUser)
 
 router.get("/getAllTicketsByAdmin/:id", controllers.getAllTicketsByAdmin)
 

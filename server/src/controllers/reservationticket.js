@@ -105,14 +105,12 @@ export const getAllUserPriorityByAdmin = async (req, res) => {
 }
 
 export const getAllUserNoPriorityByStaff = async (req, res) => {
-  const { id, userID } = req.params;
-  const response = await services.getAllUserNoPriorityByStaff(id, userID);
+  const response = await services.getAllUserNoPriorityByStaff(req.query);
   return res.status(200).json(response);
 }
 
 export const getAllUserPriorityByStaff = async (req, res) => {
-  const { id, userID } = req.params;
-  const response = await services.getAllUserPriorityByStaff(id, userID);
+  const response = await services.getAllUserPriorityByStaff(req.query);
   return res.status(200).json(response);
 }
 
@@ -122,11 +120,7 @@ export const getAllUserPriorityByStaff = async (req, res) => {
 // }
 
 export const getAllTicketsByUser = async (req, res) => {
-  const { id, status } = req.params;
-  if(!/^\d+$/.test(id) || !/^[-+]?\d+$/.test(status)){
-    return missValue("Missing value!", res);
-  }
-  const response = await services.getAllTicketsByUser(id, status);
+  const response = await services.getAllTicketsByUser(req.query);
   return res.status(200).json(response);
 }
 
@@ -138,3 +132,4 @@ export const getAllTicketsByAdmin = async (req, res) => {
     const response = await services.getAllTicketsByAdmin(id);
     return res.status(200).json(response);
 }
+

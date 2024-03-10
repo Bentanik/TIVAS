@@ -126,7 +126,9 @@ export const searchProject = async (req, res) => {
 };
 
 export const searchNameAndLocationProject = async (req, res) => {
-  const { info, limit } = req.params;
+  const { info, limit } = req.query;
+  console.log(info);
+  console.log(limit);
   let limitDB;
   if (/^\d+$/.test(limit)) {
     limitDB = parseInt(limit);
@@ -149,6 +151,12 @@ export const getDetailsProject = async (req, res) => {
   const response = await services.getDetailsProject(id);
   return res.status(200).json(response);
 };
+
+export const getTypeOfProject = async (req, res) => {
+  const { id } = req.params;
+  const response = await services.getTypeOfProject(id); 
+  return res.status(200).json(response);
+}
 
 export const updateBooking = async (req, res) => {
   const { id } = req.params;

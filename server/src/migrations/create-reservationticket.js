@@ -30,6 +30,12 @@ module.exports = {
       refund: {
         type: Sequelize.INTEGER
       },
+      bookingDate: {
+        type: Sequelize.DATE
+      },
+      refundDate: {
+        type: Sequelize.DATE
+      },
       userID: {
         type: Sequelize.INTEGER
       },

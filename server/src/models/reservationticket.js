@@ -34,6 +34,8 @@ module.exports = (sequelize, DataTypes) => {
         openDate: DataTypes.DATE,
         closeDate: DataTypes.DATE,
         refund: DataTypes.INTEGER,
+        bookingDate: DataTypes.DATE,
+        refundDate: DataTypes.DATE,
         userID: DataTypes.INTEGER,
         projectID: DataTypes.INTEGER,
         timeShareID: DataTypes.INTEGER,
