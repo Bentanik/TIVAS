@@ -3,6 +3,26 @@ const cloudinary = require("cloudinary").v2;
 import "dotenv/config";
 import { Model, Op, fn, col, literal, where } from "sequelize";
 const nodemailer = require("nodemailer");
+import ejs from "ejs";
+import { log } from "console";
+const fs = require("fs");
+
+function formatDate(date) {
+    // Ensure 'date' is a valid Date object
+    if (!(date instanceof Date)) {
+        date = new Date(date);
+    }
+
+    // Get day, month, and year
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based
+    const year = date.getFullYear();
+
+    // Create the formatted date string
+    const formattedDate = `${day}/${month}/${year}`;
+
+    return formattedDate;
+}
 
 export const paymentReservation = (username) => {
     return new Promise(async (resolve, reject) => {
@@ -46,7 +66,8 @@ export const createTicket = ({
                     reservationDate: projectResponse.reservationDate,
                     openDate: projectResponse.openDate,
                     closeDate: projectResponse.closeDate,
-                    timeshareID: null
+                    timeshareID: null,
+                    refund: 0,
                 })
                 let transporter = nodemailer.createTransport({
                     service: "gmail",
@@ -398,6 +419,24 @@ export const checkPriority = (id) => {
             await Promise.all(timeSharesToUpdate.map((timeShare) => timeShare.save()));
 
             const ticketResponse = await db.ReservationTicket.findAll({
+                include: [
+                    {
+                        model: db.User,
+                        attributes: ['id', 'username', 'email']
+                    },
+                    {
+                        model: db.Project,
+                        attributes: ['id', 'name']
+                    },
+                    {
+                        model: db.TimeShare,
+                        atributes: ['id', 'startDate', 'endDate'],
+                        include: {
+                            model: db.TypeRoom,
+                            attributes: ['id', 'name']
+                        }
+                    },
+                ],
                 where: {
                     projectID: id,
                     timeShareID: {
@@ -414,8 +453,8 @@ export const checkPriority = (id) => {
             for (let i = 0; i < count1; i++) {
                 const quantityTimeshare = await db.TimeShare.findByPk(Object.getOwnPropertyNames(result)[i])
                 for (let x = 0; x < quantityTimeshare.quantity; x++) {
-                    const timeshare = result[Object.getOwnPropertyNames(result)[i]][x]
-                    if (timeshare) {
+                    const reservation = result[Object.getOwnPropertyNames(result)[i]][x]
+                    if (reservation) {
                         await db.ReservationTicket.update({
                             status: 2
                         }, {
@@ -430,18 +469,18 @@ export const checkPriority = (id) => {
                                 id: result[Object.getOwnPropertyNames(result)[i]][x].dataValues.timeShareID
                             }
                         })
-                        const timeShareResponse = await db.TimeShare.findByPk(result[Object.getOwnPropertyNames(result)[i]][x].dataValues.timeShareID);
-                        const user = await db.User.findByPk(timeshare.userID)
-                        const ticket = await db.ReservationTicket.findByPk(result[Object.getOwnPropertyNames(result)[i]][x].dataValues.id);
-                        const startDateDB = new Date(ticket.updatedAt);
-                        const endDateDB = ticket.updatedAt;
+                        const timeShare = reservation.TimeShare;
+                        const user = reservation.User
+                        const project = reservation.Project
+                        const startDateDB = new Date(timeShare.updatedAt);
+                        const endDateDB = timeShare.updatedAt;
                         endDateDB.setDate(endDateDB.getDate() + 7);
                         await db.Booking.create({
                             startDate: startDateDB,
                             endDate: endDateDB,
                             status: 0,
-                            priceBooking: timeShareResponse.price - ticket.reservationPrice,
-                            reservationTicketID: ticket.id,
+                            priceBooking: timeShare.price - reservation.reservationPrice,
+                            reservationTicketID: reservation.id,
                         })
                         let transporter = nodemailer.createTransport({
                             service: "gmail",
@@ -450,12 +489,29 @@ export const checkPriority = (id) => {
                                 pass: process.env.GOOGLE_APP_PASSWORD,
                             },
                         });
+                        const emailTemplatePath = "src/template/EmailWinner/index.ejs";
+                        const emailTemplate = fs.readFileSync(emailTemplatePath, "utf-8");
+
+                        const data = {
+                            email: user.email,
+                            projectName: project.name,
+                            typeRoomName: timeShare.TypeRoom.name,
+                            startDate: formatDate(timeShare.startDate),
+                            endDate: formatDate(timeShare.endDate),
+                            reservationPrice: reservation.reservationPrice,
+                            timeSharePrice: timeShare.price,
+                            bookingPrice: timeShare.price - reservation.reservationPrice
+                        };
+
+                        const renderedHtml = ejs.render(emailTemplate, data);
+
                         let mailOptions = {
                             from: "Tivas",
                             to: `${user.email}`,
                             subject: "Confirm received email",
-                            text: `You win a TimeShare with timeShareID: ${ticket.timeShareID}. Please coming back to our pages to see the details of your TimeShares. Our staffs will contact you later. Please remembering you have only 7 days to complete buying your winning TimeShares!`
+                            html: renderedHtml,
                         };
+
                         transporter.sendMail(mailOptions, function (error, info) {
                             if (error) {
                                 console.log(error);
@@ -635,50 +691,75 @@ export const getUserBuyTickets = (id) => {
 export const getAllUserNoPriorityByAdmin = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
+            let response = [];
             let ticketResponse = [];
             const projectResponse = await db.Project.findByPk(id);
             if (projectResponse) {
                 if (projectResponse.status === 3) {
                     ticketResponse = await db.ReservationTicket.findAll({
+                        nest: true,
                         raw: true,
-                        attributes: ['id', 'userID', 'projectID', 'timeShareID'],
+                        attributes: ['id', 'userID', 'projectID', 'timeShareID', 'refund'],
+                        include: [
+                            {
+                                model: db.User,
+                                attributes: ['id', 'username']
+                            },
+                            {
+                                model: db.Project,
+                                attributes: ['id', 'name', 'thumbnailPathUrl'],
+                                include: {
+                                    model: db.Location,
+                                    attributes: ['id', 'name'],
+                                }
+                            },
+                            {
+                                model: db.TimeShare,
+                                attributes: ['id', 'startDate', 'endDate'],
+                                include: {
+                                    model: db.TypeRoom,
+                                    atributes: ['id', 'name'],
+                                }
+                            },
+                        ],
                         where: {
                             projectID: id,
-                            status: 1
+                            status: 1,
                         }
                     })
                     if (ticketResponse.length !== 0) {
                         for (let i = 0; i < ticketResponse.length; i++) {
-                            const projectResponse = await db.Project.findByPk(ticketResponse[i].projectID);
-                            ticketResponse[i].projectName = projectResponse.name;
-                            const userResponse = await db.User.findByPk(ticketResponse[i].userID);
-                            ticketResponse.username = userResponse.username;
-                            if (ticketResponse[i].timeShareID) {
-                                const timeShareResponse = await db.TimeShare.findByPk(ticketResponse[i].timeShareID, {
-                                    include: {
-                                        model: db.TypeRoom
-                                    }
-                                });
-
-                                ticketResponse[i].typeRoomID = timeShareResponse.TypeRoom.id
-                                ticketResponse[i].typeRoomName = timeShareResponse.TypeRoom.name
-                                ticketResponse[i].startDate = timeShareResponse.startDate;
-                                ticketResponse[i].endDate = timeShareResponse.endDate;
+                            const ticket = {};
+                            ticket.reservationID = ticketResponse[i].id
+                            ticket.userID = ticketResponse[i].User.id;
+                            ticket.username = ticketResponse[i].User.username;
+                            ticket.projectID = ticketResponse[i].Project.id
+                            ticket.projectName = ticketResponse[i].Project.name;
+                            ticket.projectThumbnailPathUrl = ticketResponse[i].Project.thumbnailPathUrl;
+                            ticket.location = ticketResponse[i].Project.Location.name;
+                            ticket.typeRoomID = ticketResponse[i].TimeShare.TypeRoom.id
+                            ticket.typeRoomName = ticketResponse[i].TimeShare.TypeRoom.name
+                            ticket.timeShareID = ticketResponse[i].TimeShare.id
+                            ticket.startDate = ticketResponse[i].TimeShare.startDate;
+                            ticket.endDate = ticketResponse[i].TimeShare.endDate;
+                            ticket.refund = ticketResponse[i].refund;
+                            if (ticket.projectID) {
+                                response.push(ticket);
                             }
                         }
                     }
                 }
             }
             resolve({
-                err: ticketResponse.length !== 0 ? 0 : 1,
+                err: response.length !== 0 ? 0 : 1,
                 message: !projectResponse ?
                     `Project (${id}) does not exist!`
                     : projectResponse.status !== 3 ?
                         `Project (${id}) is not on checkPriority Stage!`
-                        : ticketResponse.length === 0 ?
-                            `Can not find any Users have the reservation with Project(${id})!`
+                        : response.length === 0 ?
+                            `Can not find any Users have no Priority with Project(${id})!`
                             : `All Users have no Priority with Project(${id}).`,
-                data: ticketResponse,
+                data: response,
             })
         } catch (error) {
             console.log(error);
@@ -690,49 +771,79 @@ export const getAllUserNoPriorityByAdmin = (id) => {
 export const getAllUserPriorityByAdmin = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
+            let response = [];
             let ticketResponse = [];
             const projectResponse = await db.Project.findByPk(id);
             if (projectResponse) {
                 if (projectResponse.status === 3) {
                     ticketResponse = await db.ReservationTicket.findAll({
+                        nest: true,
                         raw: true,
                         attributes: ['id', 'userID', 'projectID', 'timeShareID'],
+                        include: [
+                            {
+                                model: db.User,
+                                attributes: ['id', 'username']
+                            },
+                            {
+                                model: db.Project,
+                                attributes: ['id', 'name', 'thumbnailPathUrl'],
+                                include: {
+                                    model: db.Location,
+                                    attributes: ['id', 'name'],
+                                }
+                            },
+                            {
+                                model: db.TimeShare,
+                                attributes: ['id', 'startDate', 'endDate'],
+                                include: {
+                                    model: db.TypeRoom,
+                                    atributes: ['id', 'name'],
+                                }
+                            },
+                            {
+                                model: db.Booking,
+                                attributes: ['id', 'status'],
+                            },
+                        ],
                         where: {
                             projectID: id,
-                            status: 2
+                            status: 2,
                         }
                     })
                     if (ticketResponse.length !== 0) {
                         for (let i = 0; i < ticketResponse.length; i++) {
-                            const bookingResponse = await db.Booking.findByPk(ticketResponse[i].id);
-                            ticketResponse[i].status = bookingResponse.status;
-                            const userResponse = await db.User.findByPk(ticketResponse[i].userID);
-                            ticketResponse.username = userResponse.username;
-                            const projectResponse = await db.Project.findByPk(ticketResponse[i].projectID);
-                            ticketResponse[i].projectName = projectResponse.name;
-                            const timeShareResponse = await db.TimeShare.findByPk(ticketResponse[i].timeShareID, {
-                                include: {
-                                    model: db.TypeRoom
-                                }
-                            });
-                            ticketResponse[i].typeRoomID = timeShareResponse.TypeRoom.id
-                            ticketResponse[i].typeRoomName = timeShareResponse.TypeRoom.name
-                            ticketResponse[i].startDate = timeShareResponse.startDate;
-                            ticketResponse[i].endDate = timeShareResponse.endDate;
+                            const ticket = {};
+                            ticket.reservationID = ticketResponse[i].id
+                            ticket.userID = ticketResponse[i].User.id;
+                            ticket.username = ticketResponse[i].User.username;
+                            ticket.projectID = ticketResponse[i].Project.id
+                            ticket.projectName = ticketResponse[i].Project.name;
+                            ticket.projectThumbnailPathUrl = ticketResponse[i].Project.thumbnailPathUrl;
+                            ticket.location = ticketResponse[i].Project.Location.name;
+                            ticket.typeRoomID = ticketResponse[i].TimeShare.TypeRoom.id
+                            ticket.typeRoomName = ticketResponse[i].TimeShare.TypeRoom.name
+                            ticket.timeShareID = ticketResponse[i].TimeShare.id
+                            ticket.startDate = ticketResponse[i].TimeShare.startDate;
+                            ticket.endDate = ticketResponse[i].TimeShare.endDate;
+                            ticket.bookingStatus = ticketResponse[i].Booking.status;
+                            if (ticket.projectID) {
+                                response.push(ticket);
+                            }
                         }
                     }
                 }
             }
             resolve({
-                err: ticketResponse.length !== 0 ? 0 : 1,
+                err: response.length !== 0 ? 0 : 1,
                 message: !projectResponse ?
                     `Project (${id}) does not exist!`
                     : projectResponse.status !== 3 ?
                         `Project (${id}) is not on checkPriority Stage!`
-                        : ticketResponse.length === 0 ?
-                            `Can not find any Users have the reservation with Project(${id})!`
+                        : response.length === 0 ?
+                            `Can not find any Users have Priority with Project(${id})!`
                             : `All Users have Priority with Project(${id}).`,
-                data: ticketResponse
+                data: response
             })
         } catch (error) {
             console.log(error);
@@ -744,50 +855,88 @@ export const getAllUserPriorityByAdmin = (id) => {
 export const getAllUserNoPriorityByStaff = (id, userID) => {
     return new Promise(async (resolve, reject) => {
         try {
+            let response = [];
             let ticketResponse = [];
             const projectResponse = await db.Project.findByPk(id);
-            if (projectResponse) {
+            const userResponse = await db.User.findByPk(userID, {
+                include: {
+                    model: db.RoleCode,
+                }
+            });
+            console.log(userResponse.RoleCode.roleName === 'Staff');
+            if (projectResponse && userResponse && userResponse.RoleCode.roleName === 'Staff') {
                 if (projectResponse.status === 3) {
                     ticketResponse = await db.ReservationTicket.findAll({
+                        nest: true,
                         raw: true,
-                        attributes: ['id', 'userID', 'projectID', 'timeShareID'],
+                        attributes: ['id', 'userID', 'projectID', 'timeShareID', 'refund'],
+                        include: [
+                            {
+                                model: db.User,
+                                attributes: ['id', 'username']
+                            },
+                            {
+                                model: db.Project,
+                                attributes: ['id', 'name', 'thumbnailPathUrl'],
+                                include: {
+                                    model: db.Location,
+                                    attributes: ['id', 'name'],
+                                }
+                            },
+                            {
+                                model: db.TimeShare,
+                                attributes: ['id', 'startDate', 'endDate'],
+                                include: {
+                                    model: db.TypeRoom,
+                                    atributes: ['id', 'name'],
+                                },
+                                where: {
+                                    userID,
+                                }
+                            },
+                        ],
                         where: {
                             projectID: id,
-                            status: 1
+                            status: 1,
                         }
                     })
                     if (ticketResponse.length !== 0) {
                         for (let i = 0; i < ticketResponse.length; i++) {
-                            const projectResponse = await db.Project.findByPk(ticketResponse[i].projectID);
-                            ticketResponse[i].projectName = projectResponse.name;
-                            const userResponse = await db.User.findByPk(ticketResponse[i].userID);
-                            ticketResponse.username = userResponse.username;
-                            if (ticketResponse[i].timeShareID) {
-                                const timeShareResponse = await db.TimeShare.findByPk(ticketResponse[i].timeShareID, {
-                                    include: {
-                                        model: db.TypeRoom
-                                    }
-                                });
-
-                                ticketResponse[i].typeRoomID = timeShareResponse.TypeRoom.id
-                                ticketResponse[i].typeRoomName = timeShareResponse.TypeRoom.name
-                                ticketResponse[i].startDate = timeShareResponse.startDate;
-                                ticketResponse[i].endDate = timeShareResponse.endDate;
+                            const ticket = {};
+                            ticket.reservationID = ticketResponse[i].id
+                            ticket.userID = ticketResponse[i].User.id;
+                            ticket.username = ticketResponse[i].User.username;
+                            ticket.projectID = ticketResponse[i].Project.id
+                            ticket.projectName = ticketResponse[i].Project.name;
+                            ticket.projectThumbnailPathUrl = ticketResponse[i].Project.thumbnailPathUrl;
+                            ticket.location = ticketResponse[i].Project.Location.name;
+                            ticket.typeRoomID = ticketResponse[i].TimeShare.TypeRoom.id
+                            ticket.typeRoomName = ticketResponse[i].TimeShare.TypeRoom.name
+                            ticket.timeShareID = ticketResponse[i].TimeShare.id
+                            ticket.startDate = ticketResponse[i].TimeShare.startDate;
+                            ticket.endDate = ticketResponse[i].TimeShare.endDate;
+                            ticket.refund = ticketResponse[i].refund;
+                            if (ticket.projectID) {
+                                response.push(ticket);
                             }
                         }
                     }
                 }
             }
             resolve({
-                err: ticketResponse.length !== 0 ? 0 : 1,
+                err: response.length !== 0 ? 0 : 1,
                 message: !projectResponse ?
                     `Project (${id}) does not exist!`
-                    : projectResponse.status !== 3 ?
-                        `Project (${id}) is not on checkPriority Stage!`
-                        : ticketResponse.length === 0 ?
-                            `Can not find any Users have the reservation with Project(${id})!`
-                            : `All Users have no Priority with Project(${id}).`,
-                data: ticketResponse,
+                    : !userResponse ?
+                        `User (${userID}) does not exist!`
+                        : !(userResponse.RoleCode.roleName === 'Staff') ?
+                            `User (${userID}) is not a staff!`
+                            : projectResponse.status !== 3 ?
+                                `Project (${id}) is not on checkPriority Stage!`
+                                : response.length === 0 ?
+                                    `Can not find any Users have no Priority with Project(${id}) have TimeShares managed by Staff(${userID})!`
+                                    : `All Users have no Priority with Project(${id}) have TimeShares managed by Staff(${userID}).`,
+                data: response,
             })
         } catch (error) {
             console.log(error);
@@ -799,49 +948,93 @@ export const getAllUserNoPriorityByStaff = (id, userID) => {
 export const getAllUserPriorityByStaff = (id, userID) => {
     return new Promise(async (resolve, reject) => {
         try {
+            let response = [];
             let ticketResponse = [];
             const projectResponse = await db.Project.findByPk(id);
-            if (projectResponse) {
+            const userResponse = await db.User.findByPk(userID, {
+                include: {
+                    model: db.RoleCode,
+                }
+            });
+            console.log(userResponse.RoleCode.roleName);
+            console.log(userResponse.RoleCode.roleName === 'Staff');
+            if (projectResponse && userResponse && userResponse.RoleCode.roleName === 'Staff') {
                 if (projectResponse.status === 3) {
                     ticketResponse = await db.ReservationTicket.findAll({
+                        nest: true,
                         raw: true,
                         attributes: ['id', 'userID', 'projectID', 'timeShareID'],
+                        include: [
+                            {
+                                model: db.User,
+                                attributes: ['id', 'username']
+                            },
+                            {
+                                model: db.Project,
+                                attributes: ['id', 'name', 'thumbnailPathUrl'],
+                                include: {
+                                    model: db.Location,
+                                    attributes: ['id', 'name'],
+                                }
+                            },
+                            {
+                                model: db.TimeShare,
+                                attributes: ['id', 'startDate', 'endDate'],
+                                include: {
+                                    model: db.TypeRoom,
+                                    atributes: ['id', 'name'],
+                                },
+                                where: {
+                                    userID,
+                                }
+                            },
+                            {
+                                model: db.Booking,
+                                attributes: ['id', 'status'],
+                            },
+                        ],
                         where: {
                             projectID: id,
-                            status: 2
+                            status: 2,
                         }
                     })
                     if (ticketResponse.length !== 0) {
                         for (let i = 0; i < ticketResponse.length; i++) {
-                            const bookingResponse = await db.Booking.findByPk(ticketResponse[i].id);
-                            ticketResponse[i].status = bookingResponse.status;
-                            const userResponse = await db.User.findByPk(ticketResponse[i].userID);
-                            ticketResponse.username = userResponse.username;
-                            const projectResponse = await db.Project.findByPk(ticketResponse[i].projectID);
-                            ticketResponse[i].projectName = projectResponse.name;
-                            const timeShareResponse = await db.TimeShare.findByPk(ticketResponse[i].timeShareID, {
-                                include: {
-                                    model: db.TypeRoom
-                                }
-                            });
-                            ticketResponse[i].typeRoomID = timeShareResponse.TypeRoom.id
-                            ticketResponse[i].typeRoomName = timeShareResponse.TypeRoom.name
-                            ticketResponse[i].startDate = timeShareResponse.startDate;
-                            ticketResponse[i].endDate = timeShareResponse.endDate;
+                            const ticket = {};
+                            ticket.reservationID = ticketResponse[i].id
+                            ticket.userID = ticketResponse[i].User.id;
+                            ticket.username = ticketResponse[i].User.username;
+                            ticket.projectID = ticketResponse[i].Project.id
+                            ticket.projectName = ticketResponse[i].Project.name;
+                            ticket.projectThumbnailPathUrl = ticketResponse[i].Project.thumbnailPathUrl;
+                            ticket.location = ticketResponse[i].Project.Location.name;
+                            ticket.typeRoomID = ticketResponse[i].TimeShare.TypeRoom.id
+                            ticket.typeRoomName = ticketResponse[i].TimeShare.TypeRoom.name
+                            ticket.timeShareID = ticketResponse[i].TimeShare.id
+                            ticket.startDate = ticketResponse[i].TimeShare.startDate;
+                            ticket.endDate = ticketResponse[i].TimeShare.endDate;
+                            ticket.bookingStatus = ticketResponse[i].Booking.status;
+                            if (ticket.projectID) {
+                                response.push(ticket);
+                            }
                         }
                     }
                 }
             }
             resolve({
-                err: ticketResponse.length !== 0 ? 0 : 1,
+                err: response.length !== 0 ? 0 : 1,
                 message: !projectResponse ?
                     `Project (${id}) does not exist!`
-                    : projectResponse.status !== 3 ?
-                        `Project (${id}) is not on checkPriority Stage!`
-                        : ticketResponse.length === 0 ?
-                            `Can not find any Users have the reservation with Project(${id})!`
-                            : `All Users have Priority with Project(${id}).`,
-                data: ticketResponse
+                    : !userResponse ?
+                        `User (${userID}) does not exist!`
+                        : !(userResponse.RoleCode.roleName === 'Staff') ?
+                            `User (${userID}) is not a staff!`
+                            : projectResponse.status !== 3 ?
+                                `Project (${id}) is not on checkPriority Stage!`
+                                : response.length === 0 ?
+                                    `Can not find any Users have Priority with Project(${id}) have TimeShares managed by Staff(${userID})!`
+                                    : `All Users have Priority with Project(${id}) have TimeShares managed by Staff(${userID}).`,
+                data: response,
             })
         } catch (error) {
             console.log(error);
@@ -853,16 +1046,20 @@ export const getAllUserPriorityByStaff = (id, userID) => {
 export const getAllTicketsByUser = (id, status) => {
     return new Promise(async (resolve, reject) => {
         try {
+            let response = [];
             let ticketResponse = [];
             const userResponse = await db.User.findByPk(id);
             let ticketAttributes = []
-            if (status === 1) {
-                ticketAttributes = ['id', 'code', 'projectID']
+            if (parseInt(status) === 1) {
+                ticketAttributes = ['id', 'code', 'projectID', 'refund']
+            } else if (parseInt(status) === 2) {
+                ticketAttributes = ['id', 'code', 'projectID', 'timeShareID', 'refund']
             } else {
                 ticketAttributes = ['id', 'code', 'projectID', 'timeShareID']
             }
             if (userResponse) {
                 ticketResponse = await db.ReservationTicket.findAll({
+                    nest: true,
                     raw: true,
                     attributes: ticketAttributes,
                     where: parseInt(status) === 1 ? {
@@ -879,38 +1076,82 @@ export const getAllTicketsByUser = (id, status) => {
                     } : {
                         userID: id,
                         status: 2
-                    }
+                    },
+                    include: [
+                        {
+                            model: db.User,
+                            attributes: ['id', 'username']
+                        },
+                        {
+                            model: db.Project,
+                            attributes: ['id', 'name', 'thumbnailPathUrl'],
+                            include: {
+                                model: db.Location,
+                                attributes: ['id', 'name'],
+                            }
+                        },
+                        {
+                            model: db.TimeShare,
+                            attributes: ['id', 'startDate', 'endDate'],
+                            include: {
+                                model: db.TypeRoom,
+                                atributes: ['id', 'name'],
+                            }
+                        },
+                        (+status === 3 || +status === 4 || +status === 5) ?
+                            {
+                                model: db.Booking,
+                                attributes: ['id', 'status'],
+                                where: parseInt(status) === 4 ? {
+                                    status: 1
+                                } : parseInt(status) === 5 ? {
+                                    status: -1
+                                } : {
+                                    status: 0
+                                }
+                            } : {
+                                model: db.Booking,
+                                attributes: ['id', 'status'],
+                            },
+                    ],
                 })
-                console.log(ticketResponse);
                 if (ticketResponse.length !== 0) {
                     for (let i = 0; i < ticketResponse.length; i++) {
-                        const projectResponse = await db.Project.findByPk(ticketResponse[i].projectID);
-                        ticketResponse[i].projectName = projectResponse.name;
-                        if (status !== 1) {
-                            if (ticketResponse[i].timeShareID) {
-                                const timeShareResponse = await db.TimeShare.findByPk(ticketResponse[i].timeShareID, {
-                                    include: {
-                                        model: db.TypeRoom
-                                    }
-                                });
-
-                                ticketResponse[i].typeRoomID = timeShareResponse.TypeRoom.id
-                                ticketResponse[i].typeRoomName = timeShareResponse.TypeRoom.name
-                                ticketResponse[i].startDate = timeShareResponse.startDate;
-                                ticketResponse[i].endDate = timeShareResponse.endDate;
+                        const ticket = {};
+                        ticket.reservationID = ticketResponse[i].id
+                        ticket.code = ticketResponse[i].code;
+                        ticket.projectID = ticketResponse[i].Project.id
+                        ticket.projectName = ticketResponse[i].Project.name;
+                        ticket.projectThumbnailPathUrl = ticketResponse[i].Project.thumbnailPathUrl;
+                        ticket.location = ticketResponse[i].Project.Location.name
+                        if (parseInt(status) !== 1) {
+                            ticket.typeRoomID = ticketResponse[i].TimeShare.TypeRoom.id
+                            ticket.typeRoomName = ticketResponse[i].TimeShare.TypeRoom.name
+                            ticket.timeShareID = ticketResponse[i].TimeShare.id
+                            ticket.startDate = ticketResponse[i].TimeShare.startDate;
+                            ticket.endDate = ticketResponse[i].TimeShare.endDate;
+                            if (parseInt(status) !== 3) {
+                                ticket.refund = ticketResponse[i].refund;
+                            } else {
+                                ticket.bookingStatus = ticketResponse[i].Booking.status;
                             }
+                        } else {
+                            ticket.refund = ticketResponse[i].refund;
+                        }
+                        if (ticket.projectID) {
+                            response.push(ticket);
                         }
                     }
                 }
             }
             resolve({
-                err: ticketResponse.length !== 0 ? 0 : 1,
+                err: response.length !== 0 ? 0 : 1,
                 message: !userResponse ?
-                `User (${id}) does not exist!`
-                : ticketResponse.length === 0 ? 
-                `User (${id}) does not have any Ticket in Progress with status (${status})!`
-                : `User (${id}) tickets.`,
-                data: ticketResponse.length !== 0 ? ticketResponse : null,
+                    `User (${id}) does not exist!`
+                    : response.length === 0 ?
+                        `User (${id}) does not have any Ticket in Progress with status (${status})!`
+                        : `User (${id}) tickets.`,
+                data: response.length !== 0 ? response : null,
             })
         } catch (error) {
             console.log(error);
@@ -922,48 +1163,73 @@ export const getAllTicketsByUser = (id, status) => {
 export const getAllTicketsByAdmin = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
+            let response = [];
             let ticketResponse = [];
             const projectResponse = await db.Project.findByPk(id);
-            if (projectResponse) {
-                    ticketResponse = await db.ReservationTicket.findAll({
-                        raw: true,
-                        attributes: ['id', 'userID', 'projectID', 'timeShareID'],
-                        where: {
-                            projectID: id,
-                        }
-                    })
-                    if (ticketResponse.length !== 0) {
-                        for (let i = 0; i < ticketResponse.length; i++) {
-                            const userResponse = await db.User.findByPk(ticketResponse[i].userID);
-                            ticketResponse.username = userResponse.username;
-                            const projectResponse = await db.Project.findByPk(ticketResponse[i].projectID);
-                            ticketResponse[i].projectName = projectResponse.name;
-                            if (ticketResponse[i].timeShareID) {
-                                const timeShareResponse = await db.TimeShare.findByPk(ticketResponse[i].timeShareID, {
-                                    include: {
-                                        model: db.TypeRoom
-                                    }
-                                });
-
-                                ticketResponse[i].typeRoomID = timeShareResponse.TypeRoom.id
-                                ticketResponse[i].typeRoomName = timeShareResponse.TypeRoom.name
-                                ticketResponse[i].startDate = timeShareResponse.startDate;
-                                ticketResponse[i].endDate = timeShareResponse.endDate;
+            if (projectResponse && projectResponse.status !== 3) {
+                ticketResponse = await db.ReservationTicket.findAll({
+                    nest: true,
+                    raw: true,
+                    attributes: ['id', 'userID', 'projectID', 'timeShareID'],
+                    include: [
+                        {
+                            model: db.User,
+                            attributes: ['id', 'username']
+                        },
+                        {
+                            model: db.Project,
+                            attributes: ['id', 'name', 'thumbnailPathUrl'],
+                            include: {
+                                model: db.Location,
+                                attributes: ['id', 'name'],
                             }
+                        },
+                        {
+                            model: db.TimeShare,
+                            attributes: ['id', 'startDate', 'endDate'],
+                            include: {
+                                model: db.TypeRoom,
+                                atributes: ['id', 'name'],
+                            }
+                        },
+                    ],
+                    where: {
+                        projectID: id,
+                        status: 1,
+                    }
+                })
+                if (ticketResponse.length !== 0) {
+                    for (let i = 0; i < ticketResponse.length; i++) {
+                        const ticket = {};
+                        ticket.reservationID = ticketResponse[i].id
+                        ticket.userID = ticketResponse[i].User.id;
+                        ticket.username = ticketResponse[i].User.username;
+                        ticket.projectID = ticketResponse[i].Project.id
+                        ticket.projectName = ticketResponse[i].Project.name;
+                        ticket.projectThumbnailPathUrl = ticketResponse[i].Project.thumbnailPathUrl;
+                        ticket.location = ticketResponse[i].Project.Location.name;
+                        ticket.typeRoomID = ticketResponse[i].TimeShare.TypeRoom.id
+                        ticket.typeRoomName = ticketResponse[i].TimeShare.TypeRoom.name
+                        ticket.timeShareID = ticketResponse[i].TimeShare.id
+                        ticket.startDate = ticketResponse[i].TimeShare.startDate;
+                        ticket.endDate = ticketResponse[i].TimeShare.endDate;
+                        if (ticket.projectID) {
+                            response.push(ticket);
                         }
                     }
+                }
             }
             resolve({
-                err: ticketResponse.length !== 0 ? 0 : 1,
+                err: response.length !== 0 ? 0 : 1,
                 message: !projectResponse ?
                     `Project (${id}) does not exist!`
-                        : ticketResponse.length === 0 ?
-                            `Can not find any Users have bought Reservation Ticket of Project(${id})!`
-                            : `All Users have bought Reservation Ticket of Project(${id}).`,
-                data: ticketResponse
+                    : response.length === 0 ?
+                        `Can not find any Users have bought Reservation Ticket of Project(${id}) before checkPrority Stage!`
+                        : `All Users have bought Reservation Ticket of Project(${id}) before checkPrority Stage.`,
+                data: response
             })
 
-            
+
         } catch (error) {
             console.log(error);
             reject(error);
