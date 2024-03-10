@@ -115,11 +115,6 @@ export const getAllProject = async (req, res) => {
   return res.status(200).json(response);
 };
 
-export const getAllWithType = async (req, res) => {
-  const response = await services.getAllWithType(req.query);
-  return res.status(200).json(response)
-}
-
 export const getAllByLocation = async (req, res) => {
   const { id } = req.params;
   const response = await services.getAllByLocation(id);
