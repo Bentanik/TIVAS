@@ -10,7 +10,7 @@ function PurchasedProject() {
     return (
         <div className={cx("wrapper")}>
             <div className={cx("row")}>
-                <h1 className={cx("title")}>Purchased Project</h1>
+                <h1 className={cx("title")}>Reservation Project</h1>
 
                 <Tippy
                     content="This is all reservation ticket you buy for project"
