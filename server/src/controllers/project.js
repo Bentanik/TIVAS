@@ -154,6 +154,12 @@ export const getDetailsProject = async (req, res) => {
   return res.status(200).json(response);
 };
 
+export const getTypeOfProject = async (req, res) => {
+  const { id } = req.params;
+  const response = await services.getTypeOfProject(id); 
+  return res.status(200).json(response);
+}
+
 export const updateBooking = async (req, res) => {
   const { id } = req.params;
   const response = await services.updateBooking(req.body, id);
