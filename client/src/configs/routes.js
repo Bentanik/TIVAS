@@ -17,116 +17,161 @@ import AdminProjectDetail from "~/pages/AdminProjectDetail";
 import Banking from "~/components/Layouts/Banking";
 import AdminRoomTypeDetail from "~/pages/AdminRoomTypeDetail";
 import TimeshareDetail from "~/pages/TimeshareDetail";
+import Purchase from "~/components/Purchase";
+import AdminUserBanList from "~/components/UserBanList";
+import AdminManageTypeRoom from "~/pages/AdminManageTypeRoom";
 
 const routes = [
-  {
-    path: "/",
-    component: Home,
-    layout: null,
-  },
-  {
-    path: "/search",
-    component: Search,
-    layout: null,
-  },
-  {
-    path: "/projectdetail/:id",
-    component: ProjectDetail,
-    layout: null,
-  },
+    {
+        path: "/",
+        component: Home,
+        layout: null,
+    },
+    {
+        path: "/search/:id",
+        component: Search,
+        layout: null,
+    },
+    {
+        path: "/projectdetail/:id",
+        component: ProjectDetail,
+        layout: null,
+    },
 
-  {
-    path: "/user/account/profile",
-    component: Profile,
-    layout: ProfileLayout,
-  },
-  {
-    path: "/user/account/banking",
-    component: Banking,
-    layout: ProfileLayout,
-  },
-  {
-    path: "/room-type-detail",
-    component: RoomTypeDetail,
-    layout: null,
-  },
-  {
-    path: "/listings",
-    component: ListingDetails,
-    layout: null,
-  },
-  {
-    path: "/timesharerentals",
-    component: TimeshareRentals,
-    layout: null,
-  },
-  {
-    path: "/policy",
-    component: Policy,
-    layout: null,
-  },
+    {
+        path: "/user/account/profile",
+        component: Profile,
+        layout: ProfileLayout,
+    },
 
-  {
-    path: "/timesharedetail",
-    component: TimeshareDetail,
-    layout: null,
-  },
-  {
-    path: "/user/account/changepassword",
-    component: ChangePassword,
-    layout: ProfileLayout,
-  },
-  {
-    path: "/user/account/banking",
-    component: Banking,
-    layout: ProfileLayout,
-  },
-  {
-    path: "/room-type-detail",
-    component: RoomTypeDetail,
-    layout: null,
-  },
+    {
+        path: "/user/account/purchase/:status",
+        component: Purchase,
+        layout: ProfileLayout,
+    },
 
-  {
-    path: "/listingdetails",
-    component: ListingDetails,
-    layout: null,
-  },
-  {
-    path: "/timesharedetail/:id",
-    component: TimeshareDetail,
-    layout: null,
-  },
-  {
-    path: "/admin",
-    component: AdminDashboard,
-    layout: LayoutAdmin,
-  },
-  {
-    path: "/admin/createproject",
-    component: AdminCreateProject,
-    layout: LayoutAdmin,
-  },
-  {
-    path: "/admin/manageproject/listproject",
-    component: AdminManageProject,
-    layout: LayoutAdmin,
-  },
-  {
-    path: "/admin/typeroomdetail",
-    component: AdminRoomTypeDetail,
-    layout: LayoutAdmin,
-  },
-  {
-    path: "/admin/manageproject/projectdetail",
-    component: AdminProjectDetail,
-    layout: LayoutAdmin,
-  },
-  {
-    path: "/admin/manageuser/listuser",
-    component: AdminManageUser,
-    layout: LayoutAdmin,
-  },
+    {
+        path: "/user/account/banking",
+        component: Banking,
+        layout: ProfileLayout,
+    },
+
+    {
+        path: "/listings",
+        component: ListingDetails,
+        layout: null,
+    },
+    {
+        path: "/timesharerentals",
+        component: TimeshareRentals,
+        layout: null,
+    },
+    {
+        path: "/policy",
+        component: Policy,
+        layout: null,
+    },
+
+    {
+        path: "/timesharedetail",
+        component: TimeshareDetail,
+        layout: null,
+    },
+
+    {
+        path: "/user/account/changepassword",
+        component: ChangePassword,
+        layout: ProfileLayout,
+    },
+
+    {
+        path: "/room-type-detail",
+        component: RoomTypeDetail,
+        layout: null,
+    },
+
+    {
+        path: "/listingdetails",
+        component: ListingDetails,
+        layout: null,
+    },
+
+    {
+        path: "/timesharedetail/:id",
+        component: TimeshareDetail,
+        layout: null,
+    },
+    {
+        path: "/admin",
+        component: AdminDashboard,
+        layout: LayoutAdmin,
+    },
+    {
+        path: "/admin/createproject",
+        component: AdminCreateProject,
+        layout: LayoutAdmin,
+    },
+
+    {
+        path: "/admin/user/manageuser/ban",
+        component: AdminManageUser,
+        layout: LayoutAdmin,
+    },
+    {
+        path: "/admin/user/userbanlist",
+        component: AdminUserBanList,
+        layout: LayoutAdmin,
+    },
+
+    {
+        path: "/listingdetails",
+        component: ListingDetails,
+        layout: null,
+    },
+    {
+        path: "/timesharedetail/:id",
+        component: TimeshareDetail,
+        layout: null,
+    },
+
+    {
+        path: "/admin/manageuser/ban",
+        component: AdminManageUser,
+        layout: LayoutAdmin,
+    },
+
+    {
+        path: "/admin/projectdetail",
+        component: AdminProjectDetail,
+        layout: LayoutAdmin,
+    },
+
+    {
+        path: "/admin/manageproject/listproject",
+        component: AdminManageProject,
+        layout: LayoutAdmin,
+    },
+    {
+        path: "/admin/typeroomdetail",
+        component: AdminRoomTypeDetail,
+        layout: LayoutAdmin,
+    },
+    {
+        path: "/admin/manageproject/projectdetail",
+        component: AdminProjectDetail,
+        layout: LayoutAdmin,
+    },
+    {
+        path: "/admin/manageuser/listuser",
+        component: AdminManageUser,
+        layout: LayoutAdmin,
+    },
+
+    {
+        path: "/admin/managetyperoom/listtyeroom",
+        component: AdminManageTypeRoom,
+        layout: LayoutAdmin,
+    },
 ];
 
 export default routes;

@@ -50,7 +50,8 @@ const images = {
     moreInfoIcon: require("~/assets/images/moreInfoIcon.svg").default,
     vyAvatar: require("~/assets/images/vyAvatar.png"),
     masterCard: require("~/assets/images/masterCard.png"),
-    visaImage: require("~/assets/images/visaImg.png")
+    importantIcon: require("~/assets/images/importantIcon.svg").default,
+    visaImage: require("~/assets/images/visaImg.png"),
 };
 
 export default images;

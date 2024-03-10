@@ -1,5 +1,5 @@
 import classNames from "classnames/bind";
-import styles from "./AdminManageProject.module.scss";
+import styles from "./AdminManageTypeRoom.module.scss";
 import { useRef, useState, useEffect } from "react";
 import Stack from "@mui/material/Stack";
 import Pagination from "@mui/material/Pagination";
@@ -47,7 +47,7 @@ function convertToDate(inputDate) {
     return result;
 }
 
-function AdminManageUser() {
+function AdminManageTypeRoom() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -119,30 +119,13 @@ function AdminManageUser() {
                                     <h4 className={cx("title")}>ID</h4>
                                 </th>
                                 <th className={cx("project", "column")}>
-                                    <h4 className={cx("title")}>Project</h4>
+                                    <h4 className={cx("title")}>Thumbnail</h4>
                                 </th>
                                 <th className={cx("unit", "column")}>
-                                    <h4 className={cx("title")}>
-                                        Type project
-                                    </h4>
+                                    <h4 className={cx("title")}>Type room</h4>
                                 </th>
-                                <th className={cx("unit", "column")}>
-                                    <h4 className={cx("title")}>
-                                        Building status
-                                    </h4>
-                                </th>
-                                <th className={cx("sleep", "column")}>
-                                    <h4 className={cx("title")}>Sale Status</h4>
-                                </th>
-                                <th className={cx("date", "column")}>
-                                    <h4 className={cx("title")}>
-                                        Reservation date
-                                    </h4>
-                                </th>
-                                <th className={cx("date", "column")}>
-                                    <h4 className={cx("title")}>
-                                        Booking date
-                                    </h4>
+                                <th className={cx("action", "column")}>
+                                    <h4 className={cx("title")}>Action</h4>
                                 </th>
                             </tr>
                         </thead>
@@ -169,20 +152,12 @@ function AdminManageUser() {
                                                     className={cx("image")}
                                                 />
                                                 <section className={cx("box")}>
-                                                    <h3
-                                                        className={cx(
-                                                            "name-project",
-                                                            "text"
-                                                        )}
-                                                    >
-                                                        {item?.name}
-                                                    </h3>
                                                     <div
                                                         className={cx(
                                                             "location"
                                                         )}
                                                     >
-                                                        <svg
+                                                        {/* <svg
                                                             className={cx(
                                                                 "icon"
                                                             )}
@@ -193,15 +168,15 @@ function AdminManageUser() {
                                                             viewBox="0 0 16 16"
                                                         >
                                                             <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6" />
-                                                        </svg>
-                                                        <span
+                                                        </svg> */}
+                                                        {/* <span
                                                             className={cx(
                                                                 "position",
                                                                 "text"
                                                             )}
                                                         >
                                                             {item?.location}
-                                                        </span>
+                                                        </span> */}
                                                     </div>
                                                 </section>
                                             </figure>
@@ -210,57 +185,25 @@ function AdminManageUser() {
                                             <span
                                                 className={cx("name", "text")}
                                             >
-                                                {item?.typeOfProject}
+                                                <div
+                                                    className={cx(
+                                                        "name-project",
+                                                        "text"
+                                                    )}
+                                                >
+                                                    {item?.name}
+                                                </div>
                                             </span>
                                         </td>
-                                        <td className={cx("sleep", "column")}>
-                                            <span className={cx("name")}>
-                                                {item?.buildingStatus === 1 &&
-                                                    "Up coming"}
-                                                {item?.buildingStatus === 2 &&
-                                                    "On going"}
-                                                {item?.buildingStatus === 3 &&
-                                                    "Already implemented"}
-                                            </span>
-                                        </td>
-                                        <td className={cx("sleep", "column")}>
-                                            <span className={cx("name")}>
-                                                {item?.status === 0 &&
-                                                    "Not reservation"}
-                                                {item?.status === 1 &&
-                                                    "Open reservation"}
-                                                {item?.status === 2 &&
-                                                    "Open booking"}
-                                                {item?.status === 3 &&
-                                                    "Close booking"}
-                                            </span>
-                                        </td>
-                                        <td className={cx("date", "column")}>
-                                            {item?.reservationDate === null ||
-                                            item?.reservationDate === "" ||
-                                            item?.openDate === null ||
-                                            item?.openDate === "" ? (
-                                                <span className={cx("name")}>
-                                                    Empty
-                                                </span>
-                                            ) : (
-                                                <span className={cx("name")}>
-                                                    {`${convertToDate(
-                                                        item?.reservationDate
-                                                    )} - ${convertToDate(
-                                                        item?.openDate
-                                                    )}`}
-                                                </span>
-                                            )}
-                                        </td>
-                                        <td className={cx("date", "column")}>
-                                            <span className={cx("name")}>
-                                                {`${convertToDate(
-                                                    item?.openDate
-                                                )} - ${convertToDate(
-                                                    item?.closeDate
-                                                )}`}
-                                            </span>
+
+                                        <td className={cx("action", "column")}>
+                                            <ActionUser
+                                                id={item?.id}
+                                                username={item?.username}
+                                                banStatus={item?.banStatus}
+                                                notify={notify}
+                                                setNotify={setNotify}
+                                            />
                                         </td>
                                     </tr>
                                 );
@@ -283,4 +226,4 @@ function AdminManageUser() {
     );
 }
 
-export default AdminManageUser;
+export default AdminManageTypeRoom;
