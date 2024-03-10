@@ -1,5 +1,5 @@
 import classNames from "classnames/bind";
-import styles from "./AdminCreateProject.module.scss";
+import styles from "./AdminCreateTypeRoom.module.scss";
 import DropImageFile from "~/components/DropFileImage";
 import { useEffect, useRef, useState } from "react";
 import { Toaster, toast } from "sonner";
@@ -13,7 +13,7 @@ import { Backdrop, CircularProgress } from "@mui/material";
 
 const cx = classNames.bind(styles);
 
-function AdminCreateProject() {
+function AdminCreateTypeRoom() {
   const dispatch = useDispatch();
 
   const currentUser = useSelector((state) => state.auth.login.user);
@@ -24,7 +24,6 @@ function AdminCreateProject() {
   const [listLocation, setListLocation] = useState([]);
 
   const [listImage, setListImage] = useState("");
-  const [thumbNail, setThumbNail] = useState(null);
 
   const [projectName, setProjectName] = useState("");
   const [buildStatus, setBuildStatus] = useState(1);
@@ -39,12 +38,6 @@ function AdminCreateProject() {
   const onFileChange = (files) => {
     setListImage(files);
   };
-
-  useEffect(() => {
-    return () => {
-      thumbNail && URL.revokeObjectURL(thumbNail.preview);
-    };
-  }, [thumbNail]);
 
   useEffect(() => {
     if (errorImage === true) {
@@ -84,32 +77,11 @@ function AdminCreateProject() {
     }
   }, [notify]);
 
-  const onFileDrop = (e) => {
-    const newFile = e.target.files[0];
-    if (newFile) {
-      const allowedTypes = ["image/jpg", "image/jpeg", "image/png"];
-      if (allowedTypes.includes(newFile?.type)) {
-        const updatedList = newFile;
-        updatedList.preview = URL.createObjectURL(updatedList);
-        setThumbNail(updatedList);
-      } else {
-        // setError(true);
-      }
-    }
-  };
-
-  const fileRemove = () => {
-    const updatedList = null;
-    setThumbNail(updatedList);
-    thumbNailRef.current.value = "";
-    // URL.revokeObjectURL(image.preview);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
     setIsLoading(true);
-    formData.append("thumbnail", thumbNail);
     listImage.map((item) => formData.append("images", item));
     formData.append("name", projectName);
     formData.append("description", desc);
@@ -125,7 +97,6 @@ function AdminCreateProject() {
     }
     setIsLoading(false);
     setListImage("");
-    setThumbNail(null);
     setProjectName("");
     setDesc("");
     setBuildStatus("");
@@ -137,10 +108,8 @@ function AdminCreateProject() {
 
   return (
     <div className={cx("wrapper")}>
-
       <Toaster position="top-right" richColors expand={true} />
-      <h2 className={cx("heading")}>Create new project</h2>
-
+      <h2 className={cx("heading")}>Create type room</h2>
       <form onSubmit={handleSubmit}>
         <div className={cx("form")}>
           <div className={cx("thumbnail")}>
@@ -150,42 +119,11 @@ function AdminCreateProject() {
               onFileChange={(files) => onFileChange(files)}
             />
           </div>
-          <div className={cx("input_compo")}>
-            <label htmlFor="name_project" className={cx("label")}>
-              Thumbnail
-            </label>
-            <input
-              ref={thumbNailRef}
-              type="file"
-              id="name_project"
-              className={cx("input")}
-              placeholder="Enter project name"
-              onChange={onFileDrop}
-            />
-            {thumbNail && (
-              <div className={cx("file_preview")}>
-                <img src={thumbNail.preview} alt="img" className={cx("img")} />
-                <div className={cx("file_info")}>
-                  <h4 className={cx("title")}>{thumbNail.name}</h4>
-                </div>
-                <span
-                  className={cx("file_remove")}
-                  onClick={() => fileRemove(thumbNail)}
-                >
-                  <img
-                    src={images.trashIcon}
-                    alt="icon"
-                    className={cx("icon")}
-                  />
-                </span>
-              </div>
-            )}
-          </div>
 
           <div className={cx("row")}>
             <div className={cx("input_compo")}>
               <label htmlFor="name_project" className={cx("label")}>
-                Project name
+                Typeroom name
               </label>
               <input
                 type="text"
@@ -249,7 +187,7 @@ function AdminCreateProject() {
           <div className={cx("row")}>
             <div className={cx("input_compo")}>
               <label htmlFor="Features" className={cx("label")}>
-                Features
+              Bed types
               </label>
               <input
                 type="text"
@@ -262,7 +200,7 @@ function AdminCreateProject() {
             </div>
             <div className={cx("input_compo")}>
               <label htmlFor="Attractions" className={cx("label")}>
-                Attractions
+                  
               </label>
               <input
                 type="text"
@@ -304,4 +242,4 @@ function AdminCreateProject() {
   );
 }
 
-export default AdminCreateProject;
+export default AdminCreateTypeRoom;

@@ -64,10 +64,8 @@ export const createNewProject = async (req, res) => {
       }
       return badRequest("Building Status is required an INTEGER!", res);
     }
-    // const response = await services.createNewProject(req.body, req.files);
-    // return res.status(200).json(response);
-    console.log(req.files);
-    return res.status(200).json("ok");
+    const response = await services.createNewProject(req.body, req.files);
+    return res.status(200).json(response);
   } catch (error) {
     if (req.files) {
       deleteProjectImage(req.files);

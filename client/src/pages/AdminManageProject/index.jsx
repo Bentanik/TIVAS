@@ -17,6 +17,7 @@ import {
   getAllProjects,
   getAllWithType,
 } from "~/controllers/project";
+import ActionProject from "~/components/ActionProject";
 const cx = classNames.bind(styles);
 
 const limit = 5;
@@ -131,6 +132,9 @@ function AdminManageUser() {
                 <th className={cx("date", "column")}>
                   <h4 className={cx("title")}>Booking date</h4>
                 </th>
+                <th className={cx("action", "column")}>
+                  <h4 className={cx("title")}>Action</h4>
+                </th>
               </tr>
             </thead>
             <tbody className={cx("tbody")}>
@@ -139,7 +143,7 @@ function AdminManageUser() {
                   <tr
                     key={index}
                     className={cx("trow")}
-                    onClick={() => handleNavigate(item.id)}
+                    // onClick={() => handleNavigate(item.id)}
                   >
                     <td className={cx("id", "column")}>
                       <span className={cx("name", "text")}>{index + 1}</span>
@@ -213,6 +217,15 @@ function AdminManageUser() {
                           item?.closeDate
                         )}`}
                       </span>
+                    </td>
+                    <td className={cx("action", "column")}>
+                      <ActionProject
+                        id={item?.id}
+                        nameProject={item?.name}
+                        banStatus={item?.banStatus}
+                        notify={notify}
+                        setNotify={setNotify}
+                      />
                     </td>
                   </tr>
                 );

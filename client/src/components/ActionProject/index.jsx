@@ -1,5 +1,5 @@
 import TippyHeadless from "@tippyjs/react/headless";
-import styles from "./ActionUser.module.scss";
+import styles from "./ActionProject.module.scss";
 import classNames from "classnames/bind";
 import { useEffect, useState } from "react";
 import { banUserById, getAllUsers, unBanUserById } from "~/controllers/user";
@@ -12,10 +12,12 @@ import {
   DialogContent,
   DialogTitle,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const cx = classNames.bind(styles);
 
-function ActionUser({ id, username, banStatus, setNotify }) {
+function ActionProject({ id, nameProject, setNotify }) {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const currentUser = useSelector((state) => state.auth.login.user);
@@ -23,51 +25,20 @@ function ActionUser({ id, username, banStatus, setNotify }) {
 
   const [open, setOpen] = useState(false);
 
-  const [openPopup, setOpenPopup] = useState(false);
-  const [banUser, setBanUser] = useState("");
-
   const handleOpen = () => {
     setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);
-    setBanUser("");
   };
   const toggleOpen = () => {
     setOpen((prev) => !prev);
   };
 
-  const handleOpenPopup = () => {
-    handleClose();
-    setOpenPopup(true);
-  };
-  const handleClosePopup = () => {
-    setOpenPopup(false);
+  const handleNavigate = (id) => {
+    navigate(`/admin/manageproject/createtyperoom/${id}`);
   };
 
-  const handleSubmitBanUser = async (e) => {
-    e.preventDefault();
-    handleClosePopup();
-    const res = await banUserById(axiosInstance, {
-      id: id,
-      reasonBan: banUser,
-    });
-    if (res) {
-      setNotify(res);
-    }
-    // console.log(res);
-  };
-
-  const handleClickUnban = async () => {
-    handleClose();
-    const res = await unBanUserById(axiosInstance, {
-      id: id,
-    });
-    if (res) {
-      setNotify(res);
-    }
-  };
- 
   return (
     <div>
       <TippyHeadless
@@ -77,7 +48,23 @@ function ActionUser({ id, username, banStatus, setNotify }) {
           <div className="box" tabIndex="-1" {...attrs}>
             <section className={cx("container")}>
               <div className={cx("list")}>
-                {banStatus === 0 ? (
+                <div
+                  className={cx("item", "ban")}
+                  onClick={() => handleNavigate(id)}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="bi bi-plus-circle-fill"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z" />
+                  </svg>
+                  <span className={cx("title")}>Create type room</span>
+                </div>
+                {/* {banStatus === 0 ? (
                   <div className={cx("item", "ban")} onClick={handleOpenPopup}>
                     <svg
                       className={cx("icon")}
@@ -108,7 +95,7 @@ function ActionUser({ id, username, banStatus, setNotify }) {
                     </svg>
                     <span className={cx("title")}>Unban user</span>
                   </div>
-                )}
+                )} */}
               </div>
             </section>
           </div>
@@ -129,56 +116,8 @@ function ActionUser({ id, username, banStatus, setNotify }) {
           <path d="M1.5 7a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5zM2 7h1v1H2zm0 3.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm1 .5H2v1h1z" />
         </svg>
       </TippyHeadless>
-      <div className={cx("popup")}>
-        <Dialog
-          open={openPopup}
-          onClose={handleClosePopup}
-          PaperProps={{
-            component: "form",
-            onSubmit: (event) => {
-              event.preventDefault();
-              const formData = new FormData(event.currentTarget);
-              const formJson = Object.fromEntries(formData.entries());
-              const email = formJson.email;
-              console.log(email);
-              handleClosePopup();
-            },
-          }}
-        >
-          <DialogTitle>
-            <h4 className={cx("title_popup")}>
-              Ban user: <span className={cx("text")}>{username}</span>
-            </h4>
-          </DialogTitle>
-          <DialogContent dividers>
-            <div className={cx("form_popup")}>
-              <label htmlFor="banUser" className={cx("label")}>
-                Please fill in the reason for banning the user: {username}
-              </label>
-              <textarea
-                id="banUser"
-                className={cx("textArea")}
-                value={banUser}
-                onChange={(e) => setBanUser(e.target.value)}
-              ></textarea>
-            </div>
-          </DialogContent>
-          <DialogActions>
-            <Button style={{ fontSize: "1.4rem" }} onClick={handleClosePopup}>
-              Cancel
-            </Button>
-            <Button
-              style={{ fontSize: "1.4rem" }}
-              type="submit"
-              onClick={handleSubmitBanUser}
-            >
-              Submit
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </div>
     </div>
   );
 }
 
-export default ActionUser;
+export default ActionProject;

@@ -17,6 +17,7 @@ import AdminProjectDetail from "~/pages/AdminProjectDetail";
 import Banking from "~/components/Layouts/Banking";
 import AdminRoomTypeDetail from "~/pages/AdminRoomTypeDetail";
 import TimeshareDetail from "~/pages/TimeshareDetail";
+import AdminCreateTypeRoom from "~/pages/AdminCreateTypeRoom";
 
 const routes = [
   {
@@ -120,6 +121,11 @@ const routes = [
   {
     path: "/admin/manageproject/projectdetail",
     component: AdminProjectDetail,
+    layout: LayoutAdmin,
+  },
+  {
+    path: "/admin/manageproject/createtyperoom/:id",
+    component: AdminCreateTypeRoom,
     layout: LayoutAdmin,
   },
   {
