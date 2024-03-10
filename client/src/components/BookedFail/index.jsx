@@ -1,5 +1,5 @@
 import classNames from "classnames/bind";
-import styles from "./BookedSuccess.module.scss";
+import styles from "./BookedFail.module.scss";
 // import PurchasedProjectInfo from "~/components/PurchasedProjectInfo";
 import images from "~/assets/images";
 import Tippy from "@tippyjs/react";
@@ -25,7 +25,7 @@ function formatDate(dateString) {
     });
 }
 
-function BookedSuccess() {
+function BookedFail() {
     const [reservationProject, setReservationProject] = useState([]);
     const [countPage, setCountPage] = useState(1);
     const [page, setPage] = useState(1);
@@ -67,10 +67,10 @@ function BookedSuccess() {
     return (
         <div className={cx("wrapper")}>
             <div className={cx("row")}>
-                <h1 className={cx("title")}>Booked Success</h1>
+                <h1 className={cx("title")}>Booked Fail</h1>
 
                 <Tippy
-                    content="Show all timeshare you booked success"
+                    content="Show all timeshare you booked fail"
                     placement="top"
                 >
                     <img
@@ -227,8 +227,18 @@ function BookedSuccess() {
                                                     <span
                                                         className={cx("name")}
                                                     >
-                                                        {formatDate(
-                                                            item?.bookingTimeShareDate
+                                                        {item?.bookingTimeShareDate ? (
+                                                            formatDate(
+                                                                item?.bookingTimeShareDate
+                                                            )
+                                                        ) : (
+                                                            <div
+                                                                className={cx(
+                                                                    "empty"
+                                                                )}
+                                                            >
+                                                                Empty
+                                                            </div>
                                                         )}
                                                     </span>
                                                 </td>
@@ -241,7 +251,17 @@ function BookedSuccess() {
                                                     <span
                                                         className={cx("name")}
                                                     >
-                                                        {item?.typeRoomName}
+                                                        {item?.typeRoomName ? (
+                                                            item?.typeRoomName
+                                                        ) : (
+                                                            <div
+                                                                className={cx(
+                                                                    "empty"
+                                                                )}
+                                                            >
+                                                                Empty
+                                                            </div>
+                                                        )}
                                                     </span>
                                                 </td>
                                                 <td
@@ -253,11 +273,29 @@ function BookedSuccess() {
                                                     <span
                                                         className={cx("name")}
                                                     >
-                                                        {formatDate(
-                                                            item?.startDate
+                                                        {item?.startDate ? (
+                                                            formatDate(
+                                                                item?.startDate
+                                                            )
+                                                        ) : (
+                                                            <div
+                                                                className={cx(
+                                                                    "empty"
+                                                                )}
+                                                            >
+                                                                Empty
+                                                            </div>
                                                         )}{" "}
-                                                        {formatDate(
-                                                            item?.endDate
+                                                        {item?.endDate ? (
+                                                            formatDate(
+                                                                item?.endDate
+                                                            )
+                                                        ) : (
+                                                            <div
+                                                                className={cx(
+                                                                    "empty"
+                                                                )}
+                                                            ></div>
                                                         )}
                                                     </span>
                                                 </td>
@@ -300,4 +338,4 @@ function BookedSuccess() {
     );
 }
 
-export default BookedSuccess;
+export default BookedFail;

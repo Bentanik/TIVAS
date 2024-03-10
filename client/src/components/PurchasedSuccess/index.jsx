@@ -67,10 +67,10 @@ function PurchasedSuccess() {
     return (
         <div className={cx("wrapper")}>
             <div className={cx("row")}>
-                <h1 className={cx("title")}>Timeshare Booked</h1>
+                <h1 className={cx("title")}>Purchased Success</h1>
 
                 <Tippy
-                    content="This is all reservation ticket you buy for project"
+                    content="Show all timeshare you purchased success"
                     placement="top"
                 >
                     <img
@@ -80,181 +80,222 @@ function PurchasedSuccess() {
                     />
                 </Tippy>
             </div>
+            {reservationProject.length === 0 ? (
+                <div className={cx("empty-wrapper")}>
+                    <img
+                        src={images.empty}
+                        alt="empty"
+                        className={cx("empty-img")}
+                    />
+                </div>
+            ) : (
+                <div className={cx("content")}>
+                    <div className={cx("ticket-detail-wrapper")}>
+                        <div className={cx("ticket-detail")}>
+                            <table className={cx("table")}>
+                                <thead className={cx("thead")}>
+                                    <tr>
+                                        <th className={cx("column", "index")}>
+                                            <h4 className={cx("title")}>ID</h4>
+                                        </th>
+                                        <th className={cx("project", "column")}>
+                                            <h4 className={cx("title")}>
+                                                Project
+                                            </h4>
+                                        </th>
+                                        <th className={cx("date", "column")}>
+                                            <h4 className={cx("title")}>
+                                                Booked Date
+                                            </h4>
+                                        </th>
 
-            <div className={cx("content")}>
-                <div className={cx("ticket-detail-wrapper")}>
-                    <div className={cx("ticket-detail")}>
-                        <table className={cx("table")}>
-                            <thead className={cx("thead")}>
-                                <tr>
-                                    <th className={cx("column", "index")}>
-                                        <h4 className={cx("title")}>ID</h4>
-                                    </th>
-                                    <th className={cx("project", "column")}>
-                                        <h4 className={cx("title")}>Project</h4>
-                                    </th>
-                                    <th className={cx("date", "column")}>
-                                        <h4 className={cx("title")}>
-                                            Booked Date
-                                        </h4>
-                                    </th>
-
-                                    <th className={cx("sleep", "column")}>
-                                        <h4 className={cx("title")}>
-                                            TypeRoom
-                                        </h4>
-                                    </th>
-                                    <th className={cx("date", "column")}>
-                                        <h4 className={cx("title")}>Date</h4>
-                                    </th>
-                                    <th className={cx("date", "column")}>
-                                        <h4 className={cx("title")}>Code</h4>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className={cx("tbody")}>
-                                {reservationProject?.map((item, index) => {
-                                    return (
-                                        <tr
-                                            // key={index}
-                                            className={cx("trow")}
-                                            // onClick={() => handleNavigate(item.id)}
-                                        >
-                                            <td
-                                                className={cx(
-                                                    "index",
-                                                    "column"
-                                                )}
+                                        <th className={cx("sleep", "column")}>
+                                            <h4 className={cx("title")}>
+                                                TypeRoom
+                                            </h4>
+                                        </th>
+                                        <th className={cx("date", "column")}>
+                                            <h4 className={cx("title")}>
+                                                Date
+                                            </h4>
+                                        </th>
+                                        <th className={cx("date", "column")}>
+                                            <h4 className={cx("title")}>
+                                                Code
+                                            </h4>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className={cx("tbody")}>
+                                    {reservationProject?.map((item, index) => {
+                                        return (
+                                            <tr
+                                                // key={index}
+                                                className={cx("trow")}
+                                                // onClick={() => handleNavigate(item.id)}
                                             >
-                                                <span
+                                                <td
                                                     className={cx(
-                                                        "num",
-                                                        "text"
+                                                        "index",
+                                                        "column"
                                                     )}
                                                 >
-                                                    {index + 1}
-                                                </span>
-                                            </td>
-                                            <td
-                                                className={cx(
-                                                    "project",
-                                                    "column"
-                                                )}
-                                            >
-                                                <figure className={cx("infor")}>
-                                                    <img
-                                                        src={
-                                                            item?.projectThumbnailPathUrl
-                                                        }
-                                                        alt="image_one"
-                                                        className={cx("image")}
-                                                    />
-                                                    <section
-                                                        className={cx("box")}
+                                                    <span
+                                                        className={cx(
+                                                            "num",
+                                                            "text"
+                                                        )}
                                                     >
-                                                        <h3
+                                                        {index + 1}
+                                                    </span>
+                                                </td>
+                                                <td
+                                                    className={cx(
+                                                        "project",
+                                                        "column"
+                                                    )}
+                                                >
+                                                    <figure
+                                                        className={cx("infor")}
+                                                    >
+                                                        <img
+                                                            src={
+                                                                item?.projectThumbnailPathUrl
+                                                            }
+                                                            alt="image_one"
                                                             className={cx(
-                                                                "name-project",
-                                                                "text"
+                                                                "image"
+                                                            )}
+                                                        />
+                                                        <section
+                                                            className={cx(
+                                                                "box"
                                                             )}
                                                         >
-                                                            {item?.projectName}
-                                                        </h3>
-                                                        <div
-                                                            className={cx(
-                                                                "location"
-                                                            )}
-                                                        >
-                                                            <svg
+                                                            <h3
                                                                 className={cx(
-                                                                    "icon"
-                                                                )}
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                width="16"
-                                                                height="16"
-                                                                fill="currentColor"
-                                                                viewBox="0 0 16 16"
-                                                            >
-                                                                <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6" />
-                                                            </svg>
-                                                            <span
-                                                                className={cx(
-                                                                    "position",
+                                                                    "name-project",
                                                                     "text"
                                                                 )}
                                                             >
-                                                                {item?.location}
-                                                            </span>
-                                                        </div>
-                                                    </section>
-                                                </figure>
-                                            </td>
-                                            {/* <td className={cx("unit", "column")}>
+                                                                {
+                                                                    item?.projectName
+                                                                }
+                                                            </h3>
+                                                            <div
+                                                                className={cx(
+                                                                    "location"
+                                                                )}
+                                                            >
+                                                                <svg
+                                                                    className={cx(
+                                                                        "icon"
+                                                                    )}
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    width="16"
+                                                                    height="16"
+                                                                    fill="currentColor"
+                                                                    viewBox="0 0 16 16"
+                                                                >
+                                                                    <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6" />
+                                                                </svg>
+                                                                <span
+                                                                    className={cx(
+                                                                        "position",
+                                                                        "text"
+                                                                    )}
+                                                                >
+                                                                    {
+                                                                        item?.location
+                                                                    }
+                                                                </span>
+                                                            </div>
+                                                        </section>
+                                                    </figure>
+                                                </td>
+                                                {/* <td className={cx("unit", "column")}>
                                         <span className={cx("name", "text")}>
                                             cc
                                         </span>
                                     </td> */}
-                                            <td
-                                                className={cx(
-                                                    "sleep",
-                                                    "column"
-                                                )}
-                                            >
-                                                <span className={cx("name")}>
-                                                    {formatDate(
-                                                        item?.bookingTimeShareDate
+                                                <td
+                                                    className={cx(
+                                                        "sleep",
+                                                        "column"
                                                     )}
-                                                </span>
-                                            </td>
-                                            <td
-                                                className={cx(
-                                                    "type-room",
-                                                    "column"
-                                                )}
-                                            >
-                                                <span className={cx("name")}>
-                                                    {item?.typeRoomName}
-                                                </span>
-                                            </td>
-                                            <td
-                                                className={cx("date", "column")}
-                                            >
-                                                <span className={cx("name")}>
-                                                    {formatDate(
-                                                        item?.startDate
-                                                    )}{" "}
-                                                    {formatDate(item?.endDate)}
-                                                </span>
-                                            </td>
-                                            <td
-                                                className={cx("date", "column")}
-                                            >
-                                                <span className={cx("name")}>
-                                                    {item?.code}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
+                                                >
+                                                    <span
+                                                        className={cx("name")}
+                                                    >
+                                                        {formatDate(
+                                                            item?.bookingTimeShareDate
+                                                        )}
+                                                    </span>
+                                                </td>
+                                                <td
+                                                    className={cx(
+                                                        "type-room",
+                                                        "column"
+                                                    )}
+                                                >
+                                                    <span
+                                                        className={cx("name")}
+                                                    >
+                                                        {item?.typeRoomName}
+                                                    </span>
+                                                </td>
+                                                <td
+                                                    className={cx(
+                                                        "date",
+                                                        "column"
+                                                    )}
+                                                >
+                                                    <span
+                                                        className={cx("name")}
+                                                    >
+                                                        {formatDate(
+                                                            item?.startDate
+                                                        )}{" "}
+                                                        {formatDate(
+                                                            item?.endDate
+                                                        )}
+                                                    </span>
+                                                </td>
+                                                <td
+                                                    className={cx(
+                                                        "date",
+                                                        "column"
+                                                    )}
+                                                >
+                                                    <span
+                                                        className={cx("name")}
+                                                    >
+                                                        {item?.code}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
+                    <tfoot className={cx("tfoot")}>
+                        <tr className={cx("trow")}>
+                            <Stack spacing={2}>
+                                <Pagination
+                                    count={countPage}
+                                    page={page}
+                                    variant="outlined"
+                                    shape="rounded"
+                                    onChange={handlePageChange}
+                                    className={cx("pagination")}
+                                />
+                            </Stack>
+                        </tr>
+                    </tfoot>
                 </div>
-                <tfoot className={cx("tfoot")}>
-                    <tr className={cx("trow")}>
-                        <Stack spacing={2}>
-                            <Pagination
-                                count={countPage}
-                                page={page}
-                                variant="outlined"
-                                shape="rounded"
-                                onChange={handlePageChange}
-                                className={cx("pagination")}
-                            />
-                        </Stack>
-                    </tr>
-                </tfoot>
-            </div>
+            )}
         </div>
     );
 }

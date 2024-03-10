@@ -7,6 +7,7 @@ import BookedSuccess from "~/components/BookedSuccess";
 import PurchasedSuccess from "~/components/PurchasedSuccess";
 import PurchasedFail from "~/components/PurchasedFail";
 import AllReservation from "~/components/AllReservation";
+import BookedFail from "~/components/BookedFail";
 
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -138,7 +139,7 @@ function Purchase() {
                         }}
                     />
                     <Tab
-                        label="Purchase Success"
+                        label="Purchased Success"
                         {...a11yProps(5)}
                         className={cx("test")}
                         sx={{
@@ -149,7 +150,7 @@ function Purchase() {
                         }}
                     />
                     <Tab
-                        label="Purchase Fail"
+                        label="Purchased Fail"
                         {...a11yProps(6)}
                         className={cx("test")}
                         sx={{
@@ -174,7 +175,7 @@ function Purchase() {
                 <BookedSuccess />
             </CustomTabPanel>
             <CustomTabPanel value={+status} index={4}>
-                <BookedSuccess />
+                <BookedFail />
             </CustomTabPanel>
             <CustomTabPanel value={+status} index={5}>
                 <PurchasedSuccess />

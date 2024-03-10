@@ -31,7 +31,6 @@
     padding: 20px;
 }
 
-// ==================================
 .ticket-detail-wrapper {
     margin-top: 30px;
 
@@ -92,10 +91,8 @@
     }
 }
 
-// Td coloumn
-
 .index {
-    // width: 60px;
+    width: 60px;
     .num {
         // text-align: center;
         font-family: "Inter", sans-serif;
@@ -105,7 +102,7 @@
 }
 
 .project {
-    width: 400px;
+    width: 300px;
 
     .text {
         width: 200px;
@@ -124,6 +121,7 @@
 
     .box {
         width: 200px;
+
         .name-project {
             font-family: "Inter", sans-serif;
             font-size: 1.8rem;
@@ -161,7 +159,19 @@
 }
 
 .sleep {
-    width: 250px;
+    width: 200px;
+    .name {
+        font-family: "Inter", sans-serif;
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: #000;
+    }
+}
+
+.type-room {
+    width: 400px;
+    overflow: hidden;
+    // white-space: nowrap;
     .name {
         font-family: "Inter", sans-serif;
         font-size: 1.5rem;
@@ -171,6 +181,7 @@
 }
 
 .date {
+    width: 250px;
     .name {
         font-family: "Inter", sans-serif;
         font-size: 1.5rem;
@@ -186,7 +197,9 @@
         color: #000;
     }
 }
-
+.empty {
+    color: #8a8888fb;
+}
 .empty-img {
     position: absolute;
     top: 50%;
