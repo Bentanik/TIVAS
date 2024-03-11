@@ -7,57 +7,74 @@ router.post(
   "/create",
   uploadCloud.fields([
     {
-      name: "thumbnail",
-      maxCount: 1,
+      name: 'thumbnail', maxCount: 1
     },
     {
-      name: "images",
+      name: 'images'
     },
   ]),
   controllers.createNewProject
-);
-router.get("/getAll", controllers.getAllProject);
-router.get("/getAllByLocation/:id", controllers.getAllByLocation);
+)
+router.get("/getAll",controllers.getAllProject)
 router.get("/getAllWithType", controllers.getAllWithType);
-router.delete("/delete/:id", controllers.deleteProjects);
+router.get("/getAllByLocation/:id", controllers.getAllByLocation)
+router.delete("/delete/:id",controllers.deleteProjects)
 router.put(
   "/update/:id",
   uploadCloud.fields([
     {
-      name: "thumbnail",
-      maxCount: 1,
+      name: 'thumbnail', maxCount: 1
     },
     {
-      name: "images",
+      name: 'images',
     },
   ]),
   controllers.updateProjects
-);
+)
 
-router.get("/search", controllers.searchProject);
 
 router.get(
-  "/searchNameAndLocationProject/:info/:limit",
-  controllers.searchNameAndLocationProject
-);
+  "/search",
+  controllers.searchProject
+)
 
-router.get("/top10", controllers.getTop10);
+router.get(
+  "/searchNameAndLocationProject",
+  controllers.searchNameAndLocationProject,
+)
 
-router.get("/:id", controllers.getDetailsProject);
+router.get(
+  "/top10",
+  controllers.getTop10
+)
+
+router.get(
+  "/getTypeOfProject/:id",
+  controllers.getTypeOfProject,
+)
 
 //thay doi openDate va closeDate
-router.put("/changeBookingInfo/:id", controllers.updateBooking);
+router.put("/changeBookingInfo/:id",controllers.updateBooking)
 //thay doi reservationPrice va reservationDate
-router.put("/changeReservationInfo/:id", controllers.updateReservation);
+router.put("/changeReservationInfo/:id",controllers.updateReservation)
 //mo ban reservation ticket (status=2)
-router.put("/openReservationTicket/:id", controllers.openReservationTicket);
+router.put("/openReservationTicket/:id",controllers.openReservationTicket)
 //mo booking
-router.put("/openBooking/:id", controllers.openBooking);
+router.put("/openBooking/:id",controllers.openBooking)
 
-router.get("/getReservation/:id", controllers.getReservation);
+router.get("/getReservation/:id", controllers.getReservation)
 
-router.put("/updateReservationInfo/:id", controllers.updateReservationInfo);
+router.put("/updateReservationInfo/:id", controllers.updateReservationInfo)
 
-router.put("/getAllProjectReservation", controllers.getAllProjectReservation);
+router.put("/getAllProjectReservation", controllers.getAllProjectReservation)
+
+router.get(
+  "/:id",
+  controllers.getDetailsProject
+)
+
+
+
+
 
 export default router;

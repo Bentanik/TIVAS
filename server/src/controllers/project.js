@@ -64,10 +64,8 @@ export const createNewProject = async (req, res) => {
       }
       return badRequest("Building Status is required an INTEGER!", res);
     }
-    // const response = await services.createNewProject(req.body, req.files);
-    // return res.status(200).json(response);
-    console.log(req.files);
-    return res.status(200).json("ok");
+    const response = await services.createNewProject(req.body, req.files);
+    return res.status(200).json(response);
   } catch (error) {
     if (req.files) {
       deleteProjectImage(req.files);
@@ -128,7 +126,9 @@ export const searchProject = async (req, res) => {
 };
 
 export const searchNameAndLocationProject = async (req, res) => {
-  const { info, limit } = req.params;
+  const { info, limit } = req.query;
+  console.log(info);
+  console.log(limit);
   let limitDB;
   if (/^\d+$/.test(limit)) {
     limitDB = parseInt(limit);
@@ -151,6 +151,12 @@ export const getDetailsProject = async (req, res) => {
   const response = await services.getDetailsProject(id);
   return res.status(200).json(response);
 };
+
+export const getTypeOfProject = async (req, res) => {
+  const { id } = req.params;
+  const response = await services.getTypeOfProject(id); 
+  return res.status(200).json(response);
+}
 
 export const updateBooking = async (req, res) => {
   const { id } = req.params;

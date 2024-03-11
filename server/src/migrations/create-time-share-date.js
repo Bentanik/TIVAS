@@ -2,18 +2,18 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('ReservationTickets', {
+    await queryInterface.createTable('TimeShareDates', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      code: {
-        type: Sequelize.STRING
+      startDate: {
+        type: Sequelize.DATE
       },
-      status: {
-        type: Sequelize.INTEGER
+      endDate: {
+        type: Sequelize.DATE
       },
       reservationPrice: {
         type: Sequelize.DOUBLE
@@ -27,22 +27,10 @@ module.exports = {
       closeDate: {
         type: Sequelize.DATE
       },
-      refund: {
-        type: Sequelize.INTEGER
-      },
-      bookingDate: {
-        type: Sequelize.DATE
-      },
-      refundDate: {
-        type: Sequelize.DATE
-      },
-      userID: {
+      status: {
         type: Sequelize.INTEGER
       },
       projectID: {
-        type: Sequelize.INTEGER
-      },
-      timeShareID: {
         type: Sequelize.INTEGER
       },
       createdAt: {
@@ -58,6 +46,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('ReservationTickets');
+    await queryInterface.dropTable('TimeShareDates');
   }
 };
