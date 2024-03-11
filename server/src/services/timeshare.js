@@ -27,34 +27,78 @@ export const createNewTimeShare = (
 ) => {
     return new Promise(async (resolve, reject) => {
         try {
+            let errorTime;
+            let projectReservated;
             const startDateDB = convertDate(startDate);
             const endDateDB = convertDate(endDate);
 
+            let [timeShare, created] = [];
+
             //Find TypeRoom in DB
-            const typeRoomResponse = await db.TypeRoom.findByPk(typeRoomID);
+            const typeRoomResponse = await db.TypeRoom.findByPk(typeRoomID, {
+                include: {
+                    model: db.TypeOfProject,
+                    include: {
+                        model: db.Project
+                    }
+                }
+            });
 
             //Find User in DB
-            const userResponse = await db.User.findByPk(userID);
+            const userResponse = await db.User.findByPk(userID, {
+                include: {
+                    model: db.RoleCode,
+                    attributes: ['roleName'],
+                }
+            });
 
-            if (typeRoomResponse && userResponse) {
-                await db.TimeShare.create({
-                    price,
-                    startDate: startDateDB,
-                    endDate: endDateDB,
-                    userID,
-                    saleStatus: 0,
-                    typeRoomID,
-                    quantity: typeRoomResponse.quantity,
-                })
+            if (typeRoomResponse && userResponse && userResponse.RoleCode.roleName === 'Staff' && typeRoomResponse.TypeOfProject.Project.status === 0) {
+                projectReservated = typeRoomResponse.TypeOfProject.Project.reservationDate
+                if (projectReservated) {
+                    [timeShare, created] = await db.TimeShare.findOrCreate(
+                        {
+                            where: {
+                                typeRoomID,
+                                userID,
+                            },
+                            defaults: {
+                                price,
+                                startDate: startDateDB,
+                                endDate: endDateDB,
+                                userID,
+                                saleStatus: 0,
+                                typeRoomID,
+                                quantity: typeRoomResponse.quantity,
+                            }
+                        },
+                    )
+                    // await db.TimeShare.create({
+                    //     price,
+                    //     startDate: startDateDB,
+                    //     endDate: endDateDB,
+                    //     userID,
+                    //     saleStatus: 0,
+                    //     typeRoomID,
+                    //     quantity: typeRoomResponse.quantity,
+                    // })
+                }
             }
 
             resolve({
-                err: (typeRoomResponse && userResponse) ? 0 : 1,
+                err: created ? 0 : 1,
                 message: !typeRoomResponse ?
                     `Can not find TypeRoom (${typeRoomID})!`
                     : !userResponse ?
                         `Can not find User (${userID})!`
-                        : "Create successfully."
+                        : userResponse.RoleCode.roleName !== 'Staff' ?
+                            `User (${userID}) is not a staff!`
+                            : typeRoomResponse.TypeOfProject.Project.status !== 0 ?
+                                `TypeRoom (${typeRoomID}) belongs to Project which is for sales!`
+                                : !projectReservated ?
+                                    `TypeRoom (${typeRoomID}) does not belong to Project that have reservation info!`
+                                    : !created ?
+                                        `TimeShare duplicated!`
+                                        : "Create successfully."
             })
 
         } catch (error) {
@@ -414,8 +458,8 @@ export const getAllTimeShareByStaff = (userID, {
 }
 
 export const getAllTimeShareOfProjectByStaff = ({
-    projectID, 
-    userID, 
+    projectID,
+    userID,
     page,
     limit,
     orderBy,
@@ -535,7 +579,7 @@ export const getAllTimeShareOfProjectByStaff = ({
     })
 }
 
-export const getDetailsTimeShareByStaff = ({id, userID}) => {
+export const getDetailsTimeShareByStaff = ({ id, userID }) => {
     return new Promise(async (resolve, reject) => {
         try {
             const response = {};
