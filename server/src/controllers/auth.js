@@ -238,3 +238,9 @@ export const logout = async (req, res) => {
     mess: "Logout successfully",
   });
 };
+
+export const registerStaff = async (req, res) => {
+  const { username, password } = req.body;
+  const response = await services.registerStaft(req.body);
+  return res.status(200).json(response);
+};

@@ -72,6 +72,33 @@
   }
 }
 
+
+.title_popup {
+  font-family: "Poppin", sans-serif;
+  font-size: 2rem;
+  font-weight: 600;
+  .text {
+    font-weight: 400;
+  }
+}
+
+.form_popup {
+  .label {
+    font-family: "Inter", sans-serif;
+    font-size: 1.7rem;
+    font-weight: 400;
+  }
+  .textArea {
+    margin-top: 12px;
+    width: 100%;
+    height: 100px;
+    font-family: "Inter", sans-serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    resize: none;
+  }
+}
+
 .heading_popup {
   font-family: "Poppin", sans-serif;
   font-size: 2.5rem;
