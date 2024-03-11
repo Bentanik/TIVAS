@@ -27,6 +27,9 @@ module.exports = {
       closeDate: {
         type: Sequelize.DATE
       },
+      status: {
+        type: Sequelize.INTEGER
+      },
       projectID: {
         type: Sequelize.INTEGER
       },

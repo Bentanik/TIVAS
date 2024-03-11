@@ -11,6 +11,9 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+            TimeShareDate.belongsTo(models.Project ,{
+                foreignKey: 'projectID',
+              });
         }
     }
     TimeShareDate.init({
@@ -20,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         reservationDate: DataTypes.DATE,
         openDate: DataTypes.DATE,
         closeDate: DataTypes.DATE,
+        status: DataTypes.INTEGER,
         projectID: DataTypes.INTEGER
     }, {
         sequelize,
