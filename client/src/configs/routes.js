@@ -20,6 +20,7 @@ import TimeshareDetail from "~/pages/TimeshareDetail";
 import Purchase from "~/components/Purchase";
 import AdminUserBanList from "~/components/UserBanList";
 import AdminManageTypeRoom from "~/pages/AdminManageTypeRoom";
+import AdminManageUserTicket from "~/pages/AdminManageUserTicket";
 
 const routes = [
     {
@@ -170,6 +171,12 @@ const routes = [
     {
         path: "/admin/managetyperoom/listtyeroom",
         component: AdminManageTypeRoom,
+        layout: LayoutAdmin,
+    },
+
+    {
+        path: "/admin/manageuser/ticket/:id",
+        component: AdminManageUserTicket,
         layout: LayoutAdmin,
     },
 ];

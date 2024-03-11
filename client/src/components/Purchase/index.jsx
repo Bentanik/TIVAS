@@ -60,7 +60,7 @@ function a11yProps(index) {
     };
 }
 
-const limit = 5;
+// const limit = 5;
 
 function Purchase() {
     const dispatch = useDispatch();

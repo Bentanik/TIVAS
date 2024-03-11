@@ -30,14 +30,18 @@ export const getAllTicketByUser = (axiosInstance, form) => {
     );
 };
 
-export const getUserPriority = (axiosInstance, id) => {
+export const getUserPriority = (axiosInstance, id, form) => {
+    const page = form.page;
+    const limit = form.limit;
     return axiosInstance.get(
-        `/api/v1/ReservationTicket/getAllUserPriority/${id}`
+        `/api/v1/ReservationTicket/getAllUserPriorityByAdmin/${id}?page=${page}&limit=${limit}`
     );
 };
 
-export const getUserNoPriority = (axiosInstance, id) => {
+export const getUserNoPriority = (axiosInstance, id, form) => {
+    const page = form.page;
+    const limit = form.limit;
     return axiosInstance.get(
-        `/api/v1/ReservationTicket/getAllUserNoPriority/${id}`
+        `/api/v1/ReservationTicket/getAllUserNoPriorityByAdmin/${id}?page=${page}&limit=${limit}`
     );
 };

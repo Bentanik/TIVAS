@@ -152,7 +152,7 @@ function AdminManageUser() {
                                     <tr
                                         key={index}
                                         className={cx("trow")}
-                                        onClick={() => handleNavigate(item.id)}
+                                        onClick={() => handleNavigate(item?.id)}
                                     >
                                         <td className={cx("id", "column")}>
                                             <span
