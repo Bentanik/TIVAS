@@ -6,6 +6,8 @@ const nodemailer = require("nodemailer");
 import ejs from "ejs";
 import { log } from "console";
 const fs = require("fs");
+import { pagination } from "../middlewares/pagination";
+
 
 function formatDate(date) {
     // Ensure 'date' is a valid Date object
@@ -1048,11 +1050,24 @@ export const getAllUserPriorityByStaff = ({ id, userID }) => {
     })
 }
 
-export const getAllTicketsByUser = ({ id, status }) => {
+export const getAllTicketsByUser = ({ id, status, page, limit, orderBy, orderType }) => {
     return new Promise(async (resolve, reject) => {
         try {
             let response = [];
             let ticketResponse = [];
+            let pageInput = 1;
+            let countPages = 0;
+            let queries = pagination({ page, limit, orderType, orderBy });
+
+            //const ticketResponsePagination = await db.R.findAll();
+            // countPages = ticketResponsePagination.length !== 0 ? 1 : 0;
+            // if (ticketResponsePagination.length / queries.limit > 1) {
+            //     countPages = Math.ceil(ticketResponsePagination.length / queries.limit)
+            // }
+            // if (page) {
+            //     pageInput = page
+            // }
+
             const userResponse = await db.User.findByPk(id);
             let ticketAttributes = []
             if (parseInt(status) === 1) {
@@ -1063,101 +1078,301 @@ export const getAllTicketsByUser = ({ id, status }) => {
                 ticketAttributes = ['id', 'code', 'projectID', 'timeShareID', 'bookingDate']
             }
             if (userResponse) {
-                ticketResponse = await db.ReservationTicket.findAll({
-                    nest: true,
-                    raw: true,
-                    attributes: ticketAttributes,
-                    where: parseInt(status) === 1 ? {
-                        userID: id,
-                        timeShareID: {
-                            [Op.eq]: null
-                        }
-                    } : parseInt(status) === 2 ? {
-                        userID: id,
-                        status: 1,
-                        timeShareID: {
-                            [Op.ne]: null
-                        }
-                    } : {
-                        userID: id,
-                        status: 2
-                    },
-                    include: [
-                        {
-                            model: db.User,
-                            attributes: ['id', 'username']
-                        },
-                        {
-                            model: db.Project,
-                            attributes: ['id', 'name', 'thumbnailPathUrl'],
-                            include: {
-                                model: db.Location,
-                                attributes: ['id', 'name'],
+                if (+status !== 0) {
+                    const ticketResponsePagination = await db.ReservationTicket.findAll({
+                        nest: true,
+                        raw: true,
+                        attributes: ticketAttributes,
+                        where: parseInt(status) === 1 ? {
+                            userID: id,
+                            timeShareID: {
+                                [Op.eq]: null
                             }
-                        },
-                        {
-                            model: db.TimeShare,
-                            attributes: ['id', 'startDate', 'endDate'],
-                            include: {
-                                model: db.TypeRoom,
-                                atributes: ['id', 'name'],
+                        } : parseInt(status) === 2 ? {
+                            userID: id,
+                            status: 1,
+                            timeShareID: {
+                                [Op.ne]: null
                             }
+                        } : {
+                            userID: id,
+                            status: 2
                         },
-                        (+status === 3 || +status === 4 || +status === 5) ?
+                        include: [
                             {
-                                model: db.Booking,
-                                attributes: ['id', 'status', 'createdAt', 'updatedAt'],
-                                where: parseInt(status) === 4 ? {
-                                    status: 1
-                                } : parseInt(status) === 5 ? {
-                                    status: -1
+                                model: db.User,
+                                attributes: ['id', 'username']
+                            },
+                            {
+                                model: db.Project,
+                                attributes: ['id', 'name', 'thumbnailPathUrl'],
+                                include: {
+                                    model: db.Location,
+                                    attributes: ['id', 'name'],
+                                }
+                            },
+                            {
+                                model: db.TimeShare,
+                                attributes: ['id', 'startDate', 'endDate', 'price'],
+                                include: {
+                                    model: db.TypeRoom,
+                                    atributes: ['id', 'name'],
+                                }
+                            },
+                            (+status === 3 || +status === 4 || +status === 5) ?
+                                {
+                                    model: db.Booking,
+                                    attributes: ['id', 'status', 'createdAt', 'updatedAt'],
+                                    where: parseInt(status) === 4 ? {
+                                        status: 1
+                                    } : parseInt(status) === 5 ? {
+                                        status: -1
+                                    } : {
+                                        status: 0
+                                    }
                                 } : {
-                                    status: 0
+                                    model: db.Booking,
+                                    attributes: ['id', 'status'],
+                                },
+                        ],
+                    })
+                    countPages = ticketResponsePagination.length !== 0 ? 1 : 0;
+                    if (ticketResponsePagination.length / queries.limit > 1) {
+                        countPages = Math.ceil(ticketResponsePagination.length / queries.limit)
+                    }
+                    if (page) {
+                        pageInput = page
+                    }
+                    if (pageInput <= countPages) {
+                        ticketResponse = await db.ReservationTicket.findAll({
+                            nest: true,
+                            raw: true,
+                            attributes: ticketAttributes,
+                            where: parseInt(status) === 1 ? {
+                                userID: id,
+                                timeShareID: {
+                                    [Op.eq]: null
+                                }
+                            } : parseInt(status) === 2 ? {
+                                userID: id,
+                                status: 1,
+                                timeShareID: {
+                                    [Op.ne]: null
                                 }
                             } : {
+                                userID: id,
+                                status: 2
+                            },
+                            include: [
+                                {
+                                    model: db.User,
+                                    attributes: ['id', 'username']
+                                },
+                                {
+                                    model: db.Project,
+                                    attributes: ['id', 'name', 'thumbnailPathUrl'],
+                                    include: {
+                                        model: db.Location,
+                                        attributes: ['id', 'name'],
+                                    }
+                                },
+                                {
+                                    model: db.TimeShare,
+                                    attributes: ['id', 'startDate', 'endDate', 'price'],
+                                    include: {
+                                        model: db.TypeRoom,
+                                        atributes: ['id', 'name'],
+                                    }
+                                },
+                                (+status === 3 || +status === 4 || +status === 5) ?
+                                    {
+                                        model: db.Booking,
+                                        attributes: ['id', 'status', 'createdAt', 'updatedAt'],
+                                        where: parseInt(status) === 4 ? {
+                                            status: 1
+                                        } : parseInt(status) === 5 ? {
+                                            status: -1
+                                        } : {
+                                            status: 0
+                                        }
+                                    } : {
+                                        model: db.Booking,
+                                        attributes: ['id', 'status'],
+                                    },
+                            ],
+                            ...queries,
+                        })
+                        if (ticketResponse.length !== 0) {
+                            for (let i = 0; i < ticketResponse.length; i++) {
+                                const ticket = {};
+                                ticket.reservationID = ticketResponse[i].id
+                                ticket.code = ticketResponse[i].code;
+                                ticket.projectID = ticketResponse[i].Project.id
+                                ticket.projectName = ticketResponse[i].Project.name;
+                                ticket.projectThumbnailPathUrl = ticketResponse[i].Project.thumbnailPathUrl;
+                                ticket.location = ticketResponse[i].Project.Location.name
+                                if (parseInt(status) !== 1) {
+                                    ticket.typeRoomID = ticketResponse[i].TimeShare.TypeRoom.id
+                                    ticket.typeRoomName = ticketResponse[i].TimeShare.TypeRoom.name
+                                    ticket.timeShareID = ticketResponse[i].TimeShare.id
+                                    ticket.startDate = ticketResponse[i].TimeShare.startDate;
+                                    ticket.endDate = ticketResponse[i].TimeShare.endDate;
+                                    ticket.price = ticketResponse[i].TimeShare.price;
+                                    if (parseInt(status) === 2) {
+                                        ticket.refund = ticketResponse[i].refund;
+                                        ticket.refundDate = ticketResponse[i].refundDate;
+                                        ticket.bookingTimeShareDate = ticketResponse[i].bookingDate
+                                    } else {
+                                        ticket.bookingStatus = ticketResponse[i].Booking.status;
+                                        if (parseInt(status) === 3) {
+                                            ticket.bookingSuccessDate = ticketResponse[i].Booking.createdAt
+                                        } else if (parseInt(status) === 4) {
+                                            ticket.purchasedSuccessDate = ticketResponse[i].Booking.updatedAt
+                                        } else {
+                                            ticket.purchasedFailedDate = ticketResponse[i].Booking.updatedAt
+                                        }
+                                    }
+                                } else {
+                                    ticket.refund = ticketResponse[i].refund;
+                                    ticket.refundDate = ticketResponse[i].refundDate;
+                                    ticket.reservatedProjectDate = ticketResponse[i].createdAt
+
+                                }
+                                if (ticket.projectID) {
+                                    response.push(ticket);
+                                }
+                            }
+                        }
+                    }
+                }
+                else {
+                    const orderBy = 'status';
+                    const orderType = 'ASC';
+                    queries = pagination({page, limit, orderType, orderBy});
+                    const ticketResponsePagination = await db.ReservationTicket.findAll({
+                        nest: true,
+                        raw: true,
+                        //attributes: ticketAttributes,
+                        where: {
+                            userID: id,
+                        },
+                        include: [
+                            {
+                                model: db.User,
+                                attributes: ['id', 'username'],
+                            },
+                            {
+                                model: db.Project,
+                                attributes: ['id', 'name', 'thumbnailPathUrl'],
+                                include: {
+                                    model: db.Location,
+                                    attributes: ['id', 'name'],
+                                }
+                            },
+                            {
+                                model: db.TimeShare,
+                                attributes: ['id', 'startDate', 'endDate'],
+                                include: {
+                                    model: db.TypeRoom,
+                                    atributes: ['id', 'name'],
+                                }
+                            },
+                            {
                                 model: db.Booking,
                                 attributes: ['id', 'status'],
                             },
-                    ],
-                })
-                if (ticketResponse.length !== 0) {
-                    for (let i = 0; i < ticketResponse.length; i++) {
-                        const ticket = {};
-                        ticket.reservationID = ticketResponse[i].id
-                        ticket.code = ticketResponse[i].code;
-                        ticket.projectID = ticketResponse[i].Project.id
-                        ticket.projectName = ticketResponse[i].Project.name;
-                        ticket.projectThumbnailPathUrl = ticketResponse[i].Project.thumbnailPathUrl;
-                        ticket.location = ticketResponse[i].Project.Location.name
-                        if (parseInt(status) !== 1) {
-                            ticket.typeRoomID = ticketResponse[i].TimeShare.TypeRoom.id
-                            ticket.typeRoomName = ticketResponse[i].TimeShare.TypeRoom.name
-                            ticket.timeShareID = ticketResponse[i].TimeShare.id
-                            ticket.startDate = ticketResponse[i].TimeShare.startDate;
-                            ticket.endDate = ticketResponse[i].TimeShare.endDate;
-                            if (parseInt(status) === 2) {
-                                ticket.refund = ticketResponse[i].refund;
-                                ticket.refundDate = ticketResponse[i].refundDate;
-                                ticket.bookingTimeShareDate = ticketResponse[i].bookingDate
-                            } else {
-                                ticket.bookingStatus = ticketResponse[i].Booking.status;
-                                if (parseInt(status) === 3) {
-                                    ticket.bookingSuccessDate = ticketResponse[i].Booking.createdAt
-                                } else if (parseInt(status) === 4) {
-                                    ticket.purchasedSuccessDate = ticketResponse[i].Booking.updatedAt
+                        ],
+                    })
+                    countPages = ticketResponsePagination.length !== 0 ? 1 : 0;
+                    if (ticketResponsePagination.length / queries.limit > 1) {
+                        countPages = Math.ceil(ticketResponsePagination.length / queries.limit)
+                    }
+                    if (page) {
+                        pageInput = page
+                    }
+                    if (pageInput <= countPages) {
+                        const ticketResponse = await db.ReservationTicket.findAll({
+                            nest: true,
+                            raw: true,
+                            where: {
+                                userID: id,
+                            },
+                            //attributes: ticketAttributes,
+                            include: [
+                                {
+                                    model: db.User,
+                                    attributes: ['id', 'username']
+                                },
+                                {
+                                    model: db.Project,
+                                    attributes: ['id', 'name', 'thumbnailPathUrl'],
+                                    include: {
+                                        model: db.Location,
+                                        attributes: ['id', 'name'],
+                                    }
+                                },
+                                {
+                                    model: db.TimeShare,
+                                    attributes: ['id', 'startDate', 'endDate'],
+                                    include: {
+                                        model: db.TypeRoom,
+                                        atributes: ['id', 'name'],
+                                    }
+                                },
+                                {
+                                    model: db.Booking,
+                                    attributes: ['id', 'status'],
+                                },
+                            ],
+                            ...queries,
+                        })
+                        if (ticketResponse.length !== 0) {
+                            for (let i = 0; i < ticketResponse.length; i++) {
+                                const ticket = {};
+                                ticket.reservationID = ticketResponse[i].id
+                                ticket.code = ticketResponse[i].code;
+                                ticket.projectID = ticketResponse[i].Project.id
+                                ticket.projectName = ticketResponse[i].Project.name;
+                                ticket.projectThumbnailPathUrl = ticketResponse[i].Project.thumbnailPathUrl;
+                                ticket.location = ticketResponse[i].Project.Location.name
+                                if ((ticketResponse[i].status === 1 || ticketResponse[i].status === 2) && ticketResponse[i].TimeShare.id) {
+                                    ticket.typeRoomID = ticketResponse[i].TimeShare.TypeRoom.id
+                                    ticket.typeRoomName = ticketResponse[i].TimeShare.TypeRoom.name
+                                    ticket.timeShareID = ticketResponse[i].TimeShare.id
+                                    ticket.startDate = ticketResponse[i].TimeShare.startDate;
+                                    ticket.endDate = ticketResponse[i].TimeShare.endDate;
+                                    console.log(ticketResponse[i].Booking.id);
+                                    if (!ticketResponse[i].Booking.id) {
+                                        ticket.refund = ticketResponse[i].refund;
+                                        ticket.refundDate = ticketResponse[i].refundDate;
+                                        ticket.bookingTimeShareDate = ticketResponse[i].bookingDate
+                                        ticket.status = 'Booked';
+                                    } else {
+                                        ticket.bookingStatus = ticketResponse[i].Booking.status;
+                                        if (ticketResponse[i].Booking.status === 0) {
+                                            ticket.bookingSuccessDate = ticketResponse[i].Booking.createdAt
+                                            ticket.status = 'Booked success';
+                                        } else if (ticketResponse[i].Booking.status === 1) {
+                                            ticket.purchasedSuccessDate = ticketResponse[i].Booking.updatedAt
+                                            ticket.status = 'Purchased success';
+                                        } else {
+                                            ticket.purchasedFailedDate = ticketResponse[i].Booking.updatedAt
+                                            ticket.status = 'Purchased failed';
+                                        }
+                                    }
                                 } else {
-                                    ticket.purchasedFailedDate = ticketResponse[i].Booking.updatedAt
+                                    ticket.refund = ticketResponse[i].refund;
+                                    ticket.refundDate = ticketResponse[i].refundDate;
+                                    ticket.reservatedProjectDate = ticketResponse[i].createdAt;
+                                    ticket.status = 'Reservation';
+
+                                }
+                                if (ticket.projectID) {
+                                    response.push(ticket);
                                 }
                             }
-                        } else {
-                            ticket.refund = ticketResponse[i].refund;
-                            ticket.refundDate = ticketResponse[i].refundDate;
-                            ticket.reservatedProjectDate = ticketResponse[i].createdAt
-
                         }
-                        if (ticket.projectID) {
-                            response.push(ticket);
-                        }
+                        //console.log(ticketResponse);
                     }
                 }
             }
@@ -1169,6 +1384,9 @@ export const getAllTicketsByUser = ({ id, status }) => {
                         `User (${id}) does not have any Ticket in Progress with status (${status})!`
                         : `User (${id}) tickets.`,
                 data: response.length !== 0 ? response : null,
+                count: response.length,
+                countPages: countPages,
+                page: pageInput
             })
         } catch (error) {
             console.log(error);
