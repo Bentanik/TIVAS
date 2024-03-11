@@ -1,3 +1,36 @@
+.wrapper {
+    // background: red;
+    position: relative;
+    border-radius: 8px;
+    padding: 30px;
+    background-color: #fff;
+    box-shadow: rgba(17, 17, 26, 0.1) 0px 8px 24px,
+        rgba(17, 17, 26, 0.1) 0px 16px 56px, rgba(17, 17, 26, 0.1) 0px 24px 80px;
+    padding-bottom: 30px;
+    height: 1000px;
+}
+
+.title {
+    font-family: "Inter", sans-serif;
+    font-size: 3rem;
+    font-weight: 600;
+}
+
+.icon {
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.content {
+    padding: 20px;
+}
+
 .ticket-detail-wrapper {
     margin-top: 30px;
 
@@ -38,11 +71,11 @@
             text-overflow: ellipsis;
         }
     }
-    .trow {
-        &:hover {
-            background-color: #1cb9541a;
-        }
-    }
+    // .trow {
+    //     &:hover {
+    //         background-color: #1cb9541a;
+    //     }
+    // }
 }
 
 .tfoot {
@@ -58,8 +91,6 @@
     }
 }
 
-// Td coloumn
-
 .index {
     width: 60px;
     .num {
@@ -71,7 +102,7 @@
 }
 
 .project {
-    width: 400px;
+    width: 300px;
 
     .text {
         width: 200px;
@@ -90,6 +121,7 @@
 
     .box {
         width: 200px;
+
         .name-project {
             font-family: "Inter", sans-serif;
             font-size: 1.8rem;
@@ -127,7 +159,19 @@
 }
 
 .sleep {
-    width: 250px;
+    width: 150px;
+    .name {
+        font-family: "Inter", sans-serif;
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: #000;
+    }
+}
+
+.type-room {
+    width: 400px;
+    overflow: hidden;
+    // white-space: nowrap;
     .name {
         font-family: "Inter", sans-serif;
         font-size: 1.5rem;
@@ -137,11 +181,44 @@
 }
 
 .date {
+    width: 200px;
     .name {
+        width: 200px;
         font-family: "Inter", sans-serif;
         font-size: 1.5rem;
         font-weight: 500;
         color: #000;
+
+        .btn-wrapper {
+            .btn {
+                min-width: 130px;
+                display: block;
+                padding: 10px 20px;
+                border-radius: 10px;
+                cursor: pointer;
+                font-family: "Inter", sans-serif;
+                font-size: 1.5rem;
+                font-weight: 500;
+                color: #000;
+            }
+
+            .success {
+                background: #13c56355;
+
+                &:hover {
+                    background: #13c563;
+                }
+            }
+
+            .fail {
+                margin-top: 5px;
+                background: #cb23233f;
+
+                &:hover {
+                    background: #cb2323;
+                }
+            }
+        }
     }
 }
 .price {
@@ -151,4 +228,16 @@
         font-weight: 500;
         color: #000;
     }
+}
+
+.empty-img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-position: 50%;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 200px;
+    width: 200px;
 }

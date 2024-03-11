@@ -20,8 +20,13 @@ import TimeshareDetail from "~/pages/TimeshareDetail";
 import Purchase from "~/components/Purchase";
 import AdminUserBanList from "~/components/UserBanList";
 import AdminManageTypeRoom from "~/pages/AdminManageTypeRoom";
+import AdminManageUserTicket from "~/pages/AdminManageUserTicket";
 import AdminCreateTypeRoom from "~/pages/AdminCreateTypeRoom";
 import AdminManageTimeshare from "~/pages/AdminManageTimeshare";
+
+
+
+
 
 const routes = [
   {
@@ -224,7 +229,13 @@ const routes = [
     component: AdminManageUser,
     layout: LayoutAdmin,
   },
+        {
+        path: "/admin/manageuser/ticket/:id",
+        component: AdminManageUserTicket,
+        layout: LayoutAdmin,
+    },
   
+
 ];
 
 export default routes;

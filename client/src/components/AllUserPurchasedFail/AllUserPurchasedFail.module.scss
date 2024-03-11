@@ -31,7 +31,6 @@
     padding: 20px;
 }
 
-// ==================================
 .ticket-detail-wrapper {
     margin-top: 30px;
 
@@ -72,11 +71,11 @@
             text-overflow: ellipsis;
         }
     }
-    .trow {
-        &:hover {
-            background-color: #1cb9541a;
-        }
-    }
+    // .trow {
+    //     &:hover {
+    //         background-color: #1cb9541a;
+    //     }
+    // }
 }
 
 .tfoot {
@@ -92,10 +91,8 @@
     }
 }
 
-// Td coloumn
-
 .index {
-    // width: 60px;
+    width: 60px;
     .num {
         // text-align: center;
         font-family: "Inter", sans-serif;
@@ -105,7 +102,7 @@
 }
 
 .project {
-    width: 400px;
+    width: 300px;
 
     .text {
         width: 200px;
@@ -124,6 +121,7 @@
 
     .box {
         width: 200px;
+
         .name-project {
             font-family: "Inter", sans-serif;
             font-size: 1.8rem;
@@ -161,7 +159,19 @@
 }
 
 .sleep {
-    width: 250px;
+    width: 150px;
+    .name {
+        font-family: "Inter", sans-serif;
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: #000;
+    }
+}
+
+.type-room {
+    width: 400px;
+    overflow: hidden;
+    // white-space: nowrap;
     .name {
         font-family: "Inter", sans-serif;
         font-size: 1.5rem;
@@ -171,11 +181,44 @@
 }
 
 .date {
+    width: 200px;
     .name {
+        width: 200px;
         font-family: "Inter", sans-serif;
         font-size: 1.5rem;
         font-weight: 500;
         color: #000;
+
+        //         .btn-wrapper {
+        //             .btn {
+        //                 min-width: 130px;
+        //                 display: block;
+        //                 padding: 10px 20px;
+        //                 border-radius: 10px;
+        //                 cursor: pointer;
+        //                 font-family: "Inter", sans-serif;
+        //                 font-size: 1.5rem;
+        //                 font-weight: 500;
+        //                 color: #000;
+        //             }
+
+        //             .success {
+        //                 background: #13c56355;
+
+        //                 &:hover {
+        //                     background: #13c563;
+        //                 }
+        //             }
+
+        //             .fail {
+        //                 margin-top: 5px;
+        //                 background: #cb23233f;
+
+        //                 &:hover {
+        //                     background: #cb2323;
+        //                 }
+        //             }
+        //         }
     }
 }
 .price {
@@ -197,4 +240,18 @@
     background-size: contain;
     height: 200px;
     width: 200px;
+}
+
+.refund {
+    font-family: "Inter", sans-serif;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #000;
+}
+
+.success {
+    color: #3a9520;
+}
+.fail {
+    color: rgb(168, 25, 25);
 }

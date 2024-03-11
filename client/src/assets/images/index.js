@@ -52,6 +52,7 @@ const images = {
     masterCard: require("~/assets/images/masterCard.png"),
     importantIcon: require("~/assets/images/importantIcon.svg").default,
     visaImage: require("~/assets/images/visaImg.png"),
+    empty: require("~/assets/images/empty.png"),
 };
 
 export default images;

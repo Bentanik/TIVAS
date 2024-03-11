@@ -1,12 +1,13 @@
 import classNames from "classnames/bind";
-import styles from "./TimeshareBooked.module.scss";
+import styles from "./AllUserPurchasedFail.module.scss";
 // import PurchasedProjectInfo from "~/components/PurchasedProjectInfo";
 import images from "~/assets/images";
 import Tippy from "@tippyjs/react";
+
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Rating, Stack, Pagination } from "@mui/material";
-import { getAllTicketByUser } from "~/controllers/reservationTicket";
+import { getUserNoPriority } from "~/controllers/reservationTicket";
 
 import { useDispatch, useSelector } from "react-redux";
 import createAxios from "~/configs/axios";
@@ -25,8 +26,8 @@ function formatDate(dateString) {
     });
 }
 
-function TimeshareBooked() {
-    const [reservationProject, setReservationProject] = useState([]);
+function AllUserPurchasedFail() {
+    const [userPriorityData, setUserPriorityData] = useState([]);
     const [countPage, setCountPage] = useState(1);
     const [page, setPage] = useState(1);
 
@@ -39,25 +40,25 @@ function TimeshareBooked() {
     const handlePageChange = (event, value) => {
         setPage(value);
     };
+
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
 
-    const { status } = useParams();
+    const { id } = useParams();
 
     useEffect(() => {
         const fetchListing = async () => {
-            const res = await getAllTicketByUser(axiosInstance, {
+            const res = await getUserNoPriority(axiosInstance, id, {
                 page: page,
                 limit,
-                status: status,
-                id: 10,
             });
+
             if (res?.err === 0) {
-                setReservationProject(res?.data);
+                setUserPriorityData(res?.data);
                 setCountPage(res.countPages);
             } else {
-                setReservationProject([]);
+                setUserPriorityData([]);
                 setCountPage(1);
             }
         };
@@ -67,10 +68,10 @@ function TimeshareBooked() {
     return (
         <div className={cx("wrapper")}>
             <div className={cx("row")}>
-                <h1 className={cx("title")}>Timeshare Booked</h1>
+                <h1 className={cx("title")}>Purchased Success</h1>
 
                 <Tippy
-                    content="Show all reservations for timeshares "
+                    content="Show all timeshare you purchased success"
                     placement="top"
                 >
                     <img
@@ -80,7 +81,7 @@ function TimeshareBooked() {
                     />
                 </Tippy>
             </div>
-            {reservationProject.length === 0 ? (
+            {userPriorityData.length === 0 ? (
                 <div className={cx("empty-wrapper")}>
                     <img
                         src={images.empty}
@@ -103,11 +104,6 @@ function TimeshareBooked() {
                                                 Project
                                             </h4>
                                         </th>
-                                        <th className={cx("date", "column")}>
-                                            <h4 className={cx("title")}>
-                                                Booked Date
-                                            </h4>
-                                        </th>
 
                                         <th className={cx("sleep", "column")}>
                                             <h4 className={cx("title")}>
@@ -116,18 +112,18 @@ function TimeshareBooked() {
                                         </th>
                                         <th className={cx("date", "column")}>
                                             <h4 className={cx("title")}>
-                                                Date
+                                                User Name
                                             </h4>
                                         </th>
                                         <th className={cx("date", "column")}>
                                             <h4 className={cx("title")}>
-                                                Code
+                                                Refund
                                             </h4>
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody className={cx("tbody")}>
-                                    {reservationProject?.map((item, index) => {
+                                    {userPriorityData?.map((item, index) => {
                                         return (
                                             <tr
                                                 // key={index}
@@ -218,20 +214,7 @@ function TimeshareBooked() {
                                             cc
                                         </span>
                                     </td> */}
-                                                <td
-                                                    className={cx(
-                                                        "sleep",
-                                                        "column"
-                                                    )}
-                                                >
-                                                    <span
-                                                        className={cx("name")}
-                                                    >
-                                                        {formatDate(
-                                                            item?.bookingTimeShareDate
-                                                        )}
-                                                    </span>
-                                                </td>
+
                                                 <td
                                                     className={cx(
                                                         "type-room",
@@ -253,12 +236,7 @@ function TimeshareBooked() {
                                                     <span
                                                         className={cx("name")}
                                                     >
-                                                        {formatDate(
-                                                            item?.startDate
-                                                        )}{" "}
-                                                        {formatDate(
-                                                            item?.endDate
-                                                        )}
+                                                        {item?.username}
                                                     </span>
                                                 </td>
                                                 <td
@@ -270,7 +248,25 @@ function TimeshareBooked() {
                                                     <span
                                                         className={cx("name")}
                                                     >
-                                                        {item?.code}
+                                                        {item?.refund === 0 ? (
+                                                            <div
+                                                                className={cx(
+                                                                    "refund",
+                                                                    "fail"
+                                                                )}
+                                                            >
+                                                                Not Refund
+                                                            </div>
+                                                        ) : (
+                                                            <div
+                                                                className={cx(
+                                                                    "refund",
+                                                                    "success"
+                                                                )}
+                                                            >
+                                                                Refunded
+                                                            </div>
+                                                        )}
                                                     </span>
                                                 </td>
                                             </tr>
@@ -300,4 +296,4 @@ function TimeshareBooked() {
     );
 }
 
-export default TimeshareBooked;
+export default AllUserPurchasedFail;

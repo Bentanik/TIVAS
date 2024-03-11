@@ -1,5 +1,5 @@
 import classNames from "classnames/bind";
-import styles from "./TimeshareBooked.module.scss";
+import styles from "./BookedSuccess.module.scss";
 // import PurchasedProjectInfo from "~/components/PurchasedProjectInfo";
 import images from "~/assets/images";
 import Tippy from "@tippyjs/react";
@@ -25,7 +25,7 @@ function formatDate(dateString) {
     });
 }
 
-function TimeshareBooked() {
+function BookedSuccess() {
     const [reservationProject, setReservationProject] = useState([]);
     const [countPage, setCountPage] = useState(1);
     const [page, setPage] = useState(1);
@@ -67,10 +67,10 @@ function TimeshareBooked() {
     return (
         <div className={cx("wrapper")}>
             <div className={cx("row")}>
-                <h1 className={cx("title")}>Timeshare Booked</h1>
+                <h1 className={cx("title")}>Booked Success</h1>
 
                 <Tippy
-                    content="Show all reservations for timeshares "
+                    content="Show all timeshare you booked success"
                     placement="top"
                 >
                     <img
@@ -300,4 +300,4 @@ function TimeshareBooked() {
     );
 }
 
-export default TimeshareBooked;
+export default BookedSuccess;
