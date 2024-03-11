@@ -64,10 +64,6 @@ export const createTicket = ({
                     status: 1,
                     userID,
                     projectID,
-                    reservationPrice: projectResponse.reservationPrice,
-                    reservationDate: projectResponse.reservationDate,
-                    openDate: projectResponse.openDate,
-                    closeDate: projectResponse.closeDate,
                     timeshareID: null,
                     refund: 0,
                 })

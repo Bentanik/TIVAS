@@ -68,7 +68,7 @@ export const createNewProject = ({
                         status: 0,
                         thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : null,
                         thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : null,
-                        locationID: locationDB.id
+                        locationID: location
                     },
                 })
                 console.log(created)
@@ -333,11 +333,7 @@ export const updateProject = ({
             //Check TypeRoom is existed in DB
             let projectResult = await db.Project.findByPk(id);
             if (projectResult) {
-                locationDB = await db.Location.findOne({
-                    where: {
-                        name: location,
-                    }
-                })
+                
                 if (projectResult.name !== name) {
                     nameDuplicated = await db.Project.findOne({
                         where: {
@@ -345,7 +341,7 @@ export const updateProject = ({
                         }
                     })
                 }
-                if (!nameDuplicated && locationDB) {
+                if (!nameDuplicated) {
                     //Delete images
                     if (imagesDeleted) {
                         imagesDeleted = imagesDeleted.split(',');
@@ -380,7 +376,7 @@ export const updateProject = ({
                         attractions,
                         thumbnailPathUrl: fileData.thumbnail ? fileData.thumbnail[0].path : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathUrl,
                         thumbnailPathName: fileData.thumbnail ? fileData.thumbnail[0].filename : (parseInt(thumbnailDeleted) === 1) ? null : projectResult.thumbnailPathName,
-                        locationID: locationDB.id,
+                        locationID: location,
                     }, {
                         where: {
                             id: id,
@@ -411,9 +407,7 @@ export const updateProject = ({
                     `Can not find Project with id: (${id})`
                     : nameDuplicated ?
                         'Project Name has been used!'
-                        : !locationDB ?
-                            `location (${location}) does not exist!`
-                            : 'Update Successfully.',
+                        : 'Update Successfully.',
                 messageImage: imageErrorMessage.length !== 0 ? `Can not find Image: ${imageErrorMessage.join(',')}` : null,
             });
         } catch (error) {
@@ -1046,6 +1040,34 @@ export const updateReservationInfo = (id, { reservationDate, reservationPrice, o
                             id
                         }
                     })
+                    const timeShareDatesResponse = await db.TimeShareDate.findOne({
+                        where: {
+                            projectID: id,
+                            status: 0
+                        }
+                    })
+                    console.log(timeShareDatesResponse);
+                    if(timeShareDatesResponse){
+                        await db.TimeShareDate.update({
+                            reservationDate: convertDate(reservationDate),
+                            reservationPrice,
+                            openDate: convertDate(openDate),
+                            closeDate: convertDate(closeDate),
+                        }, {
+                            where: {
+                                projectID: id,
+                            }
+                        })
+                    }else{
+                        await db.TimeShareDate.create({
+                            reservationDate: convertDate(reservationDate),
+                            reservationPrice,
+                            openDate: convertDate(openDate),
+                            closeDate: convertDate(closeDate),
+                            projectID: id,
+                            status: 0,
+                        })
+                    }
                 } else if (projectResponse.status === 1) {
                     await db.Project.update({
                         openDate: convertDate(openDate),
@@ -1053,6 +1075,15 @@ export const updateReservationInfo = (id, { reservationDate, reservationPrice, o
                     }, {
                         where: {
                             id
+                        }
+                    })
+                    await db.TimeShareDate.update({
+                        openDate: convertDate(openDate),
+                        closeDate: convertDate(closeDate),
+                    }, {
+                        where: {
+                            projectID: id,
+                            status: 0
                         }
                     })
                 }
@@ -1100,13 +1131,15 @@ export const updateReservationInfo = (id, { reservationDate, reservationPrice, o
                 }
             }
             resolve({
-                err: !(projectResponse?.status === 1 && (projectResponse.reservationDate?.getTime() !== convertDate(reservationDate).getTime() || projectResponse?.reservationPrice !== reservationPrice)) && !(projectResponse?.status === 2 && (projectResponse.openDate?.getTime() !== convertDate(openDate).getTime() || projectResponse.closeDate?.getTime() !== convertDate(closeDate).getTime() || projectResponse.reservationDate?.getTime() !== convertDate(reservationDate).getTime() || projectResponse?.reservationPrice !== reservationPrice)) ? 0 : 1,
+                err: !(projectResponse?.status === 1 && (projectResponse.reservationDate?.getTime() !== convertDate(reservationDate).getTime() || projectResponse?.reservationPrice !== reservationPrice)) && !(projectResponse?.status === 2 && (projectResponse.openDate?.getTime() !== convertDate(openDate).getTime() || projectResponse.closeDate?.getTime() !== convertDate(closeDate).getTime() || projectResponse.reservationDate?.getTime() !== convertDate(reservationDate).getTime() || projectResponse?.reservationPrice !== reservationPrice)) && projectResponse.status !== 3 ? 0 : 1,
                 message: !projectResponse ?
                     `Project (${id}) does not exist!` :
                     projectResponse.status === 1 && (projectResponse.reservationDate?.getTime() !== convertDate(reservationDate).getTime() || projectResponse.reservationPrice !== reservationPrice) ?
                         `Can not update Reservation Date or Reservation Price because Project(${id}) is already opened for reservation!`
                         : projectResponse.status === 2 && (projectResponse.openDate?.getTime() !== convertDate(openDate).getTime() || projectResponse.closeDate?.getTime() !== convertDate(closeDate).getTime() || projectResponse.reservationDate?.getTime() !== convertDate(reservationDate).getTime() || projectResponse.reservationPrice !== reservationPrice) ?
                             `Can not update Reservation Date, Reservation Price, Open date or Close date because Project(${id}) is already opened for booking!`
+                            : projectResponse.status === 3 ? 
+                            `Can not update reservation because Project(${id}) is on CheckPriority stage!`
                             : `Update Reservation for Project (${id}) successfully.`
             })
         } catch (error) {
