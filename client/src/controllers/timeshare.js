@@ -9,9 +9,34 @@ export const getAllTimeshare = async (axiosInstance, form) => {
   }
 };
 
-export const getTimeshareByProjectID = async (axiosInstance, projectID, form) => {
+export const getAllTimeshareOfProjectByStaff = async (
+  axiosInstance,
+  projectID,
+  userID
+) => {
   try {
-    const res = await services.getTimeshareByProjectID(axiosInstance, projectID, form);
+    const res = await services.getAllTimeshareOfProjectByStaff(
+      axiosInstance,
+      projectID,
+      userID
+    );
+    return res;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const getTimeshareByProjectID = async (
+  axiosInstance,
+  projectID,
+  form
+) => {
+  try {
+    const res = await services.getTimeshareByProjectID(
+      axiosInstance,
+      projectID,
+      form
+    );
     return res;
   } catch (err) {
     console.log(err);

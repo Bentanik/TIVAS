@@ -24,3 +24,13 @@ export const createNewTimeshare = (axiosInstance, typeRoomID, userID, form) => {
     form
   );
 };
+
+export const getAllTimeshareOfProjectByStaff = (
+  axiosInstance,
+  projectID,
+  userID
+) => {
+  return axiosInstance.get(
+    `/api/v1/timeshare/getAllByStaff/?projectID=${projectID}&userID=${userID}`
+  );
+};
