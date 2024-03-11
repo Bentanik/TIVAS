@@ -539,3 +539,40 @@ export const checkResetPassword = ({ email, otp }) => {
     }
   });
 };
+
+export const registerStaft = ({ username, password }) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const [user, created] = await db.User.findOrCreate({
+        where: { username },
+        defaults: {
+          username,
+          password: hashPassword(password),
+          roleID: 2,
+          type: "Local",
+        },
+      });
+      const refreshToken = created ? generateRefreshToken(user) : null;
+      if (refreshToken) {
+        await db.User.update(
+          {
+            refreshToken,
+          },
+          {
+            where: { id: user.id },
+          }
+        );
+      }
+      resolve({
+        err: refreshToken ? 0 : 1,
+        mess: refreshToken
+          ? "Register successfully"
+          : "Username of staff exits",
+        refreshToken,
+      });
+    } catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  });
+};

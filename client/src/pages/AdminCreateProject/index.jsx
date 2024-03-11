@@ -110,7 +110,7 @@ function AdminCreateProject() {
     const formData = new FormData();
     setIsLoading(true);
     formData.append("thumbnail", thumbNail);
-    formData.append("images", listImage[0]);
+    listImage.map((item) => formData.append("images", item));
     formData.append("name", projectName);
     formData.append("description", desc);
     formData.append("buildingStatus", buildStatus);
@@ -137,7 +137,10 @@ function AdminCreateProject() {
 
   return (
     <div className={cx("wrapper")}>
+
       <Toaster position="top-right" richColors expand={true} />
+      <h2 className={cx("heading")}>Create new project</h2>
+
       <form onSubmit={handleSubmit}>
         <div className={cx("form")}>
           <div className={cx("thumbnail")}>
@@ -200,7 +203,7 @@ function AdminCreateProject() {
               <select
                 className={cx("input")}
                 id="type"
-                valie={typeOfProject}
+                value={typeOfProject}
                 onChange={(e) => setTypeOfProject(e.target.value)}
               >
                 <option value="Villa">Villa</option>

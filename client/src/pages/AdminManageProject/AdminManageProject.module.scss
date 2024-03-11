@@ -65,8 +65,10 @@
       }
     }
     .trow {
+      transition: border-left-color 0.3s, box-shadow 0.3s;
       &:hover {
-        background-color: #1cb9541a;
+        border-left-color: #1570ee;
+        box-shadow: inset 5px 0 0 #1570ee;
       }
     }
   }

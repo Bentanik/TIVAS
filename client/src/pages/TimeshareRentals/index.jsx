@@ -1,201 +1,84 @@
 import classNames from "classnames/bind";
 import styles from "./TimeshareRentals.module.scss";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navigations from "~/components/Layouts/Navigations";
 import Footer from "~/components/Layouts/Footer";
 import images from "~/assets/images";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SearchPage from "~/components/SearchPage";
 import Slider from "react-slick";
 import Search from "~/components/Search";
+import { Pagination, Stack } from "@mui/material";
+import {
+  getAllTimeshare,
+  getTimeshareByProjectID,
+} from "~/controllers/timeshare";
+import { useDispatch, useSelector } from "react-redux";
+import createAxios from "~/configs/axios";
 
 const cx = classNames.bind(styles);
 
-const RESORT_DETAIL = [
-  {
-    link: "#!",
-    date: "04/04/2024 - 04/07/2024",
-    nights: "3",
-    price: "$1,995($665/nights)",
-    room: "2 Bedroom Villa",
-    sleeps: "8",
-    building: "Unassigned",
-    view: "Ocean View",
-  },
-  {
-    link: "#!",
-    date: "04/04/2024 - 04/07/2024",
-    nights: "3",
-    price: "$1,995($665/nights)",
-    room: "2 Bedroom Villa",
-    sleeps: "8",
-    building: "Unassigned",
-    view: "Ocean View",
-  },
-  {
-    link: "#!",
-    date: "04/04/2024 - 04/07/2024",
-    nights: "3",
-    price: "$1,995($665/nights)",
-    room: "2 Bedroom Villa",
-    sleeps: "8",
-    building: "Unassigned",
-    view: "Ocean View",
-  },
-  {
-    link: "#!",
-    date: "04/04/2024 - 04/07/2024",
-    nights: "3",
-    price: "$1,995($665/nights)",
-    room: "2 Bedroom Villa",
-    sleeps: "8",
-    building: "Unassigned",
-    view: "Ocean View",
-  },
-  {
-    link: "#!",
-    date: "04/04/2024 - 04/07/2024",
-    nights: "3",
-    price: "$1,995($665/nights)",
-    room: "2 Bedroom Villa",
-    sleeps: "8",
-    building: "Unassigned",
-    view: "Ocean View",
-  },
-  {
-    link: "#!",
-    date: "04/04/2024 - 04/07/2024",
-    nights: "3",
-    price: "$1,995($665/nights)",
-    room: "2 Bedroom Villa",
-    sleeps: "8",
-    building: "Unassigned",
-    view: "Ocean View",
-  },
-  {
-    link: "#!",
-    date: "04/04/2024 - 04/07/2024",
-    nights: "3",
-    price: "$1,995($665/nights)",
-    room: "2 Bedroom Villa",
-    sleeps: "8",
-    building: "Unassigned",
-    view: "Ocean View",
-  },
-  {
-    link: "#!",
-    date: "04/04/2024 - 04/07/2024",
-    nights: "3",
-    price: "$1,995($665/nights)",
-    room: "2 Bedroom Villa",
-    sleeps: "8",
-    building: "Unassigned",
-    view: "Ocean View",
-  },
-  {
-    link: "#!",
-    date: "04/04/2024 - 04/07/2024",
-    nights: "3",
-    price: "$1,995($665/nights)",
-    room: "2 Bedroom Villa",
-    sleeps: "8",
-    building: "Unassigned",
-    view: "Ocean View",
-  },
-  {
-    link: "#!",
-    date: "04/04/2024 - 04/07/2024",
-    nights: "3",
-    price: "$1,995($665/nights)",
-    room: "2 Bedroom Villa",
-    sleeps: "8",
-    building: "Unassigned",
-    view: "Ocean View",
-  },
-  {
-    link: "#!",
-    date: "04/04/2024 - 04/07/2024",
-    nights: "3",
-    price: "$1,995($665/nights)",
-    room: "2 Bedroom Villa",
-    sleeps: "8",
-    building: "Unassigned",
-    view: "Ocean View",
-  },
-  {
-    link: "#!",
-    date: "04/04/2024 - 04/07/2024",
-    nights: "3",
-    price: "$1,995($665/nights)",
-    room: "2 Bedroom Villa",
-    sleeps: "8",
-    building: "Unassigned",
-    view: "Ocean View",
-  },
-];
-const blog_link = {
-  link: "/blog",
-};
-function TimeshareRentals() {
-  const [listingResort, setListingResort] = useState(RESORT_DETAIL);
+function convertToDate(inputDate) {
+  const date = new Date(inputDate);
 
-  const detailsListing = () => {
-    return listingResort.map((item, index) => {
-      return (
-        <div className={cx("room-type-wrapper")}>
-          <div className={cx("room-type-block")}>
-            <div className={cx("content-wrapper")}>
-              {/* Left content */}
-              <div className={cx("left-content")}>
-                <div className={cx("left-row")}>
-                  <div className={cx("list-item")}>
-                    {/* First List */}
-                    <div className={cx("first-list")}>
-                      <div className={cx("left-content")}>
-                        <h2 style={{ width: 300 }} className={cx("sub-title")}>
-                          {item.date}
-                          <p className={cx("new")}>New!</p>
-                        </h2>
-                      </div>
-                      <div style={{ width: 85, textAlign: 'start'}} className={cx("guest", "row")}>
-                        <div className={cx("text")}>{item.nights}</div>
-                      </div>
-                      <div
-                        style={{ width: 206, fontWeight: 600, textAlign: 'start'  }}
-                        className={cx("area", "row")}
-                      >
-                        <div className={cx("text")}>{item.price}</div>
-                      </div>
-                      <div style={{ width: 205, textAlign: 'start'  }} className={cx("area", "row")}>
-                        <div className={cx("text")}>{item.room}</div>
-                      </div>
-                      <div style={{ width: 65 ,textAlign: 'start'  }} className={cx("area", "row")}>
-                        <div className={cx("text")}>{item.sleeps}</div>
-                      </div>
-                      <div style={{ width: 122, textAlign: 'start'}} className={cx("area", "row")}>
-                        <div className={cx("text")}>{item.building}</div>
-                      </div>
-                      <div style={{ width: 122, textAlign: 'start'  }} className={cx("area", "row")}>
-                        <div className={cx("text")}>{item.view}</div>
-                      </div>
-                      <button
-                        className={cx("button-listing")}
-                        style={{ width: 122 }}
-                      >
-                        VIEW & BOOK
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    });
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const month = date.getMonth();
+  const day = date.getDate();
+  const year = date.getFullYear();
+
+  const result = monthNames[month] + " " + day + " " + year;
+  return result;
+}
+
+function TimeshareRentals() {
+  const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.auth.login.user);
+  const axiosInstance = createAxios(dispatch, currentUser);
+
+  const [listingResort, setListingResort] = useState([]);
+
+  const [countPage, setCountPage] = useState(1);
+  const [page, setPage] = useState(1);
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
   };
+
+  const handleNavigate = (value, id) => {
+    if (value === "view_book") {
+      navigate(`/timesharedetail/${id}`);
+    }
+  };
+
+  useEffect(() => {
+    const fetchListing = async () => {
+      const res = await getTimeshareByProjectID(axiosInstance, 10, {
+        page: page,
+      });
+      setListingResort(res.data);
+      console.log(res.data);
+      setCountPage(res.countPages);
+    };
+    fetchListing();
+  }, [page]);
 
   return (
     <div className={cx("destination-wrapper")}>
@@ -207,94 +90,138 @@ function TimeshareRentals() {
       </header>
       {/* Breadcrumbs */}
       <section className={cx("breadcrumbs")}>
+        <h1 className={cx("title")}>List Timeshare</h1>
         <div className={cx("list-nav")}>
-          <Link to="/">
-            <div className={cx("nav")}>
-              {/* <img src={images.resort} alt="Home" /> */}
-            </div>
+          <Link to="/" className={cx("nav")}>
+            Home
           </Link>
-          <FontAwesomeIcon icon={faChevronRight} className={cx("icon-arrow")} />
-          <div className={cx("nav")}>
-            <Link to="/destinations">
-              <span className={cx("text-nav")}>Project Details</span>
-            </Link>
-          </div>
-        </div>
-        <div className={cx("ancillary")}>
-          <div className={cx("mid-text")}>
-            <img className={cx("left-image")} src={images.resort} alt="pic" />
-            <div className={cx("left-child")}>
-              <h1 style={{ fontWeight: 500 }} className={cx("text")}>
-                Marriott's Aruba Surf Club
-                <span>TIMESHARE RENTALS</span>
-                <a className={cx("click")}>« Back to resort</a>
-              </h1>
-            </div>
-          </div>
-          <div className={cx("right-content")}>
-            <p className={cx("crumb-text")}>Own a timeshare here?</p>
-            <a className={cx("crumb-button")}>RENT MY TIME SHARE</a>
-          </div>
-        </div>
-        <div className={cx("crumb-item")}>
-          <div className={cx("crumb")}>
-            <label className={cx("unit")}>1.320 rentals from $186/night</label>
-            <div className={cx("filter")}>More Filters</div>
-            <input className={cx("calendar")} type="date" />
-          </div>
-          <div className={cx("sort")}>
-            <p className={cx("crumb-unit")}>Sort by:</p>
-            <select id="cars" className={cx("sort-box")}>
-              <option value="volvo">Featured</option>
-              <option value="saab">Newest</option>
-              <option value="opel">Date</option>
-              <option value="audi">Total Price</option>
-              <option value="audi">Unit View</option>
-            </select>
-          </div>
+          <span className={cx("nav")}> - </span>
+          <span className={cx("nav", "text")}>List timeshare</span>
         </div>
       </section>
       {/* Main */}
       <main className={cx("main")}>
-        {/* Content */}
-        <section className={cx("body")}>
-          {/* Favorite destination */}
-          <div className={cx("favorite-box")}>
-            <h2 className={cx("title")}></h2>
-            {/* List box */}
-          </div>
-          {/* Top 25 resort */}
-          <div className={cx("top-resort")}>
-            {/* List box */}
-            <div className={cx("top-resort-header")}></div>
-            {/*Listing Details */}
-            <div className={cx("top-unit")}>
-              <thead className={cx("listing-content")}>
-                <tr className={cx("listing-item")}>
-                  <th className={cx("listing-dates")}>Dates</th>
-                  <th className={cx("listing-nights")}>Nights</th>
-                  <th className={cx("listing-price")}>Price</th>
-                  <th className={cx("listing-be-ba")}>
-                    <span className={cx("show-for-medium-up")}>Room</span>
-                  </th>
-                  <th className={cx("listing-sleeps")}>
-                    <span className={cx("show-for-medium-up")}>Sleeps</span>
-                  </th>
-                  <th className={cx("listing-building")}>Building</th>
-                  <th className={cx("listing-view")}>
-                    <span className={cx("show-for-medium-up")}>View</span>
-                  </th>
-                  <th className={cx("listing-action")}>&nbsp;</th>
-                </tr>
-              </thead>
+        <div className={cx("project")}>
+          <img
+            src={
+              listingResort[0]?.TypeRoom?.TypeOfProject?.Project
+                ?.thumbnailPathUrl
+            }
+            alt="img"
+            className={cx("image")}
+          />
+          <div>
+            <h3 className={cx("name")}>
+              {listingResort[0]?.TypeRoom?.TypeOfProject?.Project?.name}
+            </h3>
+            <div className={cx("location")}>
+              <svg
+                className={cx("icon")}
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+              >
+                <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6" />
+              </svg>
+              <span className={cx("position")}>
+                {
+                  listingResort[0]?.TypeRoom?.TypeOfProject?.Project?.Location
+                    ?.name
+                }
+              </span>
             </div>
-            <div>{detailsListing()}</div>
-            {/* <div>{detailsListing()}</div> */}
           </div>
-          {/* Features Rentals */}
-        </section>
+        </div>
+        {/*Listing Details */}
+        <div className={cx("list-listing")}>
+          <table className={cx("table")}>
+            <thead className={cx("thead")}>
+              <tr>
+                <th className={cx("date", "column")}>
+                  <h4 className={cx("title")}>DATES</h4>
+                </th>
+                <th className={cx("price", "column")}>
+                  <h4 className={cx("title")}>PRICE</h4>
+                </th>
+                <th className={cx("unit", "column")}>
+                  <h4 className={cx("title")}>UNIT</h4>
+                </th>
+                <th className={cx("sleep", "column")}>
+                  <h4 className={cx("title")}>SLEEPS</h4>
+                </th>
+                <th className={cx("sleep", "column")}>
+                  <h4 className={cx("title")}></h4>
+                </th>
+              </tr>
+            </thead>
+            <tbody className={cx("tbody")}>
+              {listingResort?.map((item, index) => {
+                return (
+                  <tr
+                    key={index}
+                    className={cx("trow")}
+                    // onClick={() => handleNavigate(item.id)}
+                  >
+                    <td className={cx("date", "column")}>
+                      <span className={cx("name")}>
+                        {`${convertToDate(item?.startDate)} - ${convertToDate(
+                          item?.endDate
+                        )}`}
+                      </span>
+                    </td>
+                    <td className={cx("price", "column")}>
+                      <span className={cx("name")}>
+                        {`${Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          currency: "USD",
+                          minimumFractionDigits: 0,
+                          maximumFractionDigits: 0,
+                        }).format(item?.price)}`}
+                      </span>
+                    </td>
+                    <td className={cx("unit", "column")}>
+                      <span className={cx("name", "text")}>
+                        {item?.TypeRoom?.name}
+                      </span>
+                    </td>
+                    <td className={cx("sleep", "column")}>
+                      <span className={cx("name")}>
+                        {item?.TypeRoom?.persons}
+                      </span>
+                    </td>
+                    <td className={cx("sleep", "column")}>
+                      <div
+                        className={cx("btn")}
+                        onClick={() =>
+                          handleNavigate("view_book", item?.TypeRoom?.id)
+                        }
+                      >
+                        VIEW BOOK
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+            <tfoot className={cx("tfoot")}>
+              <tr className={cx("trow")}>
+                <Stack spacing={2}>
+                  <Pagination
+                    count={countPage}
+                    page={page}
+                    variant="outlined"
+                    shape="rounded"
+                    onChange={handlePageChange}
+                    className={cx("pagination")}
+                  />
+                </Stack>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
       </main>
-      <div>{/* <PaymentIntro /> */}</div>
       <Footer />
     </div>
   );

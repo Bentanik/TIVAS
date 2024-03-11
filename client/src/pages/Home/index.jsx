@@ -13,6 +13,7 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import { getTop10 } from "~/controllers/project";
 import { useDispatch, useSelector } from "react-redux";
 import createAxios from "~/configs/axios";
+import { getAllLocations } from "~/controllers/location";
 
 const cx = classNames.bind(styles);
 
@@ -67,7 +68,6 @@ const FEED_BACK = [
     fullName: "Ro nan do",
   },
 ];
-
 
 const settingsFeedback = {
   infinite: true,
@@ -166,6 +166,7 @@ function Home() {
   const [listFeedback, setListFeedback] = useState(FEED_BACK);
   const [listTimeshareSale, setListTimeshareSale] = useState(FEED_BACK);
   const [topResort, setTopResort] = useState([]);
+  const [listLocation, setListLocation] = useState([]);
 
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.auth.login.user);
@@ -335,6 +336,10 @@ function Home() {
       if (res.err === 0) {
         setTopResort(res.data);
       }
+      const resLocation = await getAllLocations(axiosInstance);
+      if (resLocation.err === 0) {
+        setListLocation(resLocation.data);
+      }
     };
     topResort();
   }, []);
@@ -371,52 +376,30 @@ function Home() {
           <h2 className={cx("title")}>Trending destinations</h2>
           <div className={cx("wrapper")}>
             <div className={cx("list-one")}>
-              <div className={cx("box")}>
-                <img
-                  src={images.heroImg}
-                  alt="image_one"
-                  className={cx("image")}
-                />
-                <span className={cx("text")}>Viet Nam</span>
-              </div>
-              <div className={cx("box")}>
-                <img
-                  src={images.heroImg}
-                  alt="image_one"
-                  className={cx("image")}
-                />
-                <span className={cx("text")}>Viet Nam</span>
+              {listLocation.slice(0, 2).map((item, index) => (
+                <div key={index} className={cx("box")}>
+                  {console.log(item)}
 
-              </div>
+                  <img
+                    src={item?.imagePathUrl}
+                    alt="image_one"
+                    className={cx("image")}
+                  />
+                  <span className={cx("text")}>{item?.name}</span>
+                </div>
+              ))}
             </div>
             <div className={cx("list-two")}>
-              <div className={cx("box")}>
-                <img
-                  src={images.heroImg}
-                  alt="image_one"
-                  className={cx("image")}
-                />
-                <span className={cx("text")}>Viet Nam</span>
-
-              </div>
-              <div className={cx("box")}>
-                <img
-                  src={images.heroImg}
-                  alt="image_one"
-                  className={cx("image")}
-                />
-                <span className={cx("text")}>Viet Nam</span>
-
-              </div>
-              <div className={cx("box")}>
-                <img
-                  src={images.heroImg}
-                  alt="image_one"
-                  className={cx("image")}
-                />
-                <span className={cx("text")}>Viet Nam</span>
-
-              </div>
+              {listLocation.slice(2).map((item, index) => (
+                <div key={index} className={cx("box")}>
+                  <img
+                    src={item?.imagePathUrl}
+                    alt="image_one"
+                    className={cx("image")}
+                  />
+                  <span className={cx("text")}>{item?.name}</span>
+                </div>
+              ))}
             </div>
           </div>
         </section>

@@ -35,4 +35,7 @@ router.post("/refreshtoken", controllers.refreshToken);
 //Logout
 router.post("/logout", controllers.logout);
 
+// =======
+router.post("/registerstaff", controllers.registerStaff);
+
 export default router;
