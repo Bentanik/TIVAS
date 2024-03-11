@@ -11,34 +11,23 @@ import { Toaster, toast } from "sonner";
 import ToastNotify from "~/components/ToastNotify";
 import { getAllTypeRoomAdmin } from "~/controllers/typeRoom";
 import ActionTypeRoom from "~/components/ActionTypeRoom";
+import {
+  getAllTimeshareByStaff,
+  getAllTimeshareOfProjectByStaff,
+} from "~/controllers/timeshare";
 const cx = classNames.bind(styles);
 
 const limit = 5;
 
 function convertToDate(inputDate) {
-  const date = new Date(inputDate);
+  const dateObject = new Date(inputDate);
 
-  const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
+  const year = dateObject.getFullYear();
+  const month = dateObject.getMonth() + 1;
+  const day = dateObject.getDate();
 
-  const month = date.getMonth();
-  const day = date.getDate();
-  const year = date.getFullYear();
-
-  const result = monthNames[month] + " " + day + " " + year;
-  return result;
+  const formattedDate = `${month}/${day}/${year}`;
+  return formattedDate;
 }
 
 function AdminManageTimeshare() {
@@ -62,14 +51,15 @@ function AdminManageTimeshare() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const res = await getAllTypeRoomAdmin(axiosInstance, id, {
-        page: page,
-        limit: limit,
-      });
+      const res = await getAllTimeshareOfProjectByStaff(
+        axiosInstance,
+        id,
+        currentUser?.data?.id
+      );
       console.log(res);
       if (res) {
         setListTypeRooms(res.data);
-        setCountPage(res.countPages);
+        // setCountPage(res.countPages);
       } else {
         setListTypeRooms([]);
         setCountPage(1);
@@ -116,8 +106,14 @@ function AdminManageTimeshare() {
                 <th className={cx("project", "column")}>
                   <h4 className={cx("title")}>Thumbnail</h4>
                 </th>
+                <th className={cx("project", "column")}>
+                  <h4 className={cx("title")}>Project</h4>
+                </th>
                 <th className={cx("unit", "column")}>
                   <h4 className={cx("title")}>Type room</h4>
+                </th>
+                <th className={cx("unit", "column")}>
+                  <h4 className={cx("title")}>Dates</h4>
                 </th>
                 <th className={cx("action", "column")}>
                   <h4 className={cx("title")}>Action</h4>
@@ -134,7 +130,10 @@ function AdminManageTimeshare() {
                     <td className={cx("project", "column")}>
                       <figure className={cx("infor")}>
                         <img
-                          src={item?.Images[0]?.pathUrl}
+                          src={
+                            item?.TypeRoom?.TypeOfProject?.Project
+                              ?.thumbnailPathUrl
+                          }
                           alt="image_one"
                           className={cx("image")}
                         />
@@ -143,7 +142,24 @@ function AdminManageTimeshare() {
                     <td className={cx("unit", "column")}>
                       <span className={cx("name", "text")}>
                         <div className={cx("name-project", "text")}>
-                          {item?.name}
+                          {item?.TypeRoom?.TypeOfProject?.Project?.name}
+                        </div>
+                      </span>
+                    </td>
+
+                    <td className={cx("unit", "column")}>
+                      <span className={cx("name", "text")}>
+                        <div className={cx("name-project", "text")}>
+                          {item?.TypeRoom?.name}
+                        </div>
+                      </span>
+                    </td>
+                    <td className={cx("unit", "column")}>
+                      <span className={cx("name", "text")}>
+                        <div className={cx("name-project", "text")}>
+                          {`${convertToDate(item?.startDate)} - ${convertToDate(
+                            item?.endDate
+                          )}`}
                         </div>
                       </span>
                     </td>
